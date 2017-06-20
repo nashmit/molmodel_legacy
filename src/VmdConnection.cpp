@@ -11,6 +11,9 @@ extern "C" {
 #ifdef _MSC_VER
 #include <Windows.h>
 #define sleep(x) Sleep(1000*x)
+#else
+//HOREA
+#include <unistd.h>
 #endif
 
 using namespace std;

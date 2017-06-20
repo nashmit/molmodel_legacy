@@ -1181,7 +1181,9 @@ public:
                 UnitVec3 sourceDirection(bondCenterFrame * UnitVec3(1, 0, 0));
 
                 // store molecule and target structure bond directions...
-                bondVectors.push_back(std::pair<Vec3, Vec3>(sourceDirection, targetDirection));
+                //horea
+		//bondVectors.push_back(std::pair<Vec3, Vec3>(sourceDirection, targetDirection));
+                bondVectors.push_back(std::pair<UnitVec3, UnitVec3>(sourceDirection, targetDirection));
 
                 // ... and store bond center index
                 bondCenterIndexes.push_back( bondCenterInfo.getIndex() );
