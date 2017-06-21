@@ -116,8 +116,9 @@ void testTemperature(Real temperature) {
     
     // Create a gas of two atom molecules.
     
-    Body::Rigid body = Body::Rigid(MassProperties(1, Vec3(0), Inertia(1)))
-                                  .addDecoration(Transform(), DecorativeSphere(.1));
+    Body::Rigid body = Body::Rigid(MassProperties(1, Vec3(0), Inertia(1)));
+    //HOREA
+    body.addDecoration(Transform(), DecorativeSphere(.1));
     Random::Uniform random(-10.0, 10.0);
     for (int i = 0; i < NUM_MOLECULES; ++i) {
         Vec3 pos(random.getValue(), random.getValue(), random.getValue());

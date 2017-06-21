@@ -233,7 +233,7 @@ SET(SimTK_INSTALL_DIR $ENV{SimTK_INSTALL_DIR} CACHE
   PATH "Where to look for the Simbody libraries; you can change this.")
 
 # This should find Simbody in SimTK_SDK if it is set, otherwise hunt for it.
-find_package(Simbody REQUIRED)
+find_package(Simbody CONFIG REQUIRED)
 include_directories(${Simbody_INCLUDE_DIR})
 link_directories(${Simbody_LIB_DIR})
 
@@ -298,6 +298,7 @@ IF(${CMAKE_C_COMPILER} MATCHES "cc" OR ${CMAKE_C_COMPILER} MATCHES "clang")
       CACHE STRING "gcc MinSizeRel build compile flags")
 
     # C++
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")
     SET(CMAKE_CXX_FLAGS_DEBUG ${BUILD_CXX_FLAGS_DEBUG}
         CACHE STRING "Can't change here -- see BUILD_CXX..." FORCE)
     SET(CMAKE_CXX_FLAGS_RELEASE ${BUILD_CXX_FLAGS_RELEASE}
@@ -354,6 +355,7 @@ IF(WIN32 AND ${CMAKE_C_COMPILER} MATCHES "cl")
         CACHE STRING "VC MinSizeRel build compile flags")
 
     ## C++
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11")
     SET(CMAKE_CXX_FLAGS_DEBUG ${BUILD_CXX_FLAGS_DEBUG}
         CACHE STRING "Can't change here -- see BUILD_CXX..." FORCE)
     SET(CMAKE_CXX_FLAGS_RELEASE ${BUILD_CXX_FLAGS_RELEASE}

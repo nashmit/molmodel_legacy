@@ -3,11 +3,13 @@
 
 #if defined (__linux__)
 # include <sys/sysinfo.h>
+#include <unistd.h>
 
 #elif defined(__APPLE__)
 # include <mach/task.h>
 # include <mach/mach_init.h>
-
+//it should work on macosx too - it's not tested but int getpagesize(void); needs it
+#include <unistd.h>
 #elif defined(_WINDOWS)
 # include <windows.h>
 # include "psapi.h"
