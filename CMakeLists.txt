@@ -167,7 +167,7 @@ IF(${CMAKE_C_COMPILER} MATCHES "cc" OR ${CMAKE_C_COMPILER} MATCHES "clang") # Li
 #IF(${CMAKE_C_COMPILER} MATCHES "gcc") # Linux, Mac, Cygwin
 
     IF(NOT SimTK_INSTALL_PREFIX)
-        SET(SimTK_INSTALL_PREFIX "/usr/local/SimTK" 
+        SET(SimTK_INSTALL_PREFIX "/usr/local" 
             CACHE PATH "Install directory")
     ENDIF(NOT SimTK_INSTALL_PREFIX)
 
@@ -193,6 +193,8 @@ ELSE() # Windows
     ENDIF()
 
     IF(NOT SimTK_INSTALL_PREFIX)
+	#HOREA
+	MESSAGE( WARNING "I should take in consideration another default parameter for : SimTK_INSTALL_PREFIX" )
         SET(SimTK_INSTALL_PREFIX "${PROGFILEDIR}/SimTK" 
             CACHE PATH "Install directory")
     ENDIF(NOT SimTK_INSTALL_PREFIX)
@@ -565,9 +567,13 @@ INCLUDE(ApiDoxygen.cmake)
 
 # install headers
 FILE(GLOB CORE_HEADERS     include/*.h                  */include/*.h)
+#HOREA this hack is to provide to gmodmodel access to some internal headers... practically... a hack
+FILE(GLOB CORE_HEADERS_APP	   src/*h                       */src/*h )
 FILE(GLOB TOP_HEADERS      include/molmodel/*.h          */include/molmodel/*.h)
 FILE(GLOB INTERNAL_HEADERS include/molmodel/internal/*.h */include/molmodel/internal/*.h)
 INSTALL_FILES(/include/                 FILES ${CORE_HEADERS})
+#HOREA
+INSTALL_FILES(/include/			FILES ${CORE_HEADERS_APP})
 INSTALL_FILES(/include/molmodel/         FILES ${TOP_HEADERS})
 INSTALL_FILES(/include/molmodel/internal FILES ${INTERNAL_HEADERS})
 
