@@ -41,6 +41,16 @@
 
 using namespace SimTK;
 
+#ifndef DEBUG
+#define DEBUG 1
+#endif
+
+#ifdef DEBUG
+#define TRACE(STR) printf("%s", STR); 
+#else
+#define TRACE(STR) 
+#endif
+
 
 // This is Coulomb's constant 1/(4*pi*e0) in units which convert
 // e^2/nm to kJ/mol.
@@ -1089,12 +1099,12 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
                 mutableThis->usingMultithreaded = false;
                 if (tracing) 
                     // EU BEGIN COMMENT
-                    //std::clog << "NOTE: DuMM: not using multithreading because"
-                    //             " there are no nonbonded or implicit solvent"
-                    //             " terms to calculate.\n";
+                    std::clog << "NOTE: DuMM: not using multithreading because"
+                                 " there are no nonbonded or implicit solvent"
+                                 " terms to calculate.\n";
                     // EU BEGIN
-                    {
-                    }
+                    //{
+                    //}
                     // EU END
             }
             // This will probably never happen.
@@ -1102,12 +1112,12 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
                 mutableThis->usingMultithreaded = false;
                 if (tracing) 
                     // EU BEGIN COMMENT
-                    //std::clog << "NOTE: DuMM: can't use multithreading because"
-                    //             " the main thread is already a ParallelExecutor"
-                    //             " worker thread.\n";
+                    std::clog << "NOTE: DuMM: can't use multithreading because"
+                                 " the main thread is already a ParallelExecutor"
+                                 " worker thread.\n";
                     // EU BEGIN
-                    {
-                    }
+                    //{
+                    //}
                     // EU END
             }
         }
@@ -1135,6 +1145,10 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
             std::clog << "NOTE: DuMM: using multithreading code with "
                       << numThreadsInUse << " threads.\n";
 
+        TRACE("DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl includedBodies.size(): ");
+        TRACE(std::to_string(includedBodies.size()).c_str());
+        TRACE(" bodies\n");
+
         mutableThis->nonbondedExecutor = 
             new Parallel2DExecutor(includedBodies.size(), *executor);
         mutableThis->gbsaExecutor = 
@@ -1144,9 +1158,9 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
     if (!(usingOpenMM || usingMultithreaded)) {
         if (tracing)
             // EU BEGIN COMMENT
-            //std::clog << "NOTE: DuMM: using single threaded code.\n";
+            std::clog << "NOTE: DuMM: using single threaded code.\n";
             // EU BEGIN
-            {}
+            //{}
             // EU END
 
         // Using single threaded -- allocate global temporaries
@@ -1575,6 +1589,7 @@ void DuMMForceFieldSubsystemRep::calcAmberImproperTorsion
 //                 add force contribution to atoms
 //          reset scale factors on atoms bonded to atom ab
 //
+
 void DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces
    (DuMMIncludedBodyIndex                   dummBodIx,
     DuMMIncludedBodyIndex                   firstIx,
@@ -1585,6 +1600,8 @@ void DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces
     Vector_<Vec3>&                          inclAtomForce_G,
     Real&                                   energy) const
 {   
+    TRACE("DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces");
+
     const IncludedBody& inclBod1 = includedBodies[dummBodIx];
 
     // Run through every nonbond atom that is attached to this included body.
@@ -1696,7 +1713,8 @@ void DuMMForceFieldSubsystemRep::calcNonbondedForces
    (const Vector_<Vec3>&                inclAtomPos_G,
     Vector_<Vec3>&                      inclAtomForce_G,
     Real&                               energy) const
-{             
+{            
+    TRACE("calcNonbondedForces() BEGIN"); 
     for (DuMMIncludedBodyIndex inclBodyIx(0); 
          inclBodyIx < getNumIncludedBodies(); ++inclBodyIx) 
     {
@@ -1735,23 +1753,28 @@ public:
     // don't need to be accumulated locally because Parallel2DExecutor 
     // guarantees that simultaneous tasks use disjoint body indices.
     void initialize() {
+        TRACE("NonbondedForceTask::initialize BEGIN\n");
         localEnergy.upd() = 0;
 
         // Temps for nonbonded scale factors; initialize to 1
         localVdwScale.upd().resize(getNumNonbondAtoms(), Real(1));
         localCoulombScale.upd().resize(getNumNonbondAtoms(), Real(1));
+        TRACE("NonbondedForceTask::initialize END\n");
     }
 
     // At the end of execution, each thread adds its local energy contribution
     // to the global total. See comment above regarding forces.
     void finish() {
+        TRACE("NonbondedForceTask::finish BEGIN\n");
         globalEnergy += localEnergy.get();
+        TRACE("NonbondedForceTask::finish END\n");
     }
 
     // This is the standard unit of work for a pair of body indices. No
     // simultaneous task will be using either of these two indices, so we
     // can access global data that is indexed by them without synchronization.
     void execute(int body1, int body2) {
+        TRACE("NonbondedForceTask::execute BEGIN\n");
         dumm.calcBodySubsetNonbondedForces(
             DuMMIncludedBodyIndex(body1), 
             DuMMIncludedBodyIndex(body2),   // i.e, just one body
@@ -1868,6 +1891,7 @@ void DuMMForceFieldSubsystemRep::calcGBSAForces
 // Potential energy is calculated at the same time since that comes for free.
 void DuMMForceFieldSubsystemRep::realizeForcesAndEnergy(const State& s) const 
 {
+
     if (   isIncludedAtomForceCacheRealized(s) 
         && isIncludedBodyForceCacheRealized(s) 
         && isEnergyCacheRealized(s))
@@ -1949,12 +1973,16 @@ void DuMMForceFieldSubsystemRep::realizeForcesAndEnergy(const State& s) const
 
                 // NONBONDED FORCES //
 
+    TRACE("DuMMForceFieldSubsystemRep::realizeForcesAndEnergy: trying to evaluate nonbonded\n");
     if (getNumNonbondAtoms()) {
+        TRACE("DuMMForceFieldSubsystemRep::realizeForcesAndEnergy: getNumNonbondAtoms != 0\n");
         // We'll use GPU acceleration if possible; otherwise parallel computation; 
         // otherwise serial calculation here.
 
-        if (usingOpenMM) {
+        if (usingOpenMM) { 
+            TRACE("DuMMForceFieldSubsystemRep::realizeForcesAndEnergy: using OpenMM\n");
             assert(openMMPluginIfc);
+            TRACE("DuMMForceFieldSubsystemRep::realizeForcesAndEnergy: assert passed\n");
 
             // Calculate forces and energy.
             // TODO: should calculate energy only when it is asked for.
@@ -1971,13 +1999,19 @@ void DuMMForceFieldSubsystemRep::realizeForcesAndEnergy(const State& s) const
 
         // We're not using OpenMM; calculate these terms here as best we can.
         if (usingMultithreaded) {
+            TRACE("DuMMForceFieldSubsystemRep::realizeForcesAndEnergy: using multithreading\n");
             // Parallel calculation.
             NonbondedForceTask task
                (*this, inclAtomPos_G, inclAtomForce_G, energy);
+            TRACE("DuMMForceFieldSubsystemRep::realizeForcesAndEnergy: about to execute nonbondedExecutor with: ");
+            TRACE(std::to_string(numThreadsInUse).c_str());
+            TRACE(" threads\n");
             nonbondedExecutor->execute(task, Parallel2DExecutor::HalfMatrix);
         } else {
             // Serial calculation in this thread.
+            TRACE("DuMMForceFieldSubsystemRep::realizeForcesAndEnergy: begin serial calculation\n");
             if (!(coulombGlobalScaleFactor==0 && vdwGlobalScaleFactor==0)) {
+                TRACE("DuMMForceFieldSubsystemRep::realizeForcesAndEnergy: scale factor not 0\n");
                 calcNonbondedForces(inclAtomPos_G, inclAtomForce_G, energy);
             }
         }
