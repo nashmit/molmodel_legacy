@@ -1600,7 +1600,7 @@ void DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces
     Vector_<Vec3>&                          inclAtomForce_G,
     Real&                                   energy) const
 {   
-    TRACE("DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces");
+    TRACE("DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces BEGIN\n");
 
     const IncludedBody& inclBod1 = includedBodies[dummBodIx];
 
@@ -1608,6 +1608,7 @@ void DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces
     for (DuMM::NonbondAtomIndex nax1 = inclBod1.beginNonbondAtoms;
          nax1 != inclBod1.endNonbondAtoms; ++nax1)
     {
+        TRACE("a1");
         DuMM::IncludedAtomIndex iax1 = getIncludedAtomIndexOfNonbondAtom(nax1);
         const IncludedAtom& a1 = getIncludedAtom(iax1);
         const ChargedAtomType& a1type = chargedAtomTypes[a1.chargedAtomTypeIndex];
@@ -1627,13 +1628,15 @@ void DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces
         Vec3& afrc1_G = inclAtomForce_G[iax1];
 
         for (DuMMIncludedBodyIndex dbx2 = firstIx; dbx2 <= lastIx; ++dbx2) {
+            TRACE("b1");
             assert(dbx2 != dummBodIx);
             const IncludedBody& inclBod2 = includedBodies[dbx2];
 
             // Run through all the nonbond atoms that are attached to this body.
             for (DuMM::NonbondAtomIndex nax2 = inclBod2.beginNonbondAtoms;
                  nax2 != inclBod2.endNonbondAtoms; ++nax2)
-            {
+            { 
+                TRACE("a2 ");
                 DuMM::IncludedAtomIndex iax2 = 
                     getIncludedAtomIndexOfNonbondAtom(nax2);
                 assert(iax2 != iax1);
@@ -1680,6 +1683,9 @@ void DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces
                 // 8 flops
                 const Real eijScale = vdwGlobalScaleFactor*vdwScale[nax2]*eij;
                 const Real eVdw     =      eijScale * (ddij12 - 2*ddij6);
+                TRACE("eVdw: ");
+                TRACE((std::to_string(eVdw)).c_str());
+                TRACE(" ");
                 // Note: factor of 1/d^2 missing here; see below.
                 const Real fVdw     = 12 * eijScale * (ddij12 -   ddij6); 
 
@@ -1690,6 +1696,9 @@ void DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces
 
                 // kJ (Da-nm^2/ps^2)        // 2 flops 
                 energy                += (eCoulomb + eVdw); 
+                TRACE("energy: ");
+                TRACE((std::to_string(eVdw)).c_str());
+                TRACE(" ");
                 inclAtomForce_G[iax2] += fj;   // 3 flops
                 afrc1_G               -= fj;   // 3 flops
             }
@@ -1698,6 +1707,7 @@ void DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces
         // This is the end of the outer atom loop. We're done with atom a1.
         unscaleBondedAtoms(a1,vdwScale,coulombScale);
     }
+    TRACE("DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces END\n");
 }
 //....................CALC BODY SUBSET NONBONDED FORCES.........................
 
@@ -1754,7 +1764,10 @@ public:
     // guarantees that simultaneous tasks use disjoint body indices.
     void initialize() {
         TRACE("NonbondedForceTask::initialize BEGIN\n");
-        localEnergy.upd() = 0;
+        // EU COMENT BEGIN
+        //localEnergy.upd() = 0;
+        // EU COMMENT END
+        localEnergy = 0; // EU
 
         // Temps for nonbonded scale factors; initialize to 1
         localVdwScale.upd().resize(getNumNonbondAtoms(), Real(1));
@@ -1766,22 +1779,36 @@ public:
     // to the global total. See comment above regarding forces.
     void finish() {
         TRACE("NonbondedForceTask::finish BEGIN\n");
-        globalEnergy += localEnergy.get();
-        TRACE("NonbondedForceTask::finish END\n");
+        // EU COMENT BEGIN
+        //globalEnergy += localEnergy.get();
+        // EU COMMENT END
+        globalEnergy += localEnergy; // EU
+        TRACE("NonbondedForceTask::finish ");
+        TRACE(std::to_string(globalEnergy).c_str());
+        TRACE(std::to_string(localEnergy).c_str());
+        TRACE(" END\n");
     }
 
     // This is the standard unit of work for a pair of body indices. No
     // simultaneous task will be using either of these two indices, so we
     // can access global data that is indexed by them without synchronization.
     void execute(int body1, int body2) {
-        TRACE("NonbondedForceTask::execute BEGIN\n");
+        TRACE("NonbondedForceTask::execute ");
+        TRACE( (std::to_string(body1) + std::string(" ") + std::to_string(body2) ).c_str());
+        TRACE(" BEGIN\n");
         dumm.calcBodySubsetNonbondedForces(
             DuMMIncludedBodyIndex(body1), 
             DuMMIncludedBodyIndex(body2),   // i.e, just one body
             DuMMIncludedBodyIndex(body2),
             inclAtomPos_G,
             localVdwScale.upd(), localCoulombScale.upd(),
-            globalAtomForces_G, localEnergy.upd());
+            // EU COMENT BEGIN
+            //globalAtomForces_G, localEnergy.upd());
+            // EU COMMENT END
+            globalAtomForces_G, localEnergy); // EU
+        TRACE("NonbondedForceTask::execute ");
+        TRACE(std::to_string(localEnergy).c_str());
+        TRACE(" END\n");
     }
 
 private:
@@ -1793,7 +1820,10 @@ private:
     Real&                               globalEnergy;
 
     // Thread local temporaries.
-    ThreadLocal< Real >                                 localEnergy;
+    // EU COMENT BEGIN
+    //ThreadLocal< Real >                                 localEnergy;
+    // EU COMMENT END
+    Real localEnergy; // EU
     ThreadLocal< Array_<Real, DuMM::NonbondAtomIndex> > localVdwScale;
     ThreadLocal< Array_<Real, DuMM::NonbondAtomIndex> > localCoulombScale;
 };
