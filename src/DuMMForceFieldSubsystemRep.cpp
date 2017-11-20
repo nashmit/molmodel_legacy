@@ -1600,7 +1600,7 @@ void DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces
     Vector_<Vec3>&                          inclAtomForce_G,
     Real&                                   energy) const
 {   
-    TRACE("DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces BEGIN\n");
+    //TRACE("DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces BEGIN\n");
 
     const IncludedBody& inclBod1 = includedBodies[dummBodIx];
 
@@ -1613,7 +1613,7 @@ void DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces
         const ChargedAtomType& a1type = chargedAtomTypes[a1.chargedAtomTypeIndex];
         const DuMM::AtomClassIndex a1cnum = a1type.atomClassIx;
 
-        TRACE( std::to_string(a1cnum).c_str() );
+        //TRACE( std::to_string(a1cnum).c_str() );
 
         const AtomClass&           a1class = atomClasses[a1cnum];
         const Vec3&                a1Pos_G = inclAtomPos_G[iax1];
@@ -1637,14 +1637,14 @@ void DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces
             for (DuMM::NonbondAtomIndex nax2 = inclBod2.beginNonbondAtoms;
                  nax2 != inclBod2.endNonbondAtoms; ++nax2)
             { 
-                TRACE(" ");
+                //TRACE(" ");
                 DuMM::IncludedAtomIndex iax2 = 
                     getIncludedAtomIndexOfNonbondAtom(nax2);
                 assert(iax2 != iax1);
                 const IncludedAtom& a2 = getIncludedAtom(iax2);
                 const ChargedAtomType& a2type  = chargedAtomTypes[a2.chargedAtomTypeIndex];
                 const DuMM::AtomClassIndex a2cnum  = a2type.atomClassIx;
-                TRACE( std::to_string(a2cnum).c_str() );
+                //TRACE( std::to_string(a2cnum).c_str() );
                 const AtomClass& a2class = atomClasses[a2cnum];
                 const Vec3&      a2Pos_G = inclAtomPos_G[iax2];
 
@@ -1653,14 +1653,14 @@ void DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces
 
                 // Check for cutoffs on d2?
                 
-                TRACE( (std::string(" r ") + std::to_string(std::sqrt(d2))).c_str() );
+                //TRACE( (std::string(" r ") + std::to_string(std::sqrt(d2))).c_str() );
                 const Real  ood = 1/std::sqrt(d2); // approx 40 flops
                 const Real  ood2 = ood*ood;        // 1 flop
 
                 // Coulombic electrostatic force
                 const Real qq = coulombScale[nax2] // 2 flops
                                     * q1Fac * a2type.partialCharge; 
-                TRACE( (std::string(" a1type.partialCharge ") + std::to_string(a1type.partialCharge) + std::string(" a2type.partialCharge ") + std::to_string(a2type.partialCharge)).c_str() );
+                //TRACE( (std::string(" a1type.partialCharge ") + std::to_string(a1type.partialCharge) + std::string(" a2type.partialCharge ") + std::to_string(a2type.partialCharge)).c_str() );
                 // e = scale*(1/(4*pi*e0)) *  q1*q2/d 
                 const Real eCoulomb = qq * ood;     // 1 flop 
                 // f = -[scale*(1/(4*pi*e0)) * -q1*q2/d^2] * r 
@@ -1678,7 +1678,7 @@ void DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces
                     dij = a2class.vdwDij[a1cnum-a2cnum];
                     eij = a2class.vdwEij[a1cnum-a2cnum];
                 }
-                TRACE( (std::string(" Dij ") + std::to_string(dij) + std::string(" eij ") + std::to_string(eij)).c_str() );
+                //TRACE( (std::string(" Dij ") + std::to_string(dij) + std::string(" eij ") + std::to_string(eij)).c_str() );
 
                 // 5 flops
                 const Real ddij2  = dij*dij*ood2;   // (dmin_ij/d)^2
@@ -1687,10 +1687,10 @@ void DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces
 
                 // 8 flops
                 const Real eijScale = vdwGlobalScaleFactor*vdwScale[nax2]*eij;
-                TRACE( (std::string(" vdwGlobal ") + std::to_string(vdwGlobalScaleFactor) + std::string(" vdwScale[nax2] ") + std::to_string(vdwScale[nax2])).c_str() );
+                //TRACE( (std::string(" vdwGlobal ") + std::to_string(vdwGlobalScaleFactor) + std::string(" vdwScale[nax2] ") + std::to_string(vdwScale[nax2])).c_str() );
                 const Real eVdw     =      eijScale * (ddij12 - 2*ddij6);
-                TRACE(" eVdw: ");
-                TRACE((std::to_string(eVdw)).c_str());
+                //TRACE(" eVdw: ");
+                //TRACE((std::to_string(eVdw)).c_str());
                 // Note: factor of 1/d^2 missing here; see below.
                 const Real fVdw     = 12 * eijScale * (ddij12 -   ddij6); 
 
@@ -1701,9 +1701,9 @@ void DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces
 
                 // kJ (Da-nm^2/ps^2)        // 2 flops 
                 energy                += (eCoulomb + eVdw); 
-                TRACE(" energy: ");
-                TRACE((std::to_string(eVdw)).c_str());
-                TRACE(" ");
+                //TRACE(" energy: ");
+                //TRACE((std::to_string(eVdw)).c_str());
+                //TRACE(" ");
                 inclAtomForce_G[iax2] += fj;   // 3 flops
                 afrc1_G               -= fj;   // 3 flops
             }
@@ -1712,7 +1712,7 @@ void DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces
         // This is the end of the outer atom loop. We're done with atom a1.
         unscaleBondedAtoms(a1,vdwScale,coulombScale);
     }
-    TRACE("DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces END\n");
+    //TRACE("DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces END\n");
 }
 //....................CALC BODY SUBSET NONBONDED FORCES.........................
 
@@ -1790,6 +1790,7 @@ public:
         globalEnergy += localEnergy; // EU
         TRACE("NonbondedForceTask::finish ");
         TRACE(std::to_string(globalEnergy).c_str());
+        TRACE(" ");
         TRACE(std::to_string(localEnergy).c_str());
         TRACE(" END\n");
     }

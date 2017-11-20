@@ -53,6 +53,16 @@
 #include <stdexcept>
 #include <set>
 
+#ifndef DEBUG
+#define DEBUG 1
+#endif
+
+#ifdef DEBUG
+#define TRACE(STR) printf("%s", STR);
+#else
+#define TRACE(STR)
+#endif
+
 using namespace std;
 
 
