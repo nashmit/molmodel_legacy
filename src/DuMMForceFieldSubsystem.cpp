@@ -43,6 +43,16 @@
 #include "DuMMForceFieldSubsystemRep.h"
 #include "TinkerAmber99.h"
 
+//#ifndef DEBUG
+//#define DEBUG 1
+//#endif
+
+#ifdef DEBUG
+#define TRACE(STR) printf("%s", STR);
+#else
+#define TRACE(STR)
+#endif
+
 using namespace SimTK;
 
     ////////////////////////////////
@@ -1309,6 +1319,7 @@ DuMM::AtomIndex DuMMForceFieldSubsystem::addAtom(DuMM::ChargedAtomTypeIndex char
 
     const DuMM::AtomIndex atomIndex = (const DuMM::AtomIndex)mm.atoms.size();
     mm.atoms.push_back(DuMMAtom(chargedAtomTypeIndex, atomIndex));
+    TRACE((std::string("DuMM::addAtom") + std::to_string(atomIndex) + std::string("\n")).c_str());
     return atomIndex;
 }
 
