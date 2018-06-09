@@ -78,6 +78,7 @@ public:
         // is added to that.
         addSearchDirectory(SimTK::Pathname::getInstallDir("SimTK_INSTALL_DIR", "SimTK") 
                             + "lib/plugins");
+	addSearchDirectory("/usr/local/lib/plugins/");
     }
 
     // This is the only defined exported method for this kind of plugin.
