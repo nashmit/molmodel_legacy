@@ -598,6 +598,7 @@ void CompoundSystem::modelOneCompound(CompoundIndex compoundId, String mobilized
 
     if (showDebugMessages) cout << "Step 9 create decorations" << endl;
     // 9) Create nice visualization geometry
+    /*
     if (hasDecorationSubsystem()) 
     {
         DecorationSubsystem&     artwork = updDecorationSubsystem();
@@ -616,7 +617,7 @@ void CompoundSystem::modelOneCompound(CompoundIndex compoundId, String mobilized
         }
 
         for (DuMM::AtomIndex anum(0); anum < dumm.getNumAtoms(); ++anum) {
-            Real shrink = 0.25 /* 1 */, opacity = dumm.getAtomElement(anum)==1?0.5:1;
+            Real shrink = 0.25 , opacity = dumm.getAtomElement(anum)==1?0.5:1;
             Real r = dumm.getAtomRadius(anum);
             if (r<.001) r=0.1; //nm
             //opacity=0.5;//XXX
@@ -625,6 +626,7 @@ void CompoundSystem::modelOneCompound(CompoundIndex compoundId, String mobilized
                     .setColor(dumm.getAtomDefaultColor(anum)).setOpacity(opacity).setResolution(3));
         }
     }
+    */
     if (showDebugMessages) cout << "Finished modelOneCompound" << endl;
 }
 
