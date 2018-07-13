@@ -41,15 +41,15 @@
 
 using namespace SimTK;
 
-//#ifndef DEBUG
-//#define DEBUG 1
-//#endif
+// #ifndef DEBUG
+// #define DEBUG 1
+// #endif
 
-#ifdef DEBUG
+//#ifdef DEBUG
 #define TRACE(STR) printf("%s", STR);
-#else
-#define TRACE(STR)
-#endif
+//#else
+//#define TRACE(STR)
+//#endif
 
 
 // This is Coulomb's constant 1/(4*pi*e0) in units which convert
@@ -115,6 +115,10 @@ DuMMForceFieldSubsystemRep::getAmberImproperTorsion
 
 
 
+
+
+
+
 //------------------------------------------------------------------------------
 //                             REALIZE TOPOLOGY
 //------------------------------------------------------------------------------
@@ -140,7 +144,22 @@ struct CrossBodyBondInfo {
     // This is even less likely to be valid than bonds3Atoms above. It will
     // be valid iff (a) bonds3Atoms is valid, and (b) at least one of the
     // three atoms is on a different body from this one.
-    AtomIndexTriple                             xbonds3Atoms;
+    AtomIndexTriple                             xbonds3Atoms; 
+
+
+    // GMolModel - extra 
+    Array_<DuMM::AtomIndex, unsigned short>     xbond12All;
+    Array_<AtomIndexPair,   unsigned short>     xbond13All;
+    Array_<AtomIndexTriple, unsigned short>     xbond14All;
+    Array_<AtomIndexQuad,   unsigned short>     xbond15All;
+
+    Array_<DuMM::AtomIndex, unsigned short>     xshortPath12All;
+    Array_<AtomIndexPair,   unsigned short>     xshortPath13All;
+    Array_<AtomIndexTriple, unsigned short>     xshortPath14All;
+    Array_<AtomIndexQuad,   unsigned short>     xshortPath15All;
+
+    AtomIndexTriple                             xbonds3AtomsAll;
+
 };
 
 // All the force field and molecule parameters have been set, as well as
@@ -223,7 +242,12 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
     // Construct a local set that will eventually contain all the mobilized
     // bodies that have any included atom attached. We'll also mark atoms as
     // included or nonbonded as we process them.
+
     std::set<MobilizedBodyIndex> allIncludedMobods;
+
+// for GMolModel
+    std::set<MobilizedBodyIndex> allAllMobods;
+
 
     for (DuMMBodyIndex bnum(0); bnum < duMMSubsetOfBodies.size(); ++bnum) {
         const DuMMBody& b = duMMSubsetOfBodies[bnum];
@@ -246,11 +270,18 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
              || inclList.isNonbondAtom(ap.atomIndex))
             {
                 allIncludedMobods.insert(mbx);
-
+	
                 // These will be replaced by the actual assignments later.
                 a.inclAtomIndex    = DuMM::IncludedAtomIndex(1); // mark "included"
                 a.nonbondAtomIndex = DuMM::NonbondAtomIndex(1);  // mark "nonbond"
+
             }
+
+	    // for GMolModel
+	    allAllMobods.insert(mbx);
+	    a.AllAtomIndex    = DuMM::IncludedAtomIndex(1); // mark "All"
+	    a.AllnonbondAtomIndex = DuMM::NonbondAtomIndex(1);  // mark "All nonbond"
+
         }
     }
     for (DuMM::AtomIndex ax(0); ax < atoms.size(); ++ax) {
@@ -343,7 +374,6 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
     // we'll use them to fill in the per-atom bond force and scaling
     // arrays in a second pass where the included atom indices are known.
     Array_<CrossBodyBondInfo, DuMM::AtomIndex>  crossBodyBondInfo(atoms.size());
-
 
     // need to chase bonds to fill in the bonded data
     // Be sure to distinguish the *shortest* path between two atoms from
@@ -491,31 +521,35 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
         // there is only a torsion dof between two bodies, and it is aligned
         // with atoms A and B, then a bond stretch term between A and B
         // can't do anything and shouldn't be kept on the list below.
-        x.xbond12.clear();
+
+        x.xbond12.clear(); x.xbond12All.clear();
         for (int j=0; j < (int)a.bond12.size(); ++j) {
             if (anum > a.bond12[j]) continue;
             if (atoms[a.bond12[j]].mobodIx != a.mobodIx)
-                x.xbond12.push_back(a.bond12[j]);
+                x.xbond12.push_back(a.bond12[j]); 
+            x.xbond12All.push_back( a.bond12[j] );
         }
 
-        x.xbond13.clear();
+        x.xbond13.clear(); x.xbond13All.clear();
         for (int j=0; j < (int)bond13.size(); ++j) {
             if (anum > bond13[j][1]) continue;
             if (   atoms[bond13[j][0]].mobodIx != a.mobodIx
                 || atoms[bond13[j][1]].mobodIx != a.mobodIx)
                 x.xbond13.push_back(bond13[j]);
+            x.xbond13All.push_back( bond13[j] );
         }
 
-        x.xbond14.clear();
+        x.xbond14.clear(); x.xbond14All.clear();
         for (int j=0; j < (int)bond14.size(); ++j) {
             if (anum > bond14[j][2]) continue;
             if (   atoms[bond14[j][0]].mobodIx != a.mobodIx
                 || atoms[bond14[j][1]].mobodIx != a.mobodIx
                 || atoms[bond14[j][2]].mobodIx != a.mobodIx)
                 x.xbond14.push_back(bond14[j]);
+            x.xbond14All.push_back( bond14[j] );
         }
 
-        x.xbond15.clear();
+        x.xbond15.clear(); x.xbond15All.clear();
         for (int j=0; j < (int)bond15.size(); ++j) {
             if (anum > bond15[j][3]) continue;
             if (   atoms[bond15[j][0]].mobodIx != a.mobodIx
@@ -523,6 +557,8 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
                 || atoms[bond15[j][2]].mobodIx != a.mobodIx
                 || atoms[bond15[j][3]].mobodIx != a.mobodIx)
                 x.xbond15.push_back(bond15[j]);
+	    x.xbond15All.push_back( bond15[j] );
+
         }
 
         x.xbonds3Atoms.invalidate();
@@ -533,6 +569,9 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
              || atoms[bonds3Atoms[1]].mobodIx != a.mobodIx
              || atoms[bonds3Atoms[2]].mobodIx != a.mobodIx))
             x.xbonds3Atoms = bonds3Atoms;
+	if (bonds3Atoms.isValid())
+	    x.xbonds3AtomsAll = bonds3Atoms;
+
 
         // By default, or if this atom or its body are on the "must include"
         // list then we have to keep all the cross-body bonds we just
@@ -551,7 +590,9 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
                 else if (inclList.isBondAtomPair(anum, bnum))    keep=true;
                 else if (inclList.isBondBodyPair(a.mobodIx, mbx)) keep=true;
                 if (keep) ++j;
-                else x.xbond12.erase(&x.xbond12[j]); // don't increment j
+                else {
+			x.xbond12.erase(&x.xbond12[j]); // don't increment j		
+		    }
             }
 
             for (int j=0; j < (int)x.xbond13.size();) {
@@ -684,6 +725,50 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
                 }
         }
 
+
+	// Adding the same for GMolModel for All bonds.
+        a.AllAtomIndex = DuMM::IncludedAtomIndex(1); // just mark it
+        allAllMobods.insert(a.mobodIx);
+        a.AllbondStarterIndex = DuMMBondStarterIndex(1); // mark
+
+	for (int j=0; j < (int)x.xbond12All.size(); ++j) {
+                DuMMAtom& b = mutableThis->atoms[x.xbond12All[j]];
+                b.AllAtomIndex = DuMM::IncludedAtomIndex(1);
+                allAllMobods.insert(b.mobodIx);
+        	}
+
+        for (int j=0; j < (int)x.xbond13All.size(); ++j)
+                for (int k=0; k < 2; ++k) {
+                    DuMMAtom& b = mutableThis->atoms[x.xbond13All[j][k]];
+                    b.AllAtomIndex = DuMM::IncludedAtomIndex(1);
+                    allAllMobods.insert(b.mobodIx);
+        	}
+
+        for (int j=0; j < (int)x.xbond14All.size(); ++j)
+                for (int k=0; k < 3; ++k) {
+                    DuMMAtom& b = mutableThis->atoms[x.xbond14All[j][k]];
+                    b.AllAtomIndex = DuMM::IncludedAtomIndex(1);
+                    allAllMobods.insert(b.mobodIx);
+                }
+
+        for (int j=0; j < (int)x.xbond15All.size(); ++j)
+                for (int k=0; k < 4; ++k) {
+                    DuMMAtom& b = mutableThis->atoms[x.xbond15All[j][k]];
+                    b.AllAtomIndex = DuMM::IncludedAtomIndex(1);
+                    allAllMobods.insert(b.mobodIx);
+                }
+
+        if (x.xbonds3AtomsAll.isValid())
+                for (int k=0; k < 3; ++k) {
+                    DuMMAtom& b = mutableThis->atoms[x.xbonds3AtomsAll[k]];
+                    b.AllAtomIndex = DuMM::IncludedAtomIndex(1);
+                    allAllMobods.insert(b.mobodIx);
+                }
+
+
+
+
+
         // Next we're going to work on the shortest-path interconnections
         // that will be used for nonbond scaling. We'll include
         // any shortest path connections that cross a body, provided that
@@ -699,6 +784,7 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
                 if (!atoms[a.bond12[j]].isNonbondAtom()) continue;
                 if (atoms[a.bond12[j]].mobodIx != a.mobodIx)
                     x.xshortPath12.push_back(a.bond12[j]);
+		 x.xshortPath12All.push_back( a.bond12[j] );
             }
 
             for (int j=0; j < (int)shortPath13.size(); ++j) {
@@ -706,6 +792,7 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
                 if (   atoms[shortPath13[j][0]].mobodIx != a.mobodIx
                     || atoms[shortPath13[j][1]].mobodIx != a.mobodIx)
                     x.xshortPath13.push_back(shortPath13[j]);
+	        x.xshortPath13All.push_back( shortPath13[j] );
             }
 
 
@@ -715,6 +802,7 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
                     || atoms[shortPath14[j][1]].mobodIx != a.mobodIx
                     || atoms[shortPath14[j][2]].mobodIx != a.mobodIx)
                     x.xshortPath14.push_back(shortPath14[j]);
+	         x.xshortPath14All.push_back(shortPath14[j]);
             }
 
             for (int j=0; j < (int)shortPath15.size(); ++j) {
@@ -724,6 +812,8 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
                     || atoms[shortPath15[j][2]].mobodIx != a.mobodIx
                     || atoms[shortPath15[j][3]].mobodIx != a.mobodIx)
                     x.xshortPath15.push_back(shortPath15[j]);
+
+                x.xshortPath15All.push_back(shortPath15[j]);
             }
         }
     }
@@ -740,7 +830,7 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
     // Then we can just keep (start,length) pairs with each included body
     // to locate its subset of included, nonbond, and bondstart atoms.
 
-    // Build a temporary map of included bodies to their included atoms.
+  // Build a temporary map of included bodies to their included atoms.
     std::map<MobodIndex, Array_<DuMM::AtomIndex> > inclBods2Atoms;
     unsigned numIncludedAtoms = 0;
     for (DuMM::AtomIndex ax(0); ax < atoms.size(); ++ax) {
@@ -751,15 +841,28 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
         ++numIncludedAtoms;
     }
 
+
+  // same for GMolModel 
+    std::map<MobodIndex, Array_<DuMM::AtomIndex> > AllBods2Atoms;
+    unsigned numAllAtoms = 0;
+    for (DuMM::AtomIndex ax(0); ax < atoms.size(); ++ax) {
+        const DuMMAtom& atom = atoms[ax];
+        AllBods2Atoms[atom.getMobodIndex()].push_back(ax);
+        ++numAllAtoms;
+    }
+
+
     SimTK_ASSERT_ALWAYS(inclBods2Atoms.size() == allIncludedMobods.size(),
         "DuMMForceFieldSubsystem::realizeTopology(): inconsistent lists "
         "of included bodies generated.");
-
+  
     // Allocate with default construction the included bodies and included
     // atoms arrays. We'll fill them in below.
     mutableThis->includedBodies.resize((unsigned)allIncludedMobods.size());
     mutableThis->includedAtoms.resize(numIncludedAtoms);
     mutableThis->includedAtomStations.resize(numIncludedAtoms);
+
+
 
     DuMMIncludedBodyIndex   nextInclBodyIx(0);
     DuMM::IncludedAtomIndex nextInclAtomIx(0);
@@ -799,13 +902,68 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
                 ++inclBody.endBondStarterAtoms;
             }
         }
+
     }
+
+
+  // same for GMolModel
+    mutableThis->AllBodies.resize((unsigned)allAllMobods.size());
+    mutableThis->AllAtoms.resize(numAllAtoms);
+    mutableThis->AllAtomStations.resize(numAllAtoms);
+
+    DuMMIncludedBodyIndex   nextAllBodyIx(0);
+    DuMM::IncludedAtomIndex nextAllAtomIx(0);
+    for (std::set<MobodIndex>::const_iterator p = allAllMobods.begin();
+         p != allAllMobods.end(); ++p, ++nextAllBodyIx)
+    {
+        IncludedBody& AllBody = mutableThis->AllBodies[nextAllBodyIx];
+        AllBody.mobodIx = *p;
+        AllBody.beginAllAtoms    = AllBody.endAllAtoms =
+            DuMM::IncludedAtomIndex(nextAllAtomIx);
+        AllBody.beginAllNonbondAtoms     = AllBody.endAllNonbondAtoms =
+            DuMM::NonbondAtomIndex(AllnonbondAtoms.size());
+        AllBody.beginAllBondStarterAtoms = AllBody.endAllBondStarterAtoms =
+            DuMMBondStarterIndex(AllbondStarterAtoms.size());
+
+        const Array_<DuMM::AtomIndex>& AllBodAtoms = AllBods2Atoms[*p];
+        for (unsigned i=0; i < AllBodAtoms.size(); ++i, ++nextAllAtomIx) {
+            DuMMAtom& a = mutableThis->atoms[AllBodAtoms[i]];
+            assert(a.atomIndex == AllBodAtoms[i]);
+            assert(a.AllAtomIndex.isValid()); // should have been marked "1"
+            a.AllAtomIndex = nextAllAtomIx;
+            a.AllBodyIndex = nextAllBodyIx;
+
+            IncludedAtom& ia = mutableThis->AllAtoms[nextAllAtomIx];
+
+            Vec3&         station_B_All = mutableThis->AllAtomStations[nextAllAtomIx];
+            ia.setIndices(a.AllAtomIndex, a.AllBodyIndex,
+                          a.atomIndex, a.chargedAtomTypeIndex);
+            station_B_All = a.station_B;
+
+            ++AllBody.endAllAtoms;
+
+            if (a.AllnonbondAtomIndex.isValid()) {
+                a.AllnonbondAtomIndex = DuMM::NonbondAtomIndex(AllnonbondAtoms.size());
+                mutableThis->AllnonbondAtoms.push_back(a.AllAtomIndex);
+                ++AllBody.endAllNonbondAtoms;
+
+            }
+            if (a.AllbondStarterIndex.isValid()) {
+                a.AllbondStarterIndex = DuMMBondStarterIndex(AllbondStarterAtoms.size());
+                mutableThis->AllbondStarterAtoms.push_back(a.AllAtomIndex);
+                ++AllBody.endAllBondStarterAtoms;
+            }
+        }
+
+    }
+
 
     // Now that included atom index assignments have been made, we can
     // allocate the includedAtoms array and fill each IncludedAtom with
     // bonded force arrays that use included atom indices rather than full
     // atom indices. Similarly, we can create nonbond scaling arrays that
     // use nonbond atom indices.
+
     for (DuMM::IncludedAtomIndex iax(0); iax < includedAtoms.size(); ++iax) {
         const DuMM::AtomIndex ax = getAtomIndexOfIncludedAtom(iax);
         const CrossBodyBondInfo& x = crossBodyBondInfo[ax]; // computed above
@@ -840,6 +998,8 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
         // Save a BondStretch entry for each cross-body 1-2 bond
         ia.force12.resize(x.xbond12.size());
         ia.stretch.resize(x.xbond12.size());
+
+
         for (int b12=0; b12 < (int)x.xbond12.size(); ++b12) {
             const DuMM::AtomIndex bx = x.xbond12[b12];
             ia.force12[b12] = atoms[bx].inclAtomIndex;
@@ -856,6 +1016,8 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
         // Save a BondBend entry for each cross-body 1-3 bond
         ia.force13.resize(x.xbond13.size());
         ia.bend.resize(x.xbond13.size());
+
+
         for (int b13=0; b13 < (int)x.xbond13.size(); ++b13) {
             const AtomIndexPair& bx = x.xbond13[b13];
             ia.force13[b13][0] = atoms[bx[0]].inclAtomIndex;
@@ -875,6 +1037,7 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
         // Save a BondTorsion entry for each cross-body 1-4 bond
         ia.force14.resize(x.xbond14.size());
         ia.torsion.resize(x.xbond14.size());
+
         for (int b14=0; b14 < (int)x.xbond14.size(); ++b14) {
             const AtomIndexTriple& bx = x.xbond14[b14];
             ia.force14[b14][0] = atoms[bx[0]].inclAtomIndex;
@@ -892,6 +1055,7 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
                 "cross-body atom class quad (%d,%d,%d,%d).",
                 (int)c1, (int)c2, (int)c3, (int)c4);
         }
+
 
         // Save *all* Amber improper torsion entries if this atom is bonded to
         // three, and only three other atoms, *and* a matching Amber improper
@@ -930,6 +1094,117 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
             }
         }
     }
+
+
+
+// GMolModel - Same for AllAtomIndex ....this can be optimised
+
+    for (DuMM::IncludedAtomIndex iax(0); iax < AllAtoms.size(); ++iax) {
+        const DuMM::AtomIndex ax = getAtomIndexOfAllAtom(iax);
+        const CrossBodyBondInfo& x = crossBodyBondInfo[ax]; // computed above
+        IncludedAtom& ia = mutableThis->updAllAtom(iax);
+
+        ia.scale12All.clear(); ia.scale13All.clear();
+        ia.scale14All.clear(); ia.scale15All.clear();
+
+        for (int j=0; j < (int)x.xshortPath12All.size(); ++j) {
+            const DuMM::AtomIndex a2x = x.xshortPath12All[j];
+            assert(atoms[a2x].AllnonbondAtomIndex.isValid());
+            ia.scale12.push_back(atoms[a2x].AllnonbondAtomIndex);
+        }
+        for (int j=0; j < (int)x.xshortPath13All.size(); ++j) {
+            const DuMM::AtomIndex a3x = x.xshortPath13All[j][1];
+            assert(atoms[a3x].AllnonbondAtomIndex.isValid());
+            ia.scale13All.push_back(atoms[a3x].AllnonbondAtomIndex);
+        }
+        for (int j=0; j < (int)x.xshortPath14All.size(); ++j) {
+            const DuMM::AtomIndex a4x = x.xshortPath14All[j][2];
+            assert(atoms[a4x].AllnonbondAtomIndex.isValid());
+            ia.scale14All.push_back(atoms[a4x].AllnonbondAtomIndex);
+        }
+        for (int j=0; j < (int)x.xshortPath15All.size(); ++j) {
+            const DuMM::AtomIndex a4x = x.xshortPath15All[j][3];
+            assert(atoms[a4x].AllnonbondAtomIndex.isValid());
+            ia.scale15All.push_back(atoms[a4x].AllnonbondAtomIndex);
+        }
+
+        const DuMM::AtomClassIndex c1 = getAtomClassIndex(ax);
+
+        // Save a BondStretch entry for each cross-body 1-2 bond
+        ia.force12All.resize(x.xbond12All.size());
+        ia.stretchAll.resize(x.xbond12All.size());
+
+        for (int b12=0; b12 < (int)x.xbond12All.size(); ++b12) {
+            const DuMM::AtomIndex bx = x.xbond12All[b12];
+            ia.force12All[b12] = atoms[bx].AllAtomIndex;
+
+            const DuMM::AtomClassIndex c2 = getAtomClassIndex(bx);
+            ia.stretchAll[b12] = getBondStretch(c1, c2);
+        }
+
+
+
+        // Save a BondBend entry for each cross-body 1-3 bond
+
+        ia.force13All.resize(x.xbond13All.size());
+        ia.bendAll.resize(x.xbond13All.size());
+        for (int b13=0; b13 < (int)x.xbond13All.size(); ++b13) {
+            const AtomIndexPair& bx = x.xbond13All[b13];
+            ia.force13All[b13][0] = atoms[bx[0]].AllAtomIndex;
+            ia.force13All[b13][1] = atoms[bx[1]].AllAtomIndex;
+
+            const DuMM::AtomClassIndex c2 = getAtomClassIndex(bx[0]);
+            const DuMM::AtomClassIndex c3 = getAtomClassIndex(bx[1]);
+            ia.bendAll[b13] = getBondBend(c1, c2, c3);
+        }
+
+
+        // Save a BondTorsion entry for each cross-body 1-4 bond
+        ia.force14All.resize(x.xbond14All.size());
+        ia.torsionAll.resize(x.xbond14All.size());
+        for (int b14=0; b14 < (int)x.xbond14All.size(); ++b14) {
+            const AtomIndexTriple& bx = x.xbond14All[b14];
+            ia.force14All[b14][0] = atoms[bx[0]].AllAtomIndex;
+            ia.force14All[b14][1] = atoms[bx[1]].AllAtomIndex;
+            ia.force14All[b14][2] = atoms[bx[2]].AllAtomIndex;
+
+            const DuMM::AtomClassIndex c2 = getAtomClassIndex(bx[0]);
+            const DuMM::AtomClassIndex c3 = getAtomClassIndex(bx[1]);
+            const DuMM::AtomClassIndex c4 = getAtomClassIndex(bx[2]);
+            ia.torsionAll[b14] = getBondTorsion(c1, c2, c3, c4);
+        }
+
+        ia.aImproperTorsionAll.clear();   // the BondTorsion term
+        ia.forceImproper14All.clear(); // the other three atoms
+        if (x.xbonds3AtomsAll.isValid()) {
+            for (int i2=0; i2<3; i2++) {
+                for (int i3=0; i3<3; i3++) {
+                    if (i3==i2) continue;
+                    for (int i4=0; i4<3; i4++) {
+                        if (i4==i2 || i4==i3) continue;
+                        const AtomIndexTriple bx(x.xbonds3AtomsAll[i2],
+                                                 x.xbonds3AtomsAll[i3],
+                                                 x.xbonds3AtomsAll[i4]);
+
+                        const BondTorsion* bt = getAmberImproperTorsion(
+                                        getAtomClassIndex(bx[0]),
+                                        getAtomClassIndex(bx[1]),
+                                        c1,
+                                        getAtomClassIndex(bx[2]));
+                        if (bt) {
+                            ia.forceImproper14All.push_back(IncludedAtomIndexTriple(
+                                                atoms[bx[0]].AllAtomIndex,
+                                                atoms[bx[1]].AllAtomIndex,
+                                                atoms[bx[2]].AllAtomIndex));
+                            ia.aImproperTorsionAll.push_back(bt);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
 
         /////////////////////////////
         // Fill in GBSA parameters //
@@ -1102,10 +1377,7 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
                     std::clog << "NOTE: DuMM: not using multithreading because"
                                  " there are no nonbonded or implicit solvent"
                                  " terms to calculate.\n";
-                    // EU BEGIN
-                    //{
-                    //}
-                    // EU END
+
             }
             // This will probably never happen.
             if (ParallelExecutor::isWorkerThread()) {
@@ -1115,10 +1387,6 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
                     std::clog << "NOTE: DuMM: can't use multithreading because"
                                  " the main thread is already a ParallelExecutor"
                                  " worker thread.\n";
-                    // EU BEGIN
-                    //{
-                    //}
-                    // EU END
             }
         }
     }
@@ -1145,10 +1413,6 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
             std::clog << "NOTE: DuMM: using multithreading code with "
                       << numThreadsInUse << " threads.\n";
 
-        TRACE("DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl includedBodies.size(): ");
-        TRACE(std::to_string(includedBodies.size()).c_str());
-        TRACE(" bodies\n");
-
         mutableThis->nonbondedExecutor =
             new Parallel2DExecutor(includedBodies.size(), *executor);
         mutableThis->gbsaExecutor =
@@ -1159,9 +1423,7 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
         if (tracing)
             // EU BEGIN COMMENT
             std::clog << "NOTE: DuMM: using single threaded code.\n";
-            // EU BEGIN
-            //{}
-            // EU END
+
 
         // Using single threaded -- allocate global temporaries
         vdwScaleSingleThread.resize(getNumNonbondAtoms(), Real(1));
@@ -1204,7 +1466,6 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
     return 0;
 }
 //.............................REALIZE TOPOLOGY.................................
-
 
 
 //------------------------------------------------------------------------------
@@ -1329,6 +1590,7 @@ void DuMMForceFieldSubsystemRep::calcBondStretch
     Vector_<SpatialVec>&                inclBodyForces_G,
     Real&                               energy) const
 {
+
     const IncludedAtom&           a1    = getIncludedAtom(a1num);
     const DuMMIncludedBodyIndex   b1    = a1.inclBodyIndex;
     const Vec3& a1Station_G = inclAtomStation_G[a1num];
@@ -1369,15 +1631,18 @@ void DuMMForceFieldSubsystemRep::calcBondStretch
         const Vec3 f2 = (d==0 ? Vec3(fStretch,0,0) : (fStretch/d)*r);
 
         const DuMMIncludedBodyIndex b2 = a2.inclBodyIndex;
-        assert(b2 != b1);
-
+ 
+	assert(b2 != b1);
         energy += eStretch;
-        TRACE("calcBondStretch: ");
-        TRACE((std::to_string(eStretch)).c_str());
-        TRACE("\n");
+
+//        TRACE("calcBondStretch: ");
+//        TRACE((std::to_string(energy)).c_str());
+//        TRACE("\n");
+
         inclBodyForces_G[b2] += SpatialVec( a2Station_G % f2, f2); // 15 flops
         inclBodyForces_G[b1] -= SpatialVec( a1Station_G % f2, f2); // 15 flops
-    }
+
+    } 
 }
 //.............................CALC BOND STRETCH................................
 
@@ -1431,12 +1696,15 @@ void DuMMForceFieldSubsystemRep::calcBondBend
 
         const DuMMIncludedBodyIndex b2 = a2.inclBodyIndex;
         const DuMMIncludedBodyIndex b3 = a3.inclBodyIndex;
-        assert(!(b2==b1 && b3==b1)); // shouldn't be on the list if all on 1 body
+
+	assert(!(b2==b1 && b3==b1)); // shouldn't be on the list if all on 1 body
 
         energy += e;
-        TRACE("calcBondBend: ");
-        TRACE((std::to_string(e)).c_str());
-        TRACE("\n");
+
+//        TRACE("calcBondBend: ");
+//        TRACE((std::to_string(e)).c_str());
+//        TRACE("\n");
+
         inclBodyForces_G[b1] += SpatialVec( a1Station_G % f1, f1); // 15 flops
         inclBodyForces_G[b2] += SpatialVec( a2Station_G % f2, f2); // 15 flops
         inclBodyForces_G[b3] += SpatialVec( a3Station_G % f3, f3); // 15 flops
@@ -1497,12 +1765,15 @@ void DuMMForceFieldSubsystemRep::calcBondTorsion
         const DuMMIncludedBodyIndex b2 = a2.inclBodyIndex;
         const DuMMIncludedBodyIndex b3 = a3.inclBodyIndex;
         const DuMMIncludedBodyIndex b4 = a4.inclBodyIndex;
-        assert(!(b2==b1 && b3==b1 && b4==b1)); // shouldn't be on the list if all on 1 body
 
+	assert(!(b2==b1 && b3==b1 && b4==b1)); // shouldn't be on the list if all on 1 body
+    
         energy += e;
-        TRACE("calcBondTorsion: ");
-        TRACE((std::to_string(e)).c_str());
-        TRACE("\n");
+
+//        TRACE("calcBondTorsion: ");
+//        TRACE((std::to_string(e)).c_str());
+//        TRACE("\n");
+
         inclBodyForces_G[b1] += SpatialVec( a1Station_G % f1, f1); // 15 flops
         inclBodyForces_G[b2] += SpatialVec( a2Station_G % f2, f2); // 15 flops
         inclBodyForces_G[b3] += SpatialVec( a3Station_G % f3, f3); // 15 flops
@@ -1564,9 +1835,11 @@ void DuMMForceFieldSubsystemRep::calcAmberImproperTorsion
         const DuMMIncludedBodyIndex b2 = a2.inclBodyIndex;
         const DuMMIncludedBodyIndex b3 = a3.inclBodyIndex;
         const DuMMIncludedBodyIndex b4 = a4.inclBodyIndex;
-        assert(!(b2==b1 && b3==b1 && b4==b1)); // shouldn't be on the list if all on 1 body
+
+	assert(!(b2==b1 && b3==b1 && b4==b1)); // shouldn't be on the list if all on 1 body
 
         energy += e;
+
         inclBodyForces_G[b1] += SpatialVec( a1Station_G % f1, f1); // 15 flops
         inclBodyForces_G[b2] += SpatialVec( a2Station_G % f2, f2); // 15 flops
         inclBodyForces_G[b3] += SpatialVec( a3Station_G % f3, f3); // 15 flops
@@ -1650,7 +1923,7 @@ void DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces
             for (DuMM::NonbondAtomIndex nax2 = inclBod2.beginNonbondAtoms;
                  nax2 != inclBod2.endNonbondAtoms; ++nax2)
             {
-                TRACE(" ");
+   //             TRACE(" ");
                 DuMM::IncludedAtomIndex iax2 =
                     getIncludedAtomIndexOfNonbondAtom(nax2);
                 assert(iax2 != iax1);
@@ -1715,7 +1988,6 @@ void DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces
                 // is the force to apply to atom 2; apply equal and
                 // opposite to atom 1.
                 const Vec3 fj = ((fCoulomb+fVdw)*ood2) * r; // 5 flops
-
                 // kJ (Da-nm^2/ps^2)        // 2 flops
                 energy                += (eCoulomb + eVdw);
                 //TRACE(" energy: ");
@@ -1746,7 +2018,7 @@ void DuMMForceFieldSubsystemRep::calcNonbondedForces
     Vector_<Vec3>&                      inclAtomForce_G,
     Real&                               energy) const
 {
-    TRACE("calcNonbondedForces() BEGIN");
+    //TRACE("calcNonbondedForces() BEGIN");
     for (DuMMIncludedBodyIndex inclBodyIx(0);
          inclBodyIx < getNumIncludedBodies(); ++inclBodyIx)
     {
@@ -1763,97 +2035,6 @@ void DuMMForceFieldSubsystemRep::calcNonbondedForces
 //............................CALC NONBONDED FORCES.............................
 
 
-//
-// //------------------------------------------------------------------------------
-// //                        class NonbondedForceTask
-// //------------------------------------------------------------------------------
-// // This class is used by realizeDynamics for calculating nonbonded interactions
-// // in multiple threads. The strategy here is to let the Parallel2DExecutor
-// // utility execute disjoint pairs of included bodies in parallel.
-// class NonbondedForceTask : public SimTK::Parallel2DExecutor::Task {
-// public:
-//     NonbondedForceTask
-//        (const DuMMForceFieldSubsystemRep& dumm,
-//         const Vector_<Vec3>& inclAtomPos_G,
-//         Vector_<Vec3>& inclAtomForces_G, Real& energy)
-//     :   dumm(dumm), inclAtomPos_G(inclAtomPos_G),
-//         globalAtomForces_G(inclAtomForces_G), globalEnergy(energy)
-//     {
-//     }
-//
-//     // Each thread initializes its own local energy accumulator to 0. Forces
-//     // don't need to be accumulated locally because Parallel2DExecutor
-//     // guarantees that simultaneous tasks use disjoint body indices.
-//     void initialize() {
-//         TRACE("NonbondedForceTask::initialize BEGIN\n");
-//         // EU COMENT BEGIN
-//         localEnergy.upd() = 0;
-//         // EU COMMENT END
-//         //localEnergy = 0; // EU
-//
-//         // Temps for nonbonded scale factors; initialize to 1
-//         localVdwScale.upd().resize(getNumNonbondAtoms(), Real(1));
-//         localCoulombScale.upd().resize(getNumNonbondAtoms(), Real(1));
-//         TRACE("NonbondedForceTask::initialize END\n");
-//     }
-//
-//     // At the end of execution, each thread adds its local energy contribution
-//     // to the global total. See comment above regarding forces.
-//     void finish() {
-//         TRACE("NonbondedForceTask::finish BEGIN\n");
-//         // EU COMENT BEGIN
-//         globalEnergy += localEnergy.get();
-//         // EU COMMENT END
-//         //globalEnergy += localEnergy; // EU
-//         TRACE("NonbondedForceTask::finish ");
-//         TRACE(std::to_string(globalEnergy).c_str());
-//         TRACE(" ");
-//         TRACE(std::to_string(localEnergy.get()).c_str());
-//         TRACE(" END\n");
-//     }
-//
-//     // This is the standard unit of work for a pair of body indices. No
-//     // simultaneous task will be using either of these two indices, so we
-//     // can access global data that is indexed by them without synchronization.
-//     void execute(int body1, int body2) {
-//         TRACE("NonbondedForceTask::execute ");
-//         TRACE( (std::to_string(body1) + std::string(" ") + std::to_string(body2) ).c_str());
-//         TRACE(" BEGIN\n");
-//         dumm.calcBodySubsetNonbondedForces(
-//             DuMMIncludedBodyIndex(body1),
-//             DuMMIncludedBodyIndex(body2),   // i.e, just one body
-//             DuMMIncludedBodyIndex(body2),
-//             inclAtomPos_G,
-//             localVdwScale.upd(), localCoulombScale.upd(),
-//             // EU COMENT BEGIN
-//             globalAtomForces_G, localEnergy.upd());
-//             // EU COMMENT END
-//             //globalAtomForces_G, localEnergy); // EU
-//         TRACE("NonbondedForceTask::execute ");
-//         TRACE(std::to_string(localEnergy.get()).c_str());
-//         TRACE(" END\n");
-//     }
-//
-// private:
-//     int getNumNonbondAtoms() const {return dumm.getNumNonbondAtoms();}
-//
-//     const DuMMForceFieldSubsystemRep&   dumm;
-//     const Vector_<Vec3>&                inclAtomPos_G;
-//     Vector_<Vec3>&                      globalAtomForces_G;
-//     Real&                               globalEnergy;
-//
-//     // Thread local temporaries.
-//     // EU COMENT BEGIN
-//     ThreadLocal< Real >                                 localEnergy;
-//     // EU COMMENT END
-//     //Real localEnergy; // EU
-//     ThreadLocal< Array_<Real, DuMM::NonbondAtomIndex> > localVdwScale;
-//     ThreadLocal< Array_<Real, DuMM::NonbondAtomIndex> > localCoulombScale;
-// };
-// //..........................class NonbondedForceTask............................
-
-
-
 
 //------------------------------------------------------------------------------
 //                        class NonbondedForceTask
@@ -1864,7 +2045,7 @@ void DuMMForceFieldSubsystemRep::calcNonbondedForces
 
 
 // ----------------------------------------------------------------------------
-// ELIZA - modified for simbody ParallelExecutor update
+// Gmolmodel - modified for simbody ParallelExecutor update
 // ----------------------------------------------------------------------------
 class NonbondedForceTask : public SimTK::Parallel2DExecutor::Task {
 public:
@@ -1879,39 +2060,39 @@ public:
 
 
     void initialize() {
-        TRACE("NonbondedForceTask::initialize BEGIN\n");
-        localEnergy = 0;
+  //      TRACE("NonbondedForceTask::initialize BEGIN\n");
+        localEnergy = 0.0;
 
         // Temps for nonbonded scale factors; initialize to 1
         localVdwScale.resize(getNumNonbondAtoms(), Real(1));
         localCoulombScale.resize(getNumNonbondAtoms(), Real(1));
-        TRACE("NonbondedForceTask::initialize END\n");
+   //     TRACE("NonbondedForceTask::initialize END\n");
     }
 
     // At the end of execution, each thread adds its local energy contribution
     // to the global total. See comment above regarding forces.
     void finish() {
-        TRACE("NonbondedForceTask::finish BEGIN\n");
+    //    TRACE("NonbondedForceTask::finish BEGIN\n");
 
         globalEnergy += localEnergy;
 
-        TRACE("NonbondedForceTask::finish ");
-        TRACE(std::to_string(globalEnergy).c_str());
-        TRACE(" ");
-        TRACE(std::to_string(localEnergy).c_str());
-        TRACE(" END\n");
+    //    TRACE("NonbondedForceTask::finish ");
+    //    TRACE(std::to_string(globalEnergy).c_str());
+    //    TRACE(" ");
+    //    TRACE(std::to_string(localEnergy).c_str());
+     //   TRACE(" END\n");
     }
 
     // This is the standard unit of work for a pair of body indices. No
     // simultaneous task will be using either of these two indices, so we
     // can access global data that is indexed by them without synchronization.
     void execute(int body1, int body2) {
-        TRACE("NonbondedForceTask::execute ");
-        TRACE( (std::to_string(body1) + std::string(" ") + std::to_string(body2) ).c_str());
-        TRACE(" BEGIN\n");
+     //   TRACE("NonbondedForceTask::execute ");
+     //   TRACE( (std::to_string(body1) + std::string(" ") + std::to_string(body2) ).c_str());
+      //  TRACE(" BEGIN\n");
 
         // // test
-        // localEnergy += 1.0
+        // localEnergy += 1.0;    
 
         dumm.calcBodySubsetNonbondedForces(
             DuMMIncludedBodyIndex(body1),
@@ -1921,10 +2102,11 @@ public:
             localVdwScale, localCoulombScale,
             globalAtomForces_G, localEnergy);
 
-        TRACE("NonbondedForceTask::execute ");
-        TRACE(std::to_string(localEnergy).c_str());
-        TRACE(" END\n");
+      //  TRACE("NonbondedForceTask::execute ");
+      //  TRACE(std::to_string(localEnergy).c_str());
+      // TRACE(" END\n");
     }
+
 
 private:
     int getNumNonbondAtoms() const {return dumm.getNumNonbondAtoms();}
@@ -1938,6 +2120,8 @@ private:
     static thread_local Real                                  localEnergy;
     static thread_local Array_<Real, DuMM::NonbondAtomIndex>  localVdwScale;
     static thread_local Array_<Real, DuMM::NonbondAtomIndex>  localCoulombScale;
+
+
 
 };
 
@@ -2121,16 +2305,16 @@ void DuMMForceFieldSubsystemRep::realizeForcesAndEnergy(const State& s) const
 
                 // NONBONDED FORCES //
 
-    TRACE("DuMMForceFieldSubsystemRep::realizeForcesAndEnergy: trying to evaluate nonbonded\n");
+   // TRACE("DuMMForceFieldSubsystemRep::realizeForcesAndEnergy: trying to evaluate nonbonded\n");
     if (getNumNonbondAtoms()) {
-        TRACE("DuMMForceFieldSubsystemRep::realizeForcesAndEnergy: getNumNonbondAtoms != 0\n");
+   //     TRACE("DuMMForceFieldSubsystemRep::realizeForcesAndEnergy: getNumNonbondAtoms != 0\n");
         // We'll use GPU acceleration if possible; otherwise parallel computation;
         // otherwise serial calculation here.
 
         if (usingOpenMM) {
-            TRACE("DuMMForceFieldSubsystemRep::realizeForcesAndEnergy: using OpenMM\n");
+    //        TRACE("DuMMForceFieldSubsystemRep::realizeForcesAndEnergy: using OpenMM\n");
             assert(openMMPluginIfc);
-            TRACE("DuMMForceFieldSubsystemRep::realizeForcesAndEnergy: assert passed\n");
+     //       TRACE("DuMMForceFieldSubsystemRep::realizeForcesAndEnergy: assert passed\n");
 
             // Calculate forces and energy.
             // TODO: should calculate energy only when it is asked for.
@@ -2147,19 +2331,19 @@ void DuMMForceFieldSubsystemRep::realizeForcesAndEnergy(const State& s) const
 
         // We're not using OpenMM; calculate these terms here as best we can.
         if (usingMultithreaded) {
-            TRACE("DuMMForceFieldSubsystemRep::realizeForcesAndEnergy: using multithreading\n");
+     //       TRACE("DuMMForceFieldSubsystemRep::realizeForcesAndEnergy: using multithreading\n");
             // Parallel calculation.
             NonbondedForceTask task
                (*this, inclAtomPos_G, inclAtomForce_G, energy);
-            TRACE("DuMMForceFieldSubsystemRep::realizeForcesAndEnergy: about to execute nonbondedExecutor with: ");
-            TRACE(std::to_string(numThreadsInUse).c_str());
-            TRACE(" threads\n");
+     //       TRACE("DuMMForceFieldSubsystemRep::realizeForcesAndEnergy: about to execute nonbondedExecutor with: ");
+      //      TRACE(std::to_string(numThreadsInUse).c_str());
+      //      TRACE(" threads\n");
             nonbondedExecutor->execute(task, Parallel2DExecutor::HalfMatrix);
         } else {
             // Serial calculation in this thread.
-            TRACE("DuMMForceFieldSubsystemRep::realizeForcesAndEnergy: begin serial calculation\n");
+      //      TRACE("DuMMForceFieldSubsystemRep::realizeForcesAndEnergy: begin serial calculation\n");
             if (!(coulombGlobalScaleFactor==0 && vdwGlobalScaleFactor==0)) {
-                TRACE("DuMMForceFieldSubsystemRep::realizeForcesAndEnergy: scale factor not 0\n");
+      //          TRACE("DuMMForceFieldSubsystemRep::realizeForcesAndEnergy: scale factor not 0\n");
                 calcNonbondedForces(inclAtomPos_G, inclAtomForce_G, energy);
             }
         }
@@ -2232,6 +2416,8 @@ Real DuMMForceFieldSubsystemRep::calcPotentialEnergy(const State& state) const {
     // Currently there is no way to compute only the energy, although it
     // would be somewhat cheaper if forces aren't needed.
     realizeForcesAndEnergy(state);
+
+CalcFullPotEnergyIncludingRigidBodies(state);
     return getEnergyCache(state);
 }
 //............................CALC POTENTIAL ENERGY.............................
@@ -2992,3 +3178,280 @@ MassProperties Cluster::calcMassProperties
 void DuMMBody::realizeTopologicalCache(const DuMMForceFieldSubsystemRep& mm) {
     // nothing
 }
+
+
+
+
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//		        GMOLMODEL - EXTRA FUNCTIONALITIES
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+// int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s)
+// was hijacked by adding the needed topology lists in order to calculate full 
+// potential energy at any given time --> see up
+
+//------------------------------------------------------------------------------
+//          CALC FULL POTENTIAL ENERGY - INCLUDING RIGID BODIES  
+//------------------------------------------------------------------------------
+// GMolModel needs to keep track of the potential terms values that will not be 
+// calculated, since they reffere to atoms inside rigid bodies and are constant 
+// during dynamics. However, we need to evaluate the correct potential values 
+// when comparing different constrainted regimens of the same compound.
+// All variable's names were kept as in MolModel.
+// TODO: Stretch custom terms are not implemented.
+// TODO: Nonbonded terms are not calculated yet.
+// TODO: GBSA potential is not calculated.
+Real DuMMForceFieldSubsystemRep::
+CalcFullPotEnergyIncludingRigidBodies(const State& s) const {
+
+
+    Real eStretch = 0;		// Bonds Stretch Potential
+    Real eBend = 0;		// Bonds Bend Potential
+    Real eTorsion = 0;		// Bonds Torsion Potential
+    Real eImproper = 0;		// Bond Improper Potential
+    Real eVdW = 0; 		// Van der Waals Potential
+    Real eCoulomb = 0;		// Coulomb Potential
+
+    Real eTotal = 0;
+
+    const MultibodySystem&        mbs    = getMultibodySystem();
+    const SimbodyMatterSubsystem& matter = mbs.getMatterSubsystem();
+
+    Vector_<Vec3>  AllAtomStation_G = getIncludedAtomStationCache(s);
+    Vector_<Vec3>  AllAtomPos_G     = getIncludedAtomPositionCache(s);     
+    AllAtomStation_G.resize( getNumAllAtoms() );
+    AllAtomPos_G.resize( getNumAllAtoms() );
+
+    // iterate all bodies
+    for (DuMMIncludedBodyIndex dbx(0); dbx < AllBodies.size(); ++dbx) {
+
+        const IncludedBody&      currentBody  = AllBodies[dbx];
+        const MobilizedBodyIndex mbx     = currentBody.mobodIx;
+        const MobilizedBody&     mobod   = matter.getMobilizedBody(mbx);
+
+        const Transform&    X_GB  = mobod.getBodyTransform(s);
+        const Rotation&     R_GB  = X_GB.R();
+        const Vec3&         p_GB  = X_GB.p();
+
+
+	// First we make sure we have updated all atoms positions
+	int iax_count = 0;
+        for (DuMM::IncludedAtomIndex iax=currentBody.beginAllAtoms;
+             iax != currentBody.endAllAtoms; ++iax)
+        {
+            const Vec3& station_B_All = getAllAtomStation(iax);
+            // atomic coordinates with respect to Ground frame
+            const Vec3 p_BS_G = R_GB * station_B_All; 
+            AllAtomStation_G[iax] = p_BS_G;
+            AllAtomPos_G[iax]     = p_GB + p_BS_G;  
+	    iax_count++;
+        }
+
+	// iterate all bond forming atoms within currentBody
+	for (DuMMBondStarterIndex bsx = currentBody.beginAllBondStarterAtoms;
+    		bsx != currentBody.endAllBondStarterAtoms; ++bsx)
+    	{
+
+	    const DuMM::IncludedAtomIndex a1num = AllbondStarterAtoms[bsx];
+	
+	    if ( bondStretchGlobalScaleFactor !=0 
+	    || customBondStretchGlobalScaleFactor != 0 ){
+		eStretch += CalcFullPotEnergyBondStretch( a1num, AllAtomPos_G );
+	    }
+	    if ( bondBendGlobalScaleFactor !=0 
+	    || customBondTorsionGlobalScaleFactor != 0 ){
+		eBend += CalcFullPotEnergyBondBend( a1num, AllAtomPos_G );
+	    }
+	    if ( bondTorsionGlobalScaleFactor !=0 
+	    || customBondTorsionGlobalScaleFactor != 0 ){
+		eTorsion += CalcFullPotEnergyBondTorsion( a1num, AllAtomPos_G );
+	    }
+	    if ( amberImproperTorsionGlobalScaleFactor !=0 ){
+		eImproper += CalcFullPotEnergyBondImproper( a1num, AllAtomPos_G );
+	    }    
+	}
+    }	
+
+    eTotal = eStretch + eBend + eTorsion + eImproper + eVdW + eCoulomb;
+
+    TRACE( ("FUll Potential Bond Stretch: " + std::to_string( eStretch ) + "\n").c_str() );
+    TRACE( ("FUll Potential Bond Bend   : " + std::to_string( eBend ) + "\n").c_str() );
+    TRACE( ("FUll Potential Bond Torsion: " + std::to_string( eTorsion ) + "\n").c_str() );
+    TRACE( ("FUll Potential Bond Impoper: " + std::to_string( eImproper ) + "\n").c_str() );
+//  TRACE( ("FUll Potential VdW         : " + std::to_string( eVdW ) + "\n").c_str() );
+//  TRACE( ("FUll Potential Coulomnb    : " + std::to_string( eCoulomb ) + "\n").c_str() );
+    TRACE( ("FUll Potential TOTAL       : " + std::to_string( eTotal ) + "\n").c_str() );
+
+    return eTotal;
+
+}
+//.........CALC FULL POTENTIAL ENERGY - INCLUDING RIGID BODIES .................
+
+
+//------------------------------------------------------------------------------
+//          CALC FULL POTENTIAL ENERGY - BOND STRETCH TERM 
+//------------------------------------------------------------------------------
+// GMolModel needs to keep track of the full potential bond stretch terms
+// All variable's names were kept as in MolModel. 
+// Warning: Be sure that atom positions were updated before function call
+// TODO: Custom terms are not implemented.
+Real DuMMForceFieldSubsystemRep::
+CalcFullPotEnergyBondStretch(const DuMM::IncludedAtomIndex a1num, 
+Vector_<Vec3>  AllAtomPos_G ) const {
+
+    Real eCurrentStretch = 0;
+    	
+    const IncludedAtom&  a1    	     = getAllAtom( a1num );
+    const Vec3&          a1Pos_G     = AllAtomPos_G[ a1num ] ;
+
+    for (DuMM::IncludedAtomIndex b12(0); b12 < a1.force12All.size(); ++b12) 
+    {
+        const DuMM::IncludedAtomIndex a2num = a1.force12All[b12]; 
+      
+        const Vec3& a2Pos_G     = AllAtomPos_G[a2num];
+        const Vec3  r           = a2Pos_G - a1Pos_G;
+        const Real  d           = r.norm();
+        const BondStretch& bs = *a1.stretchAll[b12];
+
+	if (bs.hasBuiltinTerm()) {
+            const Real x = d - bs.d0;
+            const Real kx = bondStretchGlobalScaleFactor * bs.k * x;
+            eCurrentStretch +=  kx*x; // no factor of 1/2!     
+        } 
+        else
+            SimTK_ASSERT_ALWAYS(1, "CustomBondStretch not implemented");
+    }
+
+    return eCurrentStretch;
+}
+//.............CALC FULL POTENTIAL ENERGY - BOND STRETCH TERM...................
+
+
+//------------------------------------------------------------------------------
+//          CALC FULL POTENTIAL ENERGY - BOND BEND TERM 
+//------------------------------------------------------------------------------
+// GMolModel needs to keep track of the full potential bond bend terms 
+// Warning: Be sure that atom positions were updated before function call
+Real DuMMForceFieldSubsystemRep::
+CalcFullPotEnergyBondBend(const DuMM::IncludedAtomIndex a1num, 
+Vector_<Vec3>  AllAtomPos_G ) const {
+
+    Real eCurrentBend = 0;
+    	
+    const IncludedAtom&  a1    	     = getAllAtom( a1num );
+    const Vec3&          a1Pos_G     = AllAtomPos_G[ a1num ] ;
+
+    for (DuMM::IncludedAtomIndex b13(0); b13 < a1.force13All.size(); ++b13) 
+    {
+        const DuMM::IncludedAtomIndex a2num = a1.force13All[b13][0];
+        const DuMM::IncludedAtomIndex a3num = a1.force13All[b13][1];
+      
+        const Vec3& a2Pos_G     = AllAtomPos_G[a2num];
+        const Vec3& a3Pos_G     = AllAtomPos_G[a3num];
+
+	Vec3 f1, f2, f3;  // we don't need them actually
+        Real  angle, e;
+
+        const BondBend& bb = *a1.bendAll[b13];
+
+        bb.calculateAtomForces(a2Pos_G, a1Pos_G, a3Pos_G,
+                               bondBendGlobalScaleFactor, 
+                               customBondBendGlobalScaleFactor, angle, 
+			       e, f2, f1, f3);
+	eCurrentBend += e;
+	
+    }
+
+    return eCurrentBend;
+}
+//.............CALC FULL POTENTIAL ENERGY - BOND BEND TERM......................
+
+
+//------------------------------------------------------------------------------
+//          CALC FULL POTENTIAL ENERGY - BOND TORSION TERM 
+//------------------------------------------------------------------------------
+// GMolModel needs to keep track of the full potential bond torsion terms 
+// Warning: Be sure that atom positions were updated before function call
+Real DuMMForceFieldSubsystemRep::
+CalcFullPotEnergyBondTorsion(const DuMM::IncludedAtomIndex a1num, 
+Vector_<Vec3>  AllAtomPos_G ) const {
+
+    Real eCurrentTorsion = 0;
+    	
+    const IncludedAtom&  a1    	     = getAllAtom( a1num );
+    const Vec3&          a1Pos_G     = AllAtomPos_G[ a1num ] ;
+
+    for (DuMM::IncludedAtomIndex b14(0); b14 < a1.force14All.size(); ++b14) 
+    {
+        const DuMM::IncludedAtomIndex a2num = a1.force14All[b14][0];
+        const DuMM::IncludedAtomIndex a3num = a1.force14All[b14][1];
+        const DuMM::IncludedAtomIndex a4num = a1.force14All[b14][2];
+      
+        const Vec3& a2Pos_G     = AllAtomPos_G[a2num];
+        const Vec3& a3Pos_G     = AllAtomPos_G[a3num];
+        const Vec3& a4Pos_G     = AllAtomPos_G[a4num];
+
+	Vec3 f1, f2, f3, f4;  // we don't need them actually
+        Real  torsion, e;
+
+        const BondTorsion& bt = *a1.torsionAll[b14];
+
+        bt.calculateAtomForces(a1Pos_G, a2Pos_G, a3Pos_G, a4Pos_G,
+                               bondTorsionGlobalScaleFactor, 
+                               customBondTorsionGlobalScaleFactor, torsion, 
+			       e, f1, f2, f3, f4);
+	eCurrentTorsion += e;
+	
+    }
+
+    return eCurrentTorsion;
+}
+//.............CALC FULL POTENTIAL ENERGY - BOND TORSION TERM...................
+
+
+//------------------------------------------------------------------------------
+//          CALC FULL POTENTIAL ENERGY - BOND IMPROPER TERM 
+//------------------------------------------------------------------------------
+// GMolModel needs to keep track of the full potential bond torsion terms 
+// Warning: Be sure that atom positions were updated before function call
+Real DuMMForceFieldSubsystemRep::
+CalcFullPotEnergyBondImproper(const DuMM::IncludedAtomIndex a1num, 
+Vector_<Vec3>  AllAtomPos_G ) const {
+
+    Real eCurrentImproper = 0;
+    	
+    const IncludedAtom&  a1    	     = getAllAtom( a1num );
+    const Vec3&          a1Pos_G     = AllAtomPos_G[ a1num ] ;
+
+    for (DuMM::IncludedAtomIndex b14(0); b14 < a1.forceImproper14All.size(); ++b14) 
+    {
+        const DuMM::IncludedAtomIndex a2num = a1.forceImproper14All[b14][0];
+        const DuMM::IncludedAtomIndex a3num = a1.forceImproper14All[b14][1];
+        const DuMM::IncludedAtomIndex a4num = a1.forceImproper14All[b14][2];
+      
+        const Vec3& a2Pos_G     = AllAtomPos_G[a2num];
+        const Vec3& a3Pos_G     = AllAtomPos_G[a3num];
+        const Vec3& a4Pos_G     = AllAtomPos_G[a4num];
+
+	Vec3 f1, f2, f3, f4;  // we don't need them actually
+        Real improper, e;
+
+        const BondTorsion& bt = *a1.aImproperTorsionAll[b14];
+
+        bt.calculateAtomForces(a2Pos_G, a3Pos_G, a1Pos_G, a4Pos_G,
+                               amberImproperTorsionGlobalScaleFactor, 
+                               0, // no custom improper in MolModel - why ?
+			       improper, e, f2, f3, f1, f4);
+	eCurrentImproper += e;
+	
+    }
+
+    return eCurrentImproper;
+}
+//.............CALC FULL POTENTIAL ENERGY - BOND IMPROPER TERM..................
+
+
+
