@@ -45,11 +45,11 @@ using namespace SimTK;
 //#define DEBUG 1
 //#endif
 
-#ifdef DEBUG
+//#ifdef DEBUG
 #define TRACE(STR) printf("%s", STR);
-#else
-#define TRACE(STR)
-#endif
+//#else
+//#define TRACE(STR)
+//#endif
 
 
 // This is Coulomb's constant 1/(4*pi*e0) in units which convert
@@ -1102,10 +1102,7 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
                     std::clog << "NOTE: DuMM: not using multithreading because"
                                  " there are no nonbonded or implicit solvent"
                                  " terms to calculate.\n";
-                    // EU BEGIN
-                    //{
-                    //}
-                    // EU END
+
             }
             // This will probably never happen.
             if (ParallelExecutor::isWorkerThread()) {
@@ -1115,10 +1112,7 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
                     std::clog << "NOTE: DuMM: can't use multithreading because"
                                  " the main thread is already a ParallelExecutor"
                                  " worker thread.\n";
-                    // EU BEGIN
-                    //{
-                    //}
-                    // EU END
+
             }
         }
     }
@@ -1139,7 +1133,7 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
                       << " because there were only " << getNumNonbondAtoms()
                       << " atoms included in nonbonded force calculations.\n";
 
-        mutableThis->executor = new ParallelExecutor(numThreadsInUse);
+        //mutableThis->executor = new ParallelExecutor(numThreadsInUse);
 
         if (tracing)
             std::clog << "NOTE: DuMM: using multithreading code with "
@@ -1150,9 +1144,11 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
         TRACE(" bodies\n");
 
         mutableThis->nonbondedExecutor =
-            new Parallel2DExecutor(includedBodies.size(), *executor);
+            //new Parallel2DExecutor(includedBodies.size(), *executor);
+            new Parallel2DExecutor(includedBodies.size(), numThreadsInUse );
         mutableThis->gbsaExecutor =
-            new Parallel2DExecutor(getNumNonbondAtoms(), *executor);
+            //new Parallel2DExecutor(getNumNonbondAtoms(), *executor);
+            new Parallel2DExecutor(getNumNonbondAtoms(), numThreadsInUse );
     }
 
     if (!(usingOpenMM || usingMultithreaded)) {
