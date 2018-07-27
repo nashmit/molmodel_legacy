@@ -1139,7 +1139,7 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
                       << " because there were only " << getNumNonbondAtoms()
                       << " atoms included in nonbonded force calculations.\n";
 
-        mutableThis->executor = new ParallelExecutor(numThreadsInUse);
+        //mutableThis->executor = new ParallelExecutor(numThreadsInUse);
 
         if (tracing)
             std::clog << "NOTE: DuMM: using multithreading code with "
@@ -1150,9 +1150,12 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
         TRACE(" bodies\n");
 
         mutableThis->nonbondedExecutor =
-            new Parallel2DExecutor(includedBodies.size(), *executor);
-        mutableThis->gbsaExecutor =
-            new Parallel2DExecutor(getNumNonbondAtoms(), *executor);
+            //new Parallel2DExecutor(includedBodies.size(), *executor);
+            new Parallel2DExecutor(includedBodies.size(), numThreadsInUse );
+
+	mutableThis->gbsaExecutor =
+            //new Parallel2DExecutor(getNumNonbondAtoms(), *executor);
+	    new Parallel2DExecutor(getNumNonbondAtoms(), numThreadsInUse );
     }
 
     if (!(usingOpenMM || usingMultithreaded)) {
