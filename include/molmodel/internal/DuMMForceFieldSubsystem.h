@@ -1389,11 +1389,28 @@ void setChargedAtomTypeCharge_KA(DuMM::ChargedAtomTypeIndex chargedAtomTypeIx, R
     setChargedAtomTypeCharge(chargedAtomTypeIx, charge);
 }
 
+
+
 private:
 class DuMMForceFieldSubsystemRep& updRep();
 const DuMMForceFieldSubsystemRep& getRep() const;
 
 friend class MolecularMechanicsSystem;
+
+
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//		        GMOLMODEL - EXTRA FUNCTIONALITIES
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+public:
+        Real CalcFullPotEnergyIncludingRigidBodies ( const State& state ) const;
+
+//------------------------------------------------------------------------------
+
+
+
 };
 
 /** This class is just a DuMMForceFieldSubsystem for which the constructor 

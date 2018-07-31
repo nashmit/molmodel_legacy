@@ -1927,7 +1927,7 @@ public:
 //------------------------------------------------------------------------------
 
 
-    Real CalcFullPotEnergyIncludingRigidBodies(const State& s) const;
+    Real CalcFullPotEnergyIncludingRigidBodiesRep(const State& s) const;
 
     Real CalcFullPotEnergyBondStretch(const DuMM::IncludedAtomIndex a1num, 
     Vector_<Vec3> AllAtomPos_G ) const; 

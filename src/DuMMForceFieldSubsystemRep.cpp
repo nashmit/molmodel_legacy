@@ -45,11 +45,11 @@ using namespace SimTK;
 // #define DEBUG 1
 // #endif
 
-#ifdef DEBUG
+//#ifdef DEBUG
 #define TRACE(STR) printf("%s", STR);
-#else
-#define TRACE(STR)
-#endif
+//#else
+//#define TRACE(STR)
+//#endif
 
 
 // This is Coulomb's constant 1/(4*pi*e0) in units which convert
@@ -2439,6 +2439,7 @@ Real DuMMForceFieldSubsystemRep::calcPotentialEnergy(const State& state) const {
     // Currently there is no way to compute only the energy, although it
     // would be somewhat cheaper if forces aren't needed.
     realizeForcesAndEnergy(state);
+    CalcFullPotEnergyIncludingRigidBodiesRep(state);
     return getEnergyCache(state);
 }
 //............................CALC POTENTIAL ENERGY.............................
@@ -3297,7 +3298,7 @@ thread_local Array_<Real, DuMM::NonbondAtomIndex>  NonbondedFullEnergyTask::loca
 // TODO: Nonbonded terms are not calculated yet.
 // TODO: GBSA potential is not calculated.
 Real DuMMForceFieldSubsystemRep::
-CalcFullPotEnergyIncludingRigidBodies(const State& s) const {
+CalcFullPotEnergyIncludingRigidBodiesRep(const State& s) const {
 
 
     Real eStretch = 0;		// Bonds Stretch Potential
@@ -3409,7 +3410,6 @@ CalcFullPotEnergyIncludingRigidBodies(const State& s) const {
 //          CALC FULL POTENTIAL ENERGY - NONBONDED TERM
 //------------------------------------------------------------------------------
 // GMolModel needs to keep track of the full potential nonbonded terms
-// Warning: Be sure that atom positions were updated before function call
 // the original function calcBodySubsetNonbondedForces was slightly modified to
 // iterate Allbodies AllNonbonded lists and to calculate only energy
 void DuMMForceFieldSubsystemRep::CalcFullPotEnergyNonbonded
@@ -3424,7 +3424,7 @@ void DuMMForceFieldSubsystemRep::CalcFullPotEnergyNonbonded
 {
     const IncludedBody& inclBod1 = AllBodies[dummBodIx];
 
-    // Run through every nonbond atom that is attached to this included body.
+
     for (DuMM::NonbondAtomIndex nax1 = inclBod1.beginAllNonbondAtoms;
          nax1 != inclBod1.endAllNonbondAtoms; ++nax1)
     {
@@ -3440,19 +3440,17 @@ void DuMMForceFieldSubsystemRep::CalcFullPotEnergyNonbonded
         const Real q1Fac = coulombGlobalScaleFactor
                            * CoulombFac * a1type.partialCharge;
 
-        // Set scale factors for all closely-bonded atoms to a1 that are
-        // involved in nonbond calculations.
         scaleAllBondedAtoms(a1,vdwScaleAll,coulombScaleAll);
 
         for (DuMMIncludedBodyIndex dbx2 = firstIx; dbx2 <= lastIx; ++dbx2) {
             assert(dbx2 != dummBodIx);
             const IncludedBody& inclBod2 = AllBodies[dbx2];
 
-            // Run through all the nonbond atoms that are attached to this body.
+
             for (DuMM::NonbondAtomIndex nax2 = inclBod2.beginAllNonbondAtoms;
                  nax2 != inclBod2.endAllNonbondAtoms; ++nax2)
             {
-                //             TRACE(" ");
+
                 DuMM::IncludedAtomIndex iax2 =
                         getAllAtomIndexOfNonbondAtom(nax2);
                 assert(iax2 != iax1);
@@ -3463,11 +3461,11 @@ void DuMMForceFieldSubsystemRep::CalcFullPotEnergyNonbonded
                 const AtomClass& a2class = atomClasses[a2cnum];
                 const Vec3&      a2Pos_G = AllAtomPos_G[iax2];
 
-                const Vec3  r  = a2Pos_G - a1Pos_G; // from a1 to a2 (3 flops)
-                const Real  d2 = r.normSqr() ;     // 5 flops
+                const Vec3  r  = a2Pos_G - a1Pos_G;
+                const Real  d2 = r.normSqr() ;
 
-                const Real  ood = 1/std::sqrt(d2); // approx 40 flops
-                const Real  ood2 = ood*ood;        // 1 flop
+                const Real  ood = 1/std::sqrt(d2);
+                const Real  ood2 = ood*ood;
 
 
                 // Coulombic electrostatic force
@@ -3496,7 +3494,6 @@ void DuMMForceFieldSubsystemRep::CalcFullPotEnergyNonbonded
             }
         }
 
-        // This is the end of the outer atom loop. We're done with atom a1.
         unscaleAllBondedAtoms(a1,vdwScaleAll,coulombScaleAll);
     }
 }
@@ -3513,7 +3510,6 @@ void DuMMForceFieldSubsystemRep::CalcFullPotEnergyNonbondedSingleThread
          Real&                               eVdW,
          Real&                               eCoulomb) const
 {
-    //TRACE("calcNonbondedForces() BEGIN");
     for (DuMMIncludedBodyIndex inclBodyIx(0);
          inclBodyIx < getNumAllBodies(); ++inclBodyIx)
     {
