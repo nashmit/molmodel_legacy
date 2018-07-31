@@ -1728,7 +1728,7 @@ public:
     {   return getIncludedAtom(nonbondAtoms[nbAtomIx]); }
 
 
-// ELIZA - All
+// for GMolModel - All
 
     // All bodies
     int getNumAllBodies() const {return (int)AllBodies.size();}
@@ -1762,8 +1762,8 @@ public:
     const IncludedAtom& getNonbondAllAtom(DuMM::NonbondAtomIndex nbAtomIx) const
     {   return getAllAtom(AllnonbondAtoms[nbAtomIx]); }
 
-/*
-    int getNumBondStarterAtoms()  const {return (int)bondStarterAtoms.size();}
+    /*
+    int getNumAllBondStarterAtoms()  const {return (int)AllbondStarterAtoms.size();}
     DuMM::IncludedAtomIndex getAllAtomIndexOfBondStarterAtom
        (DuMMBondStarterIndex bsAtomIx) const
     {   return bondStarterAtoms[bsAtomIx]; }
@@ -1773,7 +1773,8 @@ public:
     const IncludedAtom& getBondStarterAllAtom
        (DuMMBondStarterIndex bsAtomIx) const
     {   return getAllAtom(bondStarterAtoms[bsAtomIx]); }
-*/
+     */
+
 
 
 
@@ -1938,11 +1939,30 @@ public:
     Vector_<Vec3> AllAtomPos_G ) const; 
 
     Real CalcFullPotEnergyBondImproper(const DuMM::IncludedAtomIndex a1num, 
-    Vector_<Vec3> AllAtomPos_G ) const; 
+    Vector_<Vec3> AllAtomPos_G ) const;
 
 
+    void CalcFullPotEnergyNonbonded
+            (DuMMIncludedBodyIndex                   dummBodIx,
+             DuMMIncludedBodyIndex                   firstIx,
+             DuMMIncludedBodyIndex                   lastIx,
+             const Vector_<Vec3>&                    AllAtomPos_G,
+             Array_<Real,DuMM::NonbondAtomIndex>&    vdwScaleAll,    // temps: all 1s
+             Array_<Real,DuMM::NonbondAtomIndex>&    coulombScaleAll,
+             Real&                                   eVdW,
+             Real&                                   eCoulomb) const;
 
+    void CalcFullPotEnergyNonbondedSingleThread
+            (const Vector_<Vec3>&                AllAtomPos_G,
+             Real&                               eVdW,
+             Real&                               eCoulomb) const;
 
+    void scaleAllBondedAtoms(const IncludedAtom&   atom,
+                          Array_<Real,DuMM::NonbondAtomIndex>&     vdwScale,
+                          Array_<Real,DuMM::NonbondAtomIndex>&     coulombScale) const;
+    void unscaleAllBondedAtoms(const IncludedAtom& atom,
+                            Array_<Real,DuMM::NonbondAtomIndex>&   vdwScale,
+                            Array_<Real,DuMM::NonbondAtomIndex>&   coulombScale) const;
 
 
 
@@ -2022,6 +2042,10 @@ private:
 
         vdwScaleSingleThread.clear();
         coulombScaleSingleThread.clear();
+
+        //GMolModel
+        vdwScaleAllSingleThread.clear();
+        coulombScaleAllSingleThread.clear();
 
         inclAtomStationCacheIndex.invalidate(); 
         inclAtomPositionCacheIndex.invalidate();
@@ -2340,6 +2364,10 @@ public:
     // per included nonbond atom and must be initialized to all-1.
     mutable Array_<Real, DuMM::NonbondAtomIndex> vdwScaleSingleThread;
     mutable Array_<Real, DuMM::NonbondAtomIndex> coulombScaleSingleThread;
+
+    // GMolModel
+    mutable Array_<Real, DuMM::NonbondAtomIndex> vdwScaleAllSingleThread;
+    mutable Array_<Real, DuMM::NonbondAtomIndex> coulombScaleAllSingleThread;
     
     // Used for multithreaded computation.
     bool                    usingMultithreaded;
@@ -2347,6 +2375,9 @@ public:
     Parallel2DExecutor*     nonbondedExecutor;
     Parallel2DExecutor*     gbsaExecutor;
     ParallelExecutor*       executor;
+
+    //gmolmodel
+    Parallel2DExecutor*     NonbondedFullExecutor;
 
     // Used for OpenMM acceleration
     bool                    usingOpenMM;
