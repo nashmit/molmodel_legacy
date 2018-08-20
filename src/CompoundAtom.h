@@ -418,9 +418,9 @@ public:
             //assert(v3Squared >= 0);
             Real v3; // EU
             if (!(v3Squared >= 0)){
-                std::cout<<__FILE__<<":"<<__LINE__<<" No solution found .. v1 v2 cosTheta = "<<v1<<", "<<v2<<", "<<cosTheta<<". Consider a larger planarity threshold."<<std::endl;
-                std::cout<<__FILE__<<":"<<__LINE__<<" 1.0 - (v1*v1 + v2*v2 + 2.0*v1*v2*cosTheta) = "<<1.0 - (v1*v1 + v2*v2 + 2.0*v1*v2*cosTheta)<<std::endl;
-                //exit(1); // RESTORE
+                //RESTORE std::cout<<__FILE__<<":"<<__LINE__<<" No solution found .. v1 v2 cosTheta = "<<v1<<", "<<v2<<", "<<cosTheta<<". Consider a larger planarity threshold."<<std::endl;
+                //RESTORE std::cout<<__FILE__<<":"<<__LINE__<<" 1.0 - (v1*v1 + v2*v2 + 2.0*v1*v2*cosTheta) = "<<1.0 - (v1*v1 + v2*v2 + 2.0*v1*v2*cosTheta)<<std::endl;
+                //RESTORE RESTORE exit(1);
                 v3 = -1*(std::sqrt(-1*v3Squared)); // EU
             }
             else{ v3 = std::sqrt(v3Squared); } // EU
