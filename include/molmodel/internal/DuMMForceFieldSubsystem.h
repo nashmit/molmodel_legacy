@@ -1407,6 +1407,12 @@ friend class MolecularMechanicsSystem;
 public:
         Real CalcFullPotEnergyIncludingRigidBodies ( const State& state ) const;
 
+        void setUsingSoftCorePotential( Real val ) ;
+        void setVdwTaylorTerm( Real val ) ;
+        void setCoulombTaylorTerm( Real val ) ;
+        void setCoulombTaylorCutoff( Real val ) ;
+
+
 //------------------------------------------------------------------------------
 
 

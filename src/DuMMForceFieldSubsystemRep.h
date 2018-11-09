@@ -1965,6 +1965,31 @@ public:
                             Array_<Real,DuMM::NonbondAtomIndex>&   coulombScale) const;
 
 
+    // calcBodySubsetNonbondedForces extension - Soft Core Taylor
+
+    bool                    usingSoftCorePotential;
+    Real                    vdwTaylorTerm, CoulombTaylorTerm, CoulombTaylorCutoff;
+
+    void calcBodySubsetNonbondedForces(
+            DuMMIncludedBodyIndex                   dummBodIx,
+             DuMMIncludedBodyIndex                   firstIx,
+             DuMMIncludedBodyIndex                   lastIx,
+             const Vector_<Vec3>&                    inclAtomPos_G,
+             Array_<Real,DuMM::NonbondAtomIndex>&    vdwScale,
+             Array_<Real,DuMM::NonbondAtomIndex>&    coulombScale,
+             int                                     vdwTaylorTerm,
+             int                                     CoulombTaylorTerm,
+             Real                                    CoulombTaylorCutoff,
+             Vector_<Vec3>&                          inclAtomForce_G,
+             Real&                                   energy) const;
+
+    void calcNonbondedForces
+            (const Vector_<Vec3>&                inclAtomPos_G,
+             Vector_<Vec3>&                      inclAtomForce_G,
+             int                                     vdwTaylorTerm,
+             int                                     CoulombTaylorTerm,
+             Real                                    CoulombTaylorCutoff,
+             Real&                               energy) const;
 
 
 protected:
@@ -2395,6 +2420,8 @@ public:
     // GMolModel
     CacheEntryIndex         AllAtomStationCacheIndex;
     CacheEntryIndex         AllAtomPositionCacheIndex;
+
+
 
 
 };

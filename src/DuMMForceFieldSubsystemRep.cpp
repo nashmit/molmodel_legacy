@@ -2367,7 +2367,15 @@ void DuMMForceFieldSubsystemRep::realizeForcesAndEnergy(const State& s) const
       //      TRACE("DuMMForceFieldSubsystemRep::realizeForcesAndEnergy: begin serial calculation\n");
             if (!(coulombGlobalScaleFactor==0 && vdwGlobalScaleFactor==0)) {
       //          TRACE("DuMMForceFieldSubsystemRep::realizeForcesAndEnergy: scale factor not 0\n");
-                calcNonbondedForces(inclAtomPos_G, inclAtomForce_G, energy);
+
+                // Gmolmodel
+                if ( usingSoftCorePotential ){
+                    calcNonbondedForces(inclAtomPos_G, inclAtomForce_G, vdwTaylorTerm, CoulombTaylorTerm,
+                                        CoulombTaylorCutoff, energy);
+                }
+                else {
+                    calcNonbondedForces(inclAtomPos_G, inclAtomForce_G, energy);
+                }
             }
         }
 
@@ -3390,6 +3398,7 @@ CalcFullPotEnergyIncludingRigidBodiesRep(const State& s) const {
 
     eTotal = eStretch + eBend + eTorsion + eImproper + eVdW + eCoulomb;
 
+    /*
     TRACE( ("FUll Potential Bond Stretch: " + std::to_string( eStretch ) + "\n").c_str() );
     TRACE( ("FUll Potential Bond Bend   : " + std::to_string( eBend ) + "\n").c_str() );
     TRACE( ("FUll Potential Bond Torsion: " + std::to_string( eTorsion ) + "\n").c_str() );
@@ -3397,6 +3406,7 @@ CalcFullPotEnergyIncludingRigidBodiesRep(const State& s) const {
     TRACE( ("FUll Potential VdW         : " + std::to_string( eVdW ) + "\n").c_str() );
     TRACE( ("FUll Potential Coulomnb    : " + std::to_string( eCoulomb ) + "\n").c_str() );
     TRACE( ("FUll Potential TOTAL       : " + std::to_string( eTotal ) + "\n").c_str() );
+     */
 
     return eTotal;
 
@@ -3626,6 +3636,7 @@ Vector_<Vec3>  AllAtomPos_G ) const {
 //.............CALC FULL POTENTIAL ENERGY - BOND STRETCH TERM...................
 
 
+
 //------------------------------------------------------------------------------
 //          CALC FULL POTENTIAL ENERGY - BOND BEND TERM 
 //------------------------------------------------------------------------------
@@ -3708,6 +3719,8 @@ Vector_<Vec3>  AllAtomPos_G ) const {
 //.............CALC FULL POTENTIAL ENERGY - BOND TORSION TERM...................
 
 
+
+
 //------------------------------------------------------------------------------
 //          CALC FULL POTENTIAL ENERGY - BOND IMPROPER TERM 
 //------------------------------------------------------------------------------
@@ -3749,3 +3762,234 @@ Vector_<Vec3>  AllAtomPos_G ) const {
 }
 //.............CALC FULL POTENTIAL ENERGY - BOND IMPROPER TERM..................
 
+
+
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//
+//  Soft Core Non-bonded Potentials
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+//         calcBodySubsetNonbondedForces extension - Soft Core Taylor
+//------------------------------------------------------------------------------
+// GMolModel - using different Taylor terms to soft nonbonded potentials
+
+void DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces
+        (DuMMIncludedBodyIndex                   dummBodIx,
+         DuMMIncludedBodyIndex                   firstIx,
+         DuMMIncludedBodyIndex                   lastIx,
+         const Vector_<Vec3>&                    inclAtomPos_G,
+         Array_<Real,DuMM::NonbondAtomIndex>&    vdwScale,    // temps: all 1s
+         Array_<Real,DuMM::NonbondAtomIndex>&    coulombScale,
+
+// specific
+         int                                     vdwTaylorTerm,
+         int                                     CoulombTaylorTerm,
+         Real                                    CoulombTaylorCutoff,
+//
+         Vector_<Vec3>&                          inclAtomForce_G,
+         Real&                                   energy) const
+{
+
+    const IncludedBody& inclBod1 = includedBodies[dummBodIx];
+
+    // Run through every nonbond atom that is attached to this included body.
+    for (DuMM::NonbondAtomIndex nax1 = inclBod1.beginNonbondAtoms;
+         nax1 != inclBod1.endNonbondAtoms; ++nax1)
+    {
+        DuMM::IncludedAtomIndex iax1 = getIncludedAtomIndexOfNonbondAtom(nax1);
+        const IncludedAtom& a1 = getIncludedAtom(iax1);
+        const ChargedAtomType& a1type = chargedAtomTypes[a1.chargedAtomTypeIndex];
+        const DuMM::AtomClassIndex a1cnum = a1type.atomClassIx;
+
+        //TRACE( (std::string(" NonbondAtomIndex ") + std::to_string(nax1)).c_str() );
+        //TRACE( (std::string(" AtomIndex ") + std::to_string(getAtomIndexOfIncludedAtom(iax1))).c_str() );
+        //TRACE( (std::string(" IncludedAtomIndex ") + std::to_string(iax1)).c_str() );
+        //TRACE( (std::string(" ChargedAtomTypeIndex ") + std::to_string(a1.chargedAtomTypeIndex)).c_str() );
+        //TRACE( (std::string(" AtomClassIndex ") + std::to_string(a1cnum)).c_str() );
+
+        const AtomClass&           a1class = atomClasses[a1cnum];
+        const Vec3&                a1Pos_G = inclAtomPos_G[iax1];
+
+        const Real q1Fac = coulombGlobalScaleFactor
+                           * CoulombFac * a1type.partialCharge;
+
+        // Set scale factors for all closely-bonded atoms to a1 that are
+        // involved in nonbond calculations.
+        scaleBondedAtoms(a1,vdwScale,coulombScale);
+
+        // We'll update this element repeatedly below so get a reference
+        // to it once outside the loop.
+        Vec3& afrc1_G = inclAtomForce_G[iax1];
+
+        for (DuMMIncludedBodyIndex dbx2 = firstIx; dbx2 <= lastIx; ++dbx2) {
+            assert(dbx2 != dummBodIx);
+            const IncludedBody& inclBod2 = includedBodies[dbx2];
+
+            // Run through all the nonbond atoms that are attached to this body.
+            for (DuMM::NonbondAtomIndex nax2 = inclBod2.beginNonbondAtoms;
+                 nax2 != inclBod2.endNonbondAtoms; ++nax2)
+            {
+
+                DuMM::IncludedAtomIndex iax2 =
+                        getIncludedAtomIndexOfNonbondAtom(nax2);
+                assert(iax2 != iax1);
+                const IncludedAtom& a2 = getIncludedAtom(iax2);
+                const ChargedAtomType& a2type  = chargedAtomTypes[a2.chargedAtomTypeIndex];
+                const DuMM::AtomClassIndex a2cnum  = a2type.atomClassIx;
+
+                const AtomClass& a2class = atomClasses[a2cnum];
+                const Vec3&      a2Pos_G = inclAtomPos_G[iax2];
+
+                const Vec3  r  = a2Pos_G - a1Pos_G; //
+                const Real  d2 = r.normSqr() ;
+
+                const Real d = std::sqrt(d2);
+
+                const Real  ood = 1/d;
+                const Real  ood2 = ood*ood;
+
+                Real eVdw = 0, fVdw = 0;
+                Real eCoulomb = 0, fCoulomb = 0;
+
+
+                // Coulombic electrostatic force
+                const Real qq = coulombScale[nax2]
+                                * q1Fac * a2type.partialCharge;
+
+
+                if ( d < CoulombTaylorCutoff){
+
+                    switch( CoulombTaylorTerm ){
+                        case 0 : {
+                            // 0 taylor term
+                            // Coulombic electrostatic force
+                            eCoulomb = qq / CoulombTaylorCutoff;
+                            fCoulomb = 0;
+                            break;
+                        }
+
+                        case 1 : {
+                            // first derivative taylor term
+                            // e = scale*(1/(4*pi*e0)) *  q1*q2/d
+                            eCoulomb = (2 * qq / CoulombTaylorCutoff) - (qq / CoulombTaylorCutoff) * d;
+                            fCoulomb = -(qq / CoulombTaylorCutoff);
+                            break;
+                        }
+                    }
+                }
+
+                else {
+                    // e = scale*(1/(4*pi*e0)) *  q1*q2/d
+                    eCoulomb = qq * ood;     // 1 flop
+                    // f = -[scale*(1/(4*pi*e0)) * -q1*q2/d^2] * r
+                    fCoulomb = eCoulomb * ood2;
+                }
+
+
+                // van der Waals forces
+
+                // Get precomputed mixed dmin and emin. Must ask the lower-numbered atom class.
+                Real dij, eij;
+                if (a1cnum <= a2cnum) {
+                    dij = a1class.vdwDij[a2cnum-a1cnum];
+                    eij = a1class.vdwEij[a2cnum-a1cnum];
+                } else {
+                    dij = a2class.vdwDij[a1cnum-a2cnum];
+                    eij = a2class.vdwEij[a1cnum-a2cnum];
+                }
+
+
+                const Real ddij2  = dij*dij*ood2;   // (dmin_ij/d)^2
+                const Real ddij6  = ddij2*ddij2*ddij2;
+                const Real ddij12 = ddij6*ddij6;
+
+
+                const Real eijScale = vdwGlobalScaleFactor*vdwScale[nax2]*eij;
+
+                if ( d < dij ){
+                    switch( vdwTaylorTerm ){
+                        case 0 : {
+                            // 0 taylor term
+                            eVdw = eijScale * (-1);
+                            fVdw = 0;
+                            break;
+                        }
+
+                        case 1 : {
+                            // 1st derivative  taylor term - is 0
+                            eVdw = eijScale * (-1);
+                            fVdw = 0;
+                            break;
+                        }
+
+                        case 2 : {
+                            // 2nd derivative taylor term
+                            eVdw = 72 * eijScale * (ddij2 - 2 * dij * ood + 1) - eijScale;
+                            fVdw = 144 * eijScale * (d / (dij * dij) - 1 / dij);
+                            break;
+                        }
+                    }
+                }
+
+                else {
+                    eVdw = eijScale * (ddij12 - 2 * ddij6);
+                    fVdw = 12 * eijScale * (ddij12 - ddij6);
+                }
+
+
+                const Vec3 fj = (fCoulomb+fVdw) * r ; // 5 flops
+                // kJ (Da-nm^2/ps^2)        // 2 flops
+
+                energy                += (eCoulomb + eVdw);
+                inclAtomForce_G[iax2] += fj;   // 3 flops
+                afrc1_G               -= fj;   // 3 flops
+            }
+        }
+        // This is the end of the outer atom loop. We're done with atom a1.
+        unscaleBondedAtoms(a1,vdwScale,coulombScale);
+    }
+}
+//....................CALC BODY SUBSET NONBONDED FORCES.........................
+
+
+//------------------------------------------------------------------------------
+//              CALC NONBONDED FORCES extension-  Soft Core Taylor
+//------------------------------------------------------------------------------
+// single-threaded nonbonded force & energy calculation Soft Core
+
+void DuMMForceFieldSubsystemRep::calcNonbondedForces
+        (const Vector_<Vec3>&                inclAtomPos_G,
+         Vector_<Vec3>&                      inclAtomForce_G,
+// specific
+         int                                     vdwTaylorTerm,
+         int                                     CoulombTaylorTerm,
+         Real                                    CoulombTaylorCutoff,
+//
+         Real&                               energy) const
+{
+    //TRACE("calcNonbondedForces() BEGIN");
+    for (DuMMIncludedBodyIndex inclBodyIx(0);
+         inclBodyIx < getNumIncludedBodies(); ++inclBodyIx)
+    {
+        calcBodySubsetNonbondedForces(
+                inclBodyIx,
+                DuMMIncludedBodyIndex(inclBodyIx + 1),
+                DuMMIncludedBodyIndex(getNumIncludedBodies()-1),
+                inclAtomPos_G,
+                vdwScaleSingleThread,
+                coulombScaleSingleThread,
+// specific
+                vdwTaylorTerm,
+                CoulombTaylorTerm,
+                CoulombTaylorCutoff,
+//
+                inclAtomForce_G, energy);
+    }
+}
+//............................CALC NONBONDED FORCES.............................

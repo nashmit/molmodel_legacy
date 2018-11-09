@@ -2415,3 +2415,29 @@ CalcFullPotEnergyIncludingRigidBodies ( const State& state ) const {
                                               MethodName, "Subsystem", "DuMMForceFieldSubsystem");
     return getRep().CalcFullPotEnergyIncludingRigidBodiesRep( state );
 }
+
+
+void DuMMForceFieldSubsystem::setUsingSoftCorePotential( Real val ) {
+    static const char* MethodName = "setUsingSoftCorePotential";
+    invalidateSubsystemTopologyCache();
+    DuMMForceFieldSubsystemRep& mm = updRep();
+    mm.usingSoftCorePotential = val;
+}
+void DuMMForceFieldSubsystem::setVdwTaylorTerm( Real val ) {
+    static const char* MethodName = "setUsingSoftCorePotential";
+    invalidateSubsystemTopologyCache();
+    DuMMForceFieldSubsystemRep& mm = updRep();
+    mm.vdwTaylorTerm = val;
+}
+void DuMMForceFieldSubsystem::setCoulombTaylorCutoff( Real val ) {
+    static const char* MethodName = "setUsingSoftCorePotential";
+    invalidateSubsystemTopologyCache();
+    DuMMForceFieldSubsystemRep& mm = updRep();
+    mm.CoulombTaylorCutoff = val;
+}
+void DuMMForceFieldSubsystem::setCoulombTaylorTerm( Real val ) {
+    static const char* MethodName = "setUsingSoftCorePotential";
+    invalidateSubsystemTopologyCache();
+    DuMMForceFieldSubsystemRep& mm = updRep();
+    mm.CoulombTaylorTerm = val;
+}
