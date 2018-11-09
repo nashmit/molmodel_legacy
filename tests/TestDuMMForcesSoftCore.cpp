@@ -86,6 +86,104 @@ public:
 ////////////////////
 
 
+class CustomMolecule_diffCharge : public TestSystem {
+public:
+    CustomMolecule_diffCharge(Real distance,
+                              Real CoulombGlobalScaleFactor,
+                              Real VdwGlobalScaleFactor,
+                              Real UsingSoftCorePotential,
+                              Real VdwTaylorTerm,
+                              Real CoulombTaylorTerm,
+                              Real CoulombTaylorCutoff
+
+    ) {
+        // Turn off all
+
+        dumm.setUseMultithreadedComputation(false);
+        dumm.setAllGlobalScaleFactors(0.0);
+
+        dumm.setCoulombGlobalScaleFactor( CoulombGlobalScaleFactor );
+        dumm.setVdwGlobalScaleFactor( VdwGlobalScaleFactor );
+
+        dumm.setUsingSoftCorePotential( UsingSoftCorePotential );
+
+        dumm.setVdwTaylorTerm( VdwTaylorTerm );
+        dumm.setCoulombTaylorTerm( CoulombTaylorTerm ) ;
+        dumm.setCoulombTaylorCutoff( CoulombTaylorCutoff );// nanometers
+
+
+        if (!dumm.hasAtomClass("Otest")) {
+            dumm.defineAtomClass(
+                    dumm.getNextUnusedAtomClassIndex(),
+                    "Otest",
+                    Element::Oxygen().getAtomicNumber(),
+                    0, // no bonds
+                    0.16612, // radius
+                    0.87864 // well depth
+            );
+        }
+
+        if (!dumm.hasChargedAtomType("Otest")) {
+            dumm.defineChargedAtomType(
+                    dumm.getNextUnusedChargedAtomTypeIndex(),
+                    "Otest",
+                    dumm.getAtomClassIndex("Otest"),
+                    -0.5679 // no charge on symmetric molecule
+            );
+        }
+
+        if (!Biotype::exists("Otest", "Otest"))
+            Biotype::defineBiotype(Element::Argon(), 0, "Otest", "Otest");
+
+        dumm.setBiotypeChargedAtomType(dumm.getChargedAtomTypeIndex("Otest"),
+                                       Biotype::get("Otest", "Otest").getIndex());
+
+
+
+
+
+        if (!dumm.hasAtomClass("Htest")) {
+            dumm.defineAtomClass(
+                    dumm.getNextUnusedAtomClassIndex(),
+                    "Htest",
+                    Element::Oxygen().getAtomicNumber(),
+                    0, // no bonds
+                    0.06, // radius
+                    0.0656888 // well depth
+            );
+        }
+
+        if (!dumm.hasChargedAtomType("Htest")) {
+            dumm.defineChargedAtomType(
+                    dumm.getNextUnusedChargedAtomTypeIndex(),
+                    "Htest",
+                    dumm.getAtomClassIndex("Htest"),
+                    0.2719 // no charge on symmetric molecule
+            );
+        }
+
+        if (!Biotype::exists("Htest", "Htest"))
+            Biotype::defineBiotype(Element::Argon(), 0, "Htest", "Htest");
+
+        dumm.setBiotypeChargedAtomType(dumm.getChargedAtomTypeIndex("Htest"),
+                                       Biotype::get("Htest", "Htest").getIndex());
+
+
+
+        Argon oxygen1, hydrogen2;
+        oxygen1.setAtomBiotype("Otest", "Otest", "Otest");
+        hydrogen2.setAtomBiotype("Htest", "Htest", "Htest");
+
+        system.adoptCompound(oxygen1, Vec3(distance, 0, 0));
+        system.adoptCompound(hydrogen2);
+        system.modelCompounds();
+
+        system.updDefaultState() = system.realizeTopology();
+    }
+
+};
+
+
 class CustomMolecule_sameCharge : public TestSystem {
 public:
     CustomMolecule_sameCharge(Real distance,
@@ -152,7 +250,8 @@ public:
 };
 
 
-Real testEnergy(Real distance,
+
+Real testEnergy_sameCharge(Real distance,
                 Real CoulombGlobalScaleFactor,
                 Real VdwGlobalScaleFactor,
                 Real UsingSoftCorePotential,
@@ -169,6 +268,24 @@ Real testEnergy(Real distance,
 }
 
 
+Real testEnergy_diffCharge(Real distance,
+                           Real CoulombGlobalScaleFactor,
+                           Real VdwGlobalScaleFactor,
+                           Real UsingSoftCorePotential,
+                           Real VdwTaylorTerm,
+                           Real CoulombTaylorTerm,
+                           Real CoulombTaylorCutoff
+)
+{
+
+    Real observedEnergy = CustomMolecule_diffCharge(distance, CoulombGlobalScaleFactor, VdwGlobalScaleFactor,
+                                                    UsingSoftCorePotential, VdwTaylorTerm, CoulombTaylorTerm, CoulombTaylorCutoff).calcEnergy();
+    return observedEnergy;
+
+}
+
+
+
 
 int main() 
 {
@@ -176,7 +293,7 @@ int main()
 
     printf( " Alanine O atom - Alanine O atom \n");
 
-    printf( " dist(nm) \t onlyCoulomb \t onlyVDW \t C_VDW \t C_0 \t C_1 \t VDW_1 \t VDW_2 \t C_1_VDW_2 \n");
+    printf( " dist(nm) \t onlyCoulomb \t onlyVDW \t C_VDW \t C_0 \t C_1 \t C_2 \t VDW_1 \t VDW_2 \t C_2_VDW_2 \n");
 
     for( int it = 0; it < 100; it++){
 
@@ -184,34 +301,84 @@ int main()
 
          // (distance, CoulombGlobalScaleFactor, VdwGlobalScaleFactor, UsingSoftCorePotential, VdwTaylorTerm, CoulombTaylorTerm, CoulombTaylorCutoff)
 
-        Real onlyCoulomb  =  testEnergy( distance, 1.0, 0.0, 0.0,
+        Real onlyCoulomb  =  testEnergy_sameCharge( distance, 1.0, 0.0, 0.0,
                                          0.0, 0.0, 0.0 );
 
-        Real onlyVDW      =  testEnergy( distance, 0.0, 1.0, 0.0,
+        Real onlyVDW      =  testEnergy_sameCharge( distance, 0.0, 1.0, 0.0,
                                          0.0, 0.0, 0.0 );
 
-        Real C_VDW        =  testEnergy( distance, 1.0, 1.0, 0.0,
+        Real C_VDW        =  testEnergy_sameCharge( distance, 1.0, 1.0, 0.0,
                                          0.0, 0.0, 0.0 );
 
-        Real C_0          =  testEnergy( distance, 1.0, 0.0, 1.0,
+        Real C_0          =  testEnergy_sameCharge( distance, 1.0, 0.0, 1.0,
                                          0.0, 0.0, 0.05 );
 
-        Real C_1          =  testEnergy( distance, 1.0, 0.0, 1.0,
+        Real C_1          =  testEnergy_sameCharge( distance, 1.0, 0.0, 1.0,
                                          0.0, 1.0, 0.05 );
 
-        Real VDW_1        =  testEnergy( distance, 0.0, 1.0, 1.0,
+        Real C_2          =  testEnergy_sameCharge( distance, 1.0, 0.0, 1.0,
+                                         0.0, 2.0, 0.05 );
+
+        Real VDW_1        =  testEnergy_sameCharge( distance, 0.0, 1.0, 1.0,
                                          1.0, 0.0, 0.0 );
 
-        Real VDW_2        =  testEnergy( distance, 0.0, 1.0, 1.0,
+        Real VDW_2        =  testEnergy_sameCharge( distance, 0.0, 1.0, 1.0,
                                          2.0, 0.0, 0.0 );
 
-        Real C_1_VDW_2    =  testEnergy( distance, 1.0, 1.0, 1.0,
-                                           2.0, 1.0, 0.05 );
+        Real C_2_VDW_2    =  testEnergy_sameCharge( distance, 1.0, 1.0, 1.0,
+                                           2.0, 2.0, 0.05 );
 
-        printf( "%5f \t %10f \t %10f \t %10f \t %10f \t %10f \t %10f \t %10f \t %10f \n",
-                distance, onlyCoulomb, onlyVDW, C_VDW, C_0, C_1, VDW_1, VDW_2, C_1_VDW_2 );
+        printf( "%5f \t %10f \t %10f \t %10f \t %10f \t %10f \t %10f \t %10f \t %10f \t %10f  \n",
+                distance, onlyCoulomb, onlyVDW, C_VDW, C_0, C_1, C_2, VDW_1, VDW_2, C_2_VDW_2 );
 
     }
 
-    
+
+    printf("\n\n\n");
+
+    distance = 0.01;
+
+    printf( " Alanine O atom - Alanine HN atom \n");
+
+    printf( " dist(nm) \t onlyCoulomb \t onlyVDW \t C_VDW \t C_0 \t C_1 \t C_2 \t VDW_1 \t VDW_2 \t C_2_VDW_2 \n");
+
+    for( int it = 0; it < 100; it++){
+
+        distance += 0.005;
+
+        // (distance, CoulombGlobalScaleFactor, VdwGlobalScaleFactor, UsingSoftCorePotential, VdwTaylorTerm, CoulombTaylorTerm, CoulombTaylorCutoff)
+
+        Real onlyCoulomb  =  testEnergy_diffCharge( distance, 1.0, 0.0, 0.0,
+                                         0.0, 0.0, 0.0 );
+
+        Real onlyVDW      =  testEnergy_diffCharge( distance, 0.0, 1.0, 0.0,
+                                         0.0, 0.0, 0.0 );
+
+        Real C_VDW        =  testEnergy_diffCharge( distance, 1.0, 1.0, 0.0,
+                                         0.0, 0.0, 0.0 );
+
+        Real C_0          =  testEnergy_diffCharge( distance, 1.0, 0.0, 1.0,
+                                         0.0, 0.0, 0.05 );
+
+        Real C_1          =  testEnergy_diffCharge( distance, 1.0, 0.0, 1.0,
+                                         0.0, 1.0, 0.05 );
+
+        Real C_2          =  testEnergy_diffCharge( distance, 1.0, 0.0, 1.0,
+                                         0.0, 2.0, 0.05 );
+
+        Real VDW_1        =  testEnergy_diffCharge( distance, 0.0, 1.0, 1.0,
+                                         1.0, 0.0, 0.0 );
+
+        Real VDW_2        =  testEnergy_diffCharge( distance, 0.0, 1.0, 1.0,
+                                         2.0, 0.0, 0.0 );
+
+        Real C_2_VDW_2    =  testEnergy_diffCharge( distance, 1.0, 1.0, 1.0,
+                                         2.0, 2.0, 0.05 );
+
+        printf( "%5f \t %10f \t %10f \t %10f \t %10f \t %10f \t %10f \t %10f \t %10f \t %10f  \n",
+                distance, onlyCoulomb, onlyVDW, C_VDW, C_0, C_1, C_2, VDW_1, VDW_2, C_2_VDW_2 );
+
+    }
+
+
 }

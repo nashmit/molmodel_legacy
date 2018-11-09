@@ -2447,7 +2447,6 @@ Real DuMMForceFieldSubsystemRep::calcPotentialEnergy(const State& state) const {
     // Currently there is no way to compute only the energy, although it
     // would be somewhat cheaper if forces aren't needed.
     realizeForcesAndEnergy(state);
-    CalcFullPotEnergyIncludingRigidBodiesRep(state);
     return getEnergyCache(state);
 }
 //............................CALC POTENTIAL ENERGY.............................
@@ -3865,6 +3864,9 @@ void DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces
 
                 if ( d < CoulombTaylorCutoff){
 
+                    const Real cc2 = CoulombTaylorCutoff * CoulombTaylorCutoff;
+                    const Real cc3 = cc2 * CoulombTaylorCutoff;
+
                     switch( CoulombTaylorTerm ){
                         case 0 : {
                             // 0 taylor term
@@ -3877,8 +3879,17 @@ void DuMMForceFieldSubsystemRep::calcBodySubsetNonbondedForces
                         case 1 : {
                             // first derivative taylor term
                             // e = scale*(1/(4*pi*e0)) *  q1*q2/d
-                            eCoulomb = (2 * qq / CoulombTaylorCutoff) - (qq / CoulombTaylorCutoff) * d;
-                            fCoulomb = -(qq / CoulombTaylorCutoff);
+                            eCoulomb = (2 * qq / CoulombTaylorCutoff) - (qq / cc2)  * d;
+                            fCoulomb = -(qq / cc2 ) ;
+                            break;
+                        }
+                        case 2 : {
+                            // second derivative taylor term
+                            // e = scale*(1/(4*pi*e0)) *  q1*q2/d
+                            eCoulomb = (qq / CoulombTaylorCutoff) - (qq / cc2)*( d - CoulombTaylorCutoff )
+                                    + (qq / cc3)*( d - CoulombTaylorCutoff )*( d - CoulombTaylorCutoff );
+
+                            fCoulomb = -( 3*qq / cc2) + 2 * d * ( qq / cc3 );
                             break;
                         }
                     }
