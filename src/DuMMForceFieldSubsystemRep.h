@@ -873,8 +873,16 @@ public:
     // If this is an included atom that serves as atom 1 for some bond, then
     // record its BondStarterIndex here.
     DuMMBondStarterIndex            bondStarterIndex;
-};
 
+
+    // GMolModel - all topology lists and indexes
+    Vec3                            station_B_All; 
+    DuMM::IncludedAtomIndex         AllAtomIndex;
+    DuMMIncludedBodyIndex           AllBodyIndex;
+    DuMM::NonbondAtomIndex          AllnonbondAtomIndex;
+    DuMMBondStarterIndex            AllbondStarterIndex;
+
+};
 
 
 //-----------------------------------------------------------------------------
@@ -952,6 +960,15 @@ public:
     Array_<DuMM::NonbondAtomIndex, unsigned short>  scale14;
     Array_<DuMM::NonbondAtomIndex, unsigned short>  scale15;
 
+    // And for GMolModel - all topology lists
+    DuMM::IncludedAtomIndex     AllAtomIndex;
+    DuMMIncludedBodyIndex       AllBodyIndex;
+    Array_<DuMM::NonbondAtomIndex, unsigned short>  scale12All; 
+    Array_<DuMM::NonbondAtomIndex, unsigned short>  scale13All;
+    Array_<DuMM::NonbondAtomIndex, unsigned short>  scale14All;
+    Array_<DuMM::NonbondAtomIndex, unsigned short>  scale15All;
+
+
     // If this is a bondStarter atom (that is, it is atom 1 in some bonded
     // force term), then these are precalculated lists of the atoms that 
     // participate in each of the bonded force terms that this atom is 
@@ -965,6 +982,14 @@ public:
     Array_<IncludedAtomIndexQuad,   unsigned short> force15; // not used
     Array_<IncludedAtomIndexTriple, unsigned short> forceImproper14;
 
+    // And for GMolModel - - all topology lists
+    Array_<DuMM::IncludedAtomIndex, unsigned short> force12All;
+    Array_<IncludedAtomIndexPair,   unsigned short> force13All;
+    Array_<IncludedAtomIndexTriple, unsigned short> force14All;
+    Array_<IncludedAtomIndexQuad,   unsigned short> force15All; // not used
+    Array_<IncludedAtomIndexTriple, unsigned short> forceImproper14All;
+
+
     // These are pointers into the various bonded maps that provide instant
     // access to the coefficients for particular bonds. These correspond
     // elementwise to the atom sets in the force1X arrays above, so have
@@ -975,6 +1000,14 @@ public:
     // Currently there are no supported 1-5 bonded force terms.
     Array_<const BondTorsion*,unsigned short> aImproperTorsion; 
                                                     // matches forceImproper14
+
+    // And for GMolModel - all topology lists
+    Array_<const BondStretch*,unsigned short> stretchAll; // matches force12
+    Array_<const BondBend*,   unsigned short> bendAll;    // matches force13
+    Array_<const BondTorsion*,unsigned short> torsionAll; // matches force14
+    Array_<const BondTorsion*,unsigned short> aImproperTorsionAll; 
+
+
 };
 
 
@@ -1317,10 +1350,16 @@ public:
     IncludedBody() {}
     bool isValid() const {return mobodIx.isValid();}
     MobilizedBodyIndex      mobodIx;
+
     // Defined as in std:: classes; end is one past the last atom.
     DuMM::IncludedAtomIndex beginIncludedAtoms,    endIncludedAtoms;
     DuMM::NonbondAtomIndex  beginNonbondAtoms,     endNonbondAtoms;
     DuMMBondStarterIndex    beginBondStarterAtoms, endBondStarterAtoms;
+
+    //GMolModel - all topology indexes
+    DuMM::IncludedAtomIndex beginAllAtoms,    endAllAtoms;
+    DuMM::NonbondAtomIndex  beginAllNonbondAtoms,     endAllNonbondAtoms;
+    DuMMBondStarterIndex    beginAllBondStarterAtoms, endAllBondStarterAtoms;
 
     void dump() const {
         printf("    mobodIndex=%d\n", (int)mobodIx);
@@ -1408,6 +1447,15 @@ public:
     // Any cross-body bond that contains an atom from both of these bodies
     // is included. Pairs are always in (low,high) order.
     std::set<MobodIndexPair>     bodyPairsWhoseConnectingBondsAreIncluded;
+
+// Same for GMolModel - to be checked
+    // These atoms are explicitly All.
+    std::set<DuMM::AtomIndex>    AllNonbondAtoms;
+    // All atoms on this body are explicitly included.
+    std::set<MobilizedBodyIndex> AllNonbondBodies;
+
+
+
 };
 
 // Unfortunately required by Value<T>.
@@ -1680,6 +1728,61 @@ public:
     {   return getIncludedAtom(nonbondAtoms[nbAtomIx]); }
 
 
+// for GMolModel - All
+
+    // All bodies
+    int getNumAllBodies() const {return (int)AllBodies.size();}
+    const IncludedBody& getAllBody(DuMMIncludedBodyIndex incBodyIx) const
+    {   return AllBodies[incBodyIx]; }
+    IncludedBody& updAllBody(DuMMIncludedBodyIndex incBodyIx)
+    {   return AllBodies[incBodyIx]; }
+
+    // All atoms
+    int getNumAllAtoms()  const {return (int)AllAtoms.size();}
+    DuMM::AtomIndex getAtomIndexOfAllAtom
+       (DuMM::IncludedAtomIndex incAtomIx) const
+    {   return AllAtoms[incAtomIx].atomIndex; }
+    const IncludedAtom& getAllAtom(DuMM::IncludedAtomIndex incAtomIx) const
+    {   return AllAtoms[incAtomIx]; }
+    IncludedAtom& updAllAtom(DuMM::IncludedAtomIndex incAtomIx)
+    {   return AllAtoms[incAtomIx]; }
+    const Vec3& getAllAtomStation(DuMM::IncludedAtomIndex incAtomIx) const
+    {   return AllAtomStations[incAtomIx]; }
+    Vec3& updAllAtomStation(DuMM::IncludedAtomIndex incAtomIx)
+    {   return AllAtomStations[incAtomIx]; }
+
+    // Nonbond All atoms
+    int getNumAllNonbondAtoms() const {return (int)AllnonbondAtoms.size();}
+    DuMM::IncludedAtomIndex getAllAtomIndexOfNonbondAtom
+       (DuMM::NonbondAtomIndex nbAtomIx) const
+    {   return AllnonbondAtoms[nbAtomIx]; }
+    DuMM::AtomIndex getAtomIndexOfAllNonbondAtom
+       (DuMM::NonbondAtomIndex nbAtomIx) const
+    {   return getAtomIndexOfAllAtom(AllnonbondAtoms[nbAtomIx]); }
+    const IncludedAtom& getNonbondAllAtom(DuMM::NonbondAtomIndex nbAtomIx) const
+    {   return getAllAtom(AllnonbondAtoms[nbAtomIx]); }
+
+    /*
+    int getNumAllBondStarterAtoms()  const {return (int)AllbondStarterAtoms.size();}
+    DuMM::IncludedAtomIndex getAllAtomIndexOfBondStarterAtom
+       (DuMMBondStarterIndex bsAtomIx) const
+    {   return bondStarterAtoms[bsAtomIx]; }
+    DuMM::AtomIndex getAtomIndexOfBondStarterAtom
+       (DuMMBondStarterIndex bsAtomIx) const
+    {   return getAtomIndexOfAllAtom(bondStarterAtoms[bsAtomIx]); }
+    const IncludedAtom& getBondStarterAllAtom
+       (DuMMBondStarterIndex bsAtomIx) const
+    {   return getAllAtom(bondStarterAtoms[bsAtomIx]); }
+     */
+
+
+
+
+
+/////////////////////////
+
+
+
     int getNumBondStarterAtoms()  const {return (int)bondStarterAtoms.size();}
     DuMM::IncludedAtomIndex getIncludedAtomIndexOfBondStarterAtom
        (DuMMBondStarterIndex bsAtomIx) const
@@ -1816,6 +1919,54 @@ public:
     SimTK_DOWNCAST(DuMMForceFieldSubsystemRep, ForceSubsystem::Guts);
     SimTK_DOWNCAST(DuMMForceFieldSubsystemRep, Subsystem::Guts);
 
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//		        GMOLMODEL - EXTRA FUNCTIONALITIES
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+
+    Real CalcFullPotEnergyIncludingRigidBodiesRep(const State& s) const;
+
+    Real CalcFullPotEnergyBondStretch(const DuMM::IncludedAtomIndex a1num, 
+    Vector_<Vec3> AllAtomPos_G ) const; 
+
+    Real CalcFullPotEnergyBondBend(const DuMM::IncludedAtomIndex a1num, 
+    Vector_<Vec3> AllAtomPos_G ) const; 
+
+    Real CalcFullPotEnergyBondTorsion(const DuMM::IncludedAtomIndex a1num, 
+    Vector_<Vec3> AllAtomPos_G ) const; 
+
+    Real CalcFullPotEnergyBondImproper(const DuMM::IncludedAtomIndex a1num, 
+    Vector_<Vec3> AllAtomPos_G ) const;
+
+
+    void CalcFullPotEnergyNonbonded
+            (DuMMIncludedBodyIndex                   dummBodIx,
+             DuMMIncludedBodyIndex                   firstIx,
+             DuMMIncludedBodyIndex                   lastIx,
+             const Vector_<Vec3>&                    AllAtomPos_G,
+             Array_<Real,DuMM::NonbondAtomIndex>&    vdwScaleAll,    // temps: all 1s
+             Array_<Real,DuMM::NonbondAtomIndex>&    coulombScaleAll,
+             Real&                                   eVdW,
+             Real&                                   eCoulomb) const;
+
+    void CalcFullPotEnergyNonbondedSingleThread
+            (const Vector_<Vec3>&                AllAtomPos_G,
+             Real&                               eVdW,
+             Real&                               eCoulomb) const;
+
+    void scaleAllBondedAtoms(const IncludedAtom&   atom,
+                          Array_<Real,DuMM::NonbondAtomIndex>&     vdwScale,
+                          Array_<Real,DuMM::NonbondAtomIndex>&     coulombScale) const;
+    void unscaleAllBondedAtoms(const IncludedAtom& atom,
+                            Array_<Real,DuMM::NonbondAtomIndex>&   vdwScale,
+                            Array_<Real,DuMM::NonbondAtomIndex>&   coulombScale) const;
+
+
+
+
 protected:
     std::ostream& generateBiotypeChargedAtomTypeSelfCode(std::ostream& os, BiotypeIndex biotypeIx) const;
     void setBiotypeChargedAtomType(DuMM::ChargedAtomTypeIndex chargedAtomTypeIndex, BiotypeIndex biotypeIx);
@@ -1891,6 +2042,10 @@ private:
 
         vdwScaleSingleThread.clear();
         coulombScaleSingleThread.clear();
+
+        //GMolModel
+        vdwScaleAllSingleThread.clear();
+        coulombScaleAllSingleThread.clear();
 
         inclAtomStationCacheIndex.invalidate(); 
         inclAtomPositionCacheIndex.invalidate();
@@ -1988,6 +2143,23 @@ private:
     const Vector_<Vec3>& getIncludedAtomPositionCache(const State& s) const
     {   return Value<Vector_<Vec3> >::downcast
             (getCacheEntry(s, inclAtomPositionCacheIndex)); }
+
+
+	// GMolModel
+    Vector_<Vec3>& updAllAtomStationCache(const State& s) const
+    {   return Value<Vector_<Vec3> >::downcast
+            (updCacheEntry(s, AllAtomStationCacheIndex)); }
+    const Vector_<Vec3>& getAllAtomStationCache(const State& s) const
+    {   return Value<Vector_<Vec3> >::downcast
+            (getCacheEntry(s, AllAtomStationCacheIndex)); }
+    Vector_<Vec3>& updAllAtomPositionCache(const State& s) const
+    {   return Value<Vector_<Vec3> >::downcast
+            (updCacheEntry(s, AllAtomPositionCacheIndex)); }
+    const Vector_<Vec3>& getAllAtomPositionCache(const State& s) const
+    {   return Value<Vector_<Vec3> >::downcast
+            (getCacheEntry(s, AllAtomPositionCacheIndex)); }
+
+
 
     // Atom velocities are lazy evaluated.
     Vector_<Vec3>& updIncludedAtomVelocityCache(const State& s) const
@@ -2094,6 +2266,13 @@ public:
     std::map<AtomClassIndexQuad,   BondTorsion> bondTorsion;
     std::map<AtomClassIndexQuad,   BondTorsion> amberImproperTorsion;
 
+    // GMolModel
+    std::map<AtomClassIndexPair,   BondStretch> bondStretchAll;
+    std::map<AtomClassIndexTriple, BondBend>    bondBendAll;
+    std::map<AtomClassIndexQuad,   BondTorsion> bondTorsionAll;
+    std::map<AtomClassIndexQuad,   BondTorsion> amberImproperTorsionAll;
+
+
     // Which rule to use for combining van der Waals radii and energy well
     // depth for dissimilar atom classes.
     DuMMForceFieldSubsystem::VdwMixingRule  vdwMixingRule;
@@ -2137,20 +2316,29 @@ public:
     // sorted in increasing order of MobilizedBodyIndex. The presence of an
     // entry here indicates the body has at least one includedAtom attached.
     Array_<IncludedBody, DuMMIncludedBodyIndex> includedBodies;
+    Array_<IncludedBody, DuMMIncludedBodyIndex> AllBodies;
     // This is the list of all atoms that participate in *any* force 
     // calculation, nonbonded or bonded. They are grouped in the same order
     // as the includedBodies list so that all the included atoms for the first
     // included body come first, then all included atoms for the second 
     // included body, etc. Use these entries to index the atoms array.
     Array_<IncludedAtom, DuMM::IncludedAtomIndex> includedAtoms;
+    Array_<IncludedAtom, DuMM::IncludedAtomIndex> AllAtoms;
     // These are the stations for each included atom on its included body. These
     // are kept separately since they are only needed during realizePosition()
     // when calculating the atom locations, but logically they are part of the
     // IncludedAtom information so this array is the same length as includedAtoms.
     Array_<Vec3, DuMM::IncludedAtomIndex> includedAtomStations;
+    Array_<Vec3, DuMM::IncludedAtomIndex> AllAtomStations;
 
     Array_<DuMM::IncludedAtomIndex, DuMM::NonbondAtomIndex> nonbondAtoms;
     Array_<DuMM::IncludedAtomIndex, DuMMBondStarterIndex>   bondStarterAtoms;
+
+// GMolModel
+    Array_<DuMM::IncludedAtomIndex, DuMM::NonbondAtomIndex> AllnonbondAtoms;
+    Array_<DuMM::IncludedAtomIndex, DuMMBondStarterIndex>   AllbondStarterAtoms;
+
+
 
     // Used for GBSA, which works only with nonbond atoms.
     Array_<RealOpenMM, DuMM::NonbondAtomIndex> gbsaAtomicPartialCharges;
@@ -2176,6 +2364,10 @@ public:
     // per included nonbond atom and must be initialized to all-1.
     mutable Array_<Real, DuMM::NonbondAtomIndex> vdwScaleSingleThread;
     mutable Array_<Real, DuMM::NonbondAtomIndex> coulombScaleSingleThread;
+
+    // GMolModel
+    mutable Array_<Real, DuMM::NonbondAtomIndex> vdwScaleAllSingleThread;
+    mutable Array_<Real, DuMM::NonbondAtomIndex> coulombScaleAllSingleThread;
     
     // Used for multithreaded computation.
     bool                    usingMultithreaded;
@@ -2183,6 +2375,9 @@ public:
     Parallel2DExecutor*     nonbondedExecutor;
     Parallel2DExecutor*     gbsaExecutor;
     ParallelExecutor*       executor;
+
+    //gmolmodel
+    Parallel2DExecutor*     NonbondedFullExecutor;
 
     // Used for OpenMM acceleration
     bool                    usingOpenMM;
@@ -2196,6 +2391,12 @@ public:
     CacheEntryIndex         inclAtomForceCacheIndex;
     CacheEntryIndex         inclBodyForceCacheIndex;
     CacheEntryIndex         energyCacheIndex;
+
+    // GMolModel
+    CacheEntryIndex         AllAtomStationCacheIndex;
+    CacheEntryIndex         AllAtomPositionCacheIndex;
+
+
 };
 
 

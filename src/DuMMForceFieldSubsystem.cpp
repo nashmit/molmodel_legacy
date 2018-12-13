@@ -2399,3 +2399,19 @@ void DuMMForceFieldSubsystem::populateFromTinkerParameterFile(std::istream& tink
 
 }
 
+
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//		        GMOLMODEL - EXTRA FUNCTIONALITIES
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+
+Real DuMMForceFieldSubsystem::
+CalcFullPotEnergyIncludingRigidBodies ( const State& state ) const {
+    static const char* MethodName = "CalcFullPotEnergyIncludingRigidBodies";
+    SimTK_STAGECHECK_TOPOLOGY_REALIZED_ALWAYS(subsystemTopologyHasBeenRealized(),
+                                              MethodName, "Subsystem", "DuMMForceFieldSubsystem");
+    return getRep().CalcFullPotEnergyIncludingRigidBodiesRep( state );
+}
