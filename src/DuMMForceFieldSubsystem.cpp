@@ -1673,6 +1673,25 @@ void DuMMForceFieldSubsystem::bsetAtomStationOnBody(DuMM::AtomIndex atomIndex, V
     a.station_B = new_station_B;
 }
 
+/// Set the station at which a particular atom is fixed on its body. 
+/// An exception will be thrown if this atom is not fixed to any body.
+void DuMMForceFieldSubsystem::bsetAllAtomStationOnBody(DuMM::AtomIndex atomIndex, Vec3 new_station_B){
+    static const char* MethodName = "getAtomStationOnBody";
+    DuMMForceFieldSubsystemRep& mm = updRep();
+
+        // Make sure we've seen this atom before.
+    SimTK_APIARGCHECK1_ALWAYS(mm.isValidAtom(atomIndex), mm.ApiClassName, MethodName,
+        "atom %d is not valid", (int) atomIndex);
+
+    DuMMAtom& a = mm.updAtom(atomIndex);
+
+        // Atom must be attached to a body.
+    SimTK_APIARGCHECK1_ALWAYS(a.isAttachedToBody(), mm.ApiClassName, MethodName,
+        "atom %d is not attached to a body", (int) atomIndex);
+
+    a.station_B_All = new_station_B;
+}
+
 // Atom placements in clusters used in realizeSubsytemTopology
 void DuMMForceFieldSubsystem::bsetAtomPlacementStation(DuMM::AtomIndex atomIndex, MobilizedBodyIndex inputMbx, Vec3 new_station){
   DuMMForceFieldSubsystemRep& mm = updRep();
@@ -1724,6 +1743,24 @@ Vec3& DuMMForceFieldSubsystem::updIncludedAtomStation(DuMM::AtomIndex atomIndex)
       "atom %d is not attached to a body", (int) atomIndex);
 
     return mm.updIncludedAtomStation(a.inclAtomIndex);
+}
+
+// Stations computed every time - CalcFullPotential
+Vec3& DuMMForceFieldSubsystem::updAllAtomStation(DuMM::AtomIndex atomIndex){
+    static const char* MethodName = "getAtomStationOnBody";
+    DuMMForceFieldSubsystemRep& mm = updRep();
+
+    // Make sure we've seen this atom before.
+    SimTK_APIARGCHECK1_ALWAYS(mm.isValidAtom(atomIndex), mm.ApiClassName, MethodName,
+      "atom %d is not valid", (int) atomIndex);
+
+    DuMMAtom& a = mm.updAtom(atomIndex);
+
+    // Atom must be attached to a body.
+    SimTK_APIARGCHECK1_ALWAYS(a.isAttachedToBody(), mm.ApiClassName, MethodName,
+      "atom %d is not attached to a body", (int) atomIndex);
+
+    return mm.updAllAtomStation(a.inclAtomIndex);
 }
 
 // Get ClusterIndex corresponding to specified Mobod

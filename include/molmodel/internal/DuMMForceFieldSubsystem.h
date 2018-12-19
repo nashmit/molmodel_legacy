@@ -371,11 +371,17 @@ Vec3 getAtomStationOnBody(DuMM::AtomIndex atomIx) const;
 /// An exception will be thrown if this atom is not fixed to any body.
 void bsetAtomStationOnBody(DuMM::AtomIndex atomIx, Vec3 new_station_B);
 
+// For CalcFullPotential Eliza
+void bsetAllAtomStationOnBody(DuMM::AtomIndex atomIx, Vec3 new_station_B);
+
 /// Set AtomPlacement station coressponding to DuMMAtom atomIx 
 void bsetAtomPlacementStation(DuMM::AtomIndex atomIx, MobilizedBodyIndex inputMbx, Vec3 new_station);
 
 // Stations computed every time
 Vec3& updIncludedAtomStation(DuMM::AtomIndex atomIx);
+
+// For CalcFullPotential Eliza
+Vec3& updAllAtomStation(DuMM::AtomIndex atomIx);
 
 // Get clusterIndex of a specified mobod
 DuMM::ClusterIndex bgetMobodClusterIndex(MobilizedBodyIndex inputMbx) const;
