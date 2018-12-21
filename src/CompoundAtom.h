@@ -186,6 +186,21 @@ public:
         return *this;
     }
 
+///* GMolModel Try other Mobilizers
+    // This method does not set default values of Q
+    Bond& setCylinderBody(MobilizedBody::Cylinder& cyl) 
+    {
+        pinJointId = cyl.getMobilizedBodyIndex();
+
+        //cyl.setDefaultAngle(defaultDihedral); No function found
+        //SimTK::Transform cylX_FM(SimTK::Rotation(defaultDihedral, SimTK::ZAxis),
+        //     SimTK::Vec3(0, 0, defaultLength));
+        //cyl.setQToFitTransform(state, cylX_FM);
+
+        return *this;
+    }
+// GMolModel */
+
     Bond& setRiboseBody(MobilizedBody::FunctionBased& pin) 
     {
         pinJointId = pin.getMobilizedBodyIndex();

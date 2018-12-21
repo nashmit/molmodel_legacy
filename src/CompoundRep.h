@@ -760,6 +760,25 @@ public:
 
 // EU END
 
+///* GMolModel Try other Mobilizers
+  mdunits::Length bgetDefaultInboardBondLength(Compound::AtomIndex atomIx) const 
+  {
+      // Get atom
+      const CompoundAtom& atom = getAtom(atomIx);
+
+      // Get inboard bond index (in Compound not in Atom)
+      CompoundAtom::BondCenterIndex inboardBondCenterIx = atom.getInboardBondCenterIndex();
+      const BondCenterInfo& inboardBondCenterInfo = getBondCenterInfo(atomIx, inboardBondCenterIx);
+      Compound::BondIndex inboardBondIndex = inboardBondCenterInfo.getBondIndex();
+      //const BondInfo& inboardBondInfo = getBondInfo((getBondCenterInfo(atomIx, (atom.getInboardBondCenterIndex()))).getBondIndex());
+
+      // Get the inboard bond
+      const BondInfo& inboardBondInfo = getBondInfo(inboardBondIndex);
+      const Bond& inboardBond = getBond(inboardBondInfo);
+      return inboardBond.getDefaultBondLength();
+  }
+// GMolmodel END */
+
     Angle calcDefaultDihedralAngle(const String& dihedralName) const 
     {
         assert( dihedralAnglesByName.find(dihedralName) != dihedralAnglesByName.end() );

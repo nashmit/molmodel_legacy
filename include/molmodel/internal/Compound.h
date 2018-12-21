@@ -616,6 +616,9 @@ public:
    // EU BEGIN
    Angle bgetDefaultDihedralAngle(Compound::BondIndex bondIx) const;
    Angle bgetDefaultInboardDihedralAngle(Compound::AtomIndex atomIx) const;
+   ///* GMolModel Try other Mobilizers
+   mdunits::Length bgetDefaultInboardBondLength(Compound::AtomIndex atomIx) const;
+   // GMolModel END */
    const Transform& getFrameInMobilizedBodyFrame(Compound::AtomIndex atomIx) const;
    const Transform& bgetLocalTransform(Compound::AtomIndex atomIx) const;
    Compound& bsetFrameInMobilizedBodyFrame(Compound::AtomIndex atomIx, Transform);
