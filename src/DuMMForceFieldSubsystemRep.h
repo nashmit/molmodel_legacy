@@ -1516,6 +1516,9 @@ public:
             addCluster(Cluster("free atoms and groups"));
         SimTK_ASSERT_ALWAYS(gid==0, 
             "Free atoms and groups cluster should have been the first one.");
+
+        internalListsRealized = false; // EU
+
     }
 
     ~DuMMForceFieldSubsystemRep() {
@@ -1841,6 +1844,10 @@ public:
 
     // Figure out the molecular topology and how the atoms are mapped
     // onto bodies.
+    // EU BEGIN
+    //void markInternalListsRealized(void);
+    int realizeInternalLists(State& s) const;
+    // EU END
     int realizeSubsystemTopologyImpl(State& s) const;
 
     int realizeSubsystemModelImpl(State& s) const {
@@ -2395,6 +2402,7 @@ public:
     // GMolModel
     CacheEntryIndex         AllAtomStationCacheIndex;
     CacheEntryIndex         AllAtomPositionCacheIndex;
+    bool internalListsRealized; // EU
 
 
 };

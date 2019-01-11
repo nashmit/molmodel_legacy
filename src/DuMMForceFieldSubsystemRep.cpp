@@ -122,6 +122,28 @@ DuMMForceFieldSubsystemRep::getAmberImproperTorsion
 //------------------------------------------------------------------------------
 //                             REALIZE TOPOLOGY
 //------------------------------------------------------------------------------
+// EU BEGIN
+//void DuMMForceFieldSubsystemRep::markInternalListsRealized(void)
+//{
+//    internalListsRealized = true;
+//}
+
+int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
+{
+    //DuMMForceFieldSubsystemRep* mutableThis =
+    //    const_cast<DuMMForceFieldSubsystemRep*>(this);
+
+    if(internalListsRealized){
+        //int realizeInternalListsResult = realizeInternalLists(s);
+        //return realizeInternalListsResult;
+        // Take whatever is needed from realizeInternalLists
+        // e.g. calcMassProperties
+    }else{
+        int realizeInternalListsResult = realizeInternalLists(s);
+        return realizeInternalListsResult;
+    }
+}
+// EU END
 
 // This class is used locally in realizeSubsystemTopologyImpl() below to
 // temporarily accumulate for each atom lists of relevant bonded connections
@@ -167,7 +189,11 @@ struct CrossBodyBondInfo {
 // calculations. Here we precalculate everything we can that derives from these
 // parameters and write it to the Topology-stage cache; i.e. write-once
 // data members of this object.
-int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
+// EU RESTORE
+//int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
+// EU BEGIN
+int DuMMForceFieldSubsystemRep::realizeInternalLists(State& s) const
+// EU END
 {
 
 	auto start = std::chrono::system_clock::now();
@@ -1481,6 +1507,7 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
     mutableThis->energyCacheIndex = allocateCacheEntry
        (s, Stage::Position, Stage::Dynamics, new Value<Real>());
 
+    mutableThis->internalListsRealized = true;
 
 auto end = std::chrono::system_clock::now();
 std::chrono::duration<double> diff = end-start;
@@ -1501,14 +1528,20 @@ std::chrono::duration<double> diff = end-start;
 // Cost is 18 flops per atom plus bookkeeping.
 int DuMMForceFieldSubsystemRep::
 realizeSubsystemPositionImpl(const State& s) const {
+    std::cout << "Started realizeSubsystemPositionImpl" << std::endl << std::flush; // EU DEBUG
     const MultibodySystem&        mbs    = getMultibodySystem();
     const SimbodyMatterSubsystem& matter = mbs.getMatterSubsystem();
 
+    std::cout << "Got mbs and matter" << std::endl << std::flush; // EU DEBUG
     Vector_<Vec3>& inclAtomStation_G = updIncludedAtomStationCache(s);
+    std::cout << "updIncludedAtomStationCache" << std::endl << std::flush; // EU DEBUG
     Vector_<Vec3>& inclAtomPos_G     = updIncludedAtomPositionCache(s);
+    std::cout << "updIncludedAtomPositionCache" << std::endl << std::flush; // EU DEBUG
 
     inclAtomStation_G.resize(getNumIncludedAtoms());
+    std::cout << "inclAtomStation_G" << std::endl << std::flush; // EU DEBUG
     inclAtomPos_G.resize(getNumIncludedAtoms());
+    std::cout << "inclAtomPos_G" << std::endl << std::flush; // EU DEBUG
 
     for (DuMMIncludedBodyIndex dbx(0); dbx < includedBodies.size(); ++dbx) {
         const IncludedBody&      inclBod = includedBodies[dbx];
