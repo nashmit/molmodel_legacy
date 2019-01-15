@@ -115,36 +115,6 @@ DuMMForceFieldSubsystemRep::getAmberImproperTorsion
 
 
 
-
-
-
-
-//------------------------------------------------------------------------------
-//                             REALIZE TOPOLOGY
-//------------------------------------------------------------------------------
-// EU BEGIN
-//void DuMMForceFieldSubsystemRep::markInternalListsRealized(void)
-//{
-//    internalListsRealized = true;
-//}
-
-int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
-{
-    //DuMMForceFieldSubsystemRep* mutableThis =
-    //    const_cast<DuMMForceFieldSubsystemRep*>(this);
-
-    if(internalListsRealized){
-        //int realizeInternalListsResult = realizeInternalLists(s);
-        //return realizeInternalListsResult;
-        // Take whatever is needed from realizeInternalLists
-        // e.g. calcMassProperties
-    }else{
-        int realizeInternalListsResult = realizeInternalLists(s);
-        return realizeInternalListsResult;
-    }
-}
-// EU END
-
 // This class is used locally in realizeSubsystemTopologyImpl() below to
 // temporarily accumulate for each atom lists of relevant bonded connections
 // that include atoms from at least two bodies, so that forces applied by
@@ -184,6 +154,1354 @@ struct CrossBodyBondInfo {
 
 };
 
+
+//------------------------------------------------------------------------------
+//                             REALIZE TOPOLOGY
+//------------------------------------------------------------------------------
+// EU BEGIN
+//void DuMMForceFieldSubsystemRep::markInternalListsRealized(void)
+//{
+//    internalListsRealized = true;
+//}
+
+int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
+{
+    if(internalListsRealized){
+        //int realizeInternalListsResult = realizeInternalLists(s);
+        //return realizeInternalListsResult;
+        // Take whatever is needed from realizeInternalLists
+        // e.g. calcMassProperties
+
+	auto start = std::chrono::system_clock::now();
+
+        std::cout << "DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl BEGIN" << std::endl;
+        // At realization time, we need to verify that every atom has a valid atom
+        // class id. TODO: should apply only to included atoms.
+        for (DuMM::AtomIndex anum(0); anum < atoms.size(); ++anum) {
+            if (!isValidChargedAtomType(atoms[anum].chargedAtomTypeIndex)) {
+                throw Exception::Base("Atom must have valid charged atom type before realizing topology");
+            }
+        }
+    
+        // We need to write once onto the 'cache' portion of the object once
+        // the topology is known.
+        DuMMForceFieldSubsystemRep* mutableThis =
+            const_cast<DuMMForceFieldSubsystemRep*>(this);
+    
+        mutableThis->invalidateNecTopologicalCacheEntries();
+    
+            // force field
+/* 1    
+        // Calculate effective van der Waals parameters for all pairs of atom
+        // classes. We only fill in the diagonal and upper triangle; that is, each
+        // class contains parameters for like classes and all classes whose
+        // (arbitrary) class number is higher.
+        for (DuMM::AtomClassIndex i(0); i < atomClasses.size(); ++i) {
+            if (!atomClasses[i].isValid()) continue;
+            if (!atomClasses[i].isComplete()) continue;
+    
+            AtomClass& iclass = mutableThis->atomClasses[i];
+            iclass.vdwDij.resize((int)atomClasses.size()-i, NaN);
+            iclass.vdwEij.resize((int)atomClasses.size()-i, NaN);
+            for (DuMM::AtomClassIndex j=i; j < atomClasses.size(); ++j) {
+                const AtomClass& jclass = atomClasses[j];
+                if (jclass.isValid() && jclass.isComplete())
+                    applyMixingRule(iclass.vdwRadius,    jclass.vdwRadius,
+                                    iclass.vdwWellDepth, jclass.vdwWellDepth,
+                                    iclass.vdwDij[j-i],  iclass.vdwEij[j-i]);
+            }
+        }
+ 1 */    
+            // molecule
+    
+/* 2    
+        // Process clusters & bodies (bodies are treated as top-level clusters)
+        // We process clusters recursively, so we need to allow the clusters
+        // writable access to the main DuMM object (i.e., "this").
+        for (DuMM::ClusterIndex cnum(0); cnum < clusters.size(); ++cnum) {
+            Cluster& c = mutableThis->clusters[cnum];
+            assert(c.isValid()); // Shouldn't be any unused cluster numbers.
+            c.realizeTopologicalCache(*mutableThis);
+        }
+ 2 */
+/* 3    
+        // Bodies, on the other hand, are always top level clusters and the
+        // calculation here assumes that all the clusters have been processed.
+        // Thus bodies need only read access to the main DuMM object,
+        // although we're passing the mutable one in so we can use the
+        // same routine (TODO).
+        for (DuMMBodyIndex bnum(0); bnum < duMMSubsetOfBodies.size(); ++bnum) {
+            DuMMBody& b = mutableThis->duMMSubsetOfBodies[bnum];
+            if (!b.isValid())
+                continue; // OK for these to be unused.
+            b.realizeTopologicalCache(*mutableThis);
+        }
+ 3 */    
+        // Assign body & station to every atom that has been assigned to a body.
+        // At the same time we can determine whether each atom will be involved
+        // in nonbond force calculations. We hold off making assignments of nonbond
+        // and included atom indices because we're going to hand them out in
+        // order of included bodies in the hope of getting nicer memory cache
+        // behavior at run time, when we'll be processing atoms in body order.
+        // We can't know all the included bodies until we're done with both nonbond
+        // and bonded processing so index assignments come last.
+    
+        // Construct a local set that will eventually contain all the mobilized
+        // bodies that have any included atom attached. We'll also mark atoms as
+        // included or nonbonded as we process them.
+    
+        std::set<MobilizedBodyIndex> allIncludedMobods;
+    
+    // for GMolModel
+        std::set<MobilizedBodyIndex> allAllMobods;
+    
+///* 4   
+        for (DuMMBodyIndex bnum(0); bnum < duMMSubsetOfBodies.size(); ++bnum) {
+            const DuMMBody& b = duMMSubsetOfBodies[bnum];
+            if (!b.isValid())
+                continue;   // Unused body numbers are OK.
+            const MobodIndex mbx = b.getMobilizedBodyIndex();
+            const Cluster& cluster = getCluster(b.getClusterIndex());
+            for (AtomPlacementSet::const_iterator
+                 app = cluster.getAllContainedAtoms().begin();
+                 app != cluster.getAllContainedAtoms().end();
+                 ++app)
+            {
+                const AtomPlacement& ap = *app; assert(ap.isValid());
+                DuMMAtom& a = mutableThis->atoms[ap.atomIndex]; assert(a.isValid());
+                assert(!a.isAttachedToBody()); // Can only be on one body!!
+                a.attachToBody(mbx, ap.station);
+    
+                if (inclList.useDefaultNonbondList
+                 || inclList.isNonbondBody(mbx)
+                 || inclList.isNonbondAtom(ap.atomIndex))
+                {
+                    allIncludedMobods.insert(mbx);
+    	
+                    // These will be replaced by the actual assignments later.
+                    a.inclAtomIndex    = DuMM::IncludedAtomIndex(1); // mark "included"
+                    a.nonbondAtomIndex = DuMM::NonbondAtomIndex(1);  // mark "nonbond"
+    
+                }
+    
+    	    // for GMolModel
+    	    allAllMobods.insert(mbx);
+    	    a.AllAtomIndex    = DuMM::IncludedAtomIndex(1); // mark "All"
+    	    a.AllnonbondAtomIndex = DuMM::NonbondAtomIndex(1);  // mark "All nonbond"
+    
+            }
+        }
+// 4 */
+
+        for (DuMM::AtomIndex ax(0); ax < atoms.size(); ++ax) {
+            const DuMMAtom& a = getAtom(ax);
+            assert(a.isAttachedToBody()); // TODO catch unassigned atoms
+        }
+    
+        //------- Process bonds -------
+        // Now we're going to look at each atom again and find all interesting
+        // bonded connections for which an atom serves as atom 1 in a 1-2, 1-2-3,
+        // 1-2-3-4, 1-2-3-4-5 sequence or 2-3-1-4 improper torsion term. These
+        // connections may be used for two purposes: generation of bonded forces,
+        // and scaling of nearby atoms when performing nonbond calculations.
+        // Normally we are only interested in bonds that cross bodies; neither
+        // bonded nor nonbonded forces are interesting if they involve only atoms
+        // from the same body.
+        //
+        // There are several subtleties here. Bonded force terms are generated
+        // for *all* possible connections between atoms, while scaling is
+        // based only on the *shortest* possible connection. So if atoms A and B are
+        // connected both directly by bond A-B and torsion A-c-d-B we want to
+        // include both for force terms, but when we're processing atom A's nonbond
+        // interactions B should be scaled based only on the 1-2 connection.
+        // So we construct separate lists for all bonds and shortest bonds only,
+        // using the former for forces and the latter for scaling.
+        //
+        // We don't know yet which bonds we're going to keep. For scaling, we
+        // only need those shortest, cross-body connections for which our
+        // atom 1 is a nonbond atom and so is the atom at the other end of
+        // the bonded connection, that is both 1-2, 1-3, 1-4, or 1-5 atoms are
+        // nonbond atoms (and we just determined above which atoms are nonbond).
+        // So we don't need to compute shortest connections lists at all for an
+        // atom that isn't involved in nonbond calculations.
+        //
+        // For bond force connections, we need keep only those cross-body bonds
+        // which have been designated as included by one of the following
+        // conditions:
+        //    - any one if the bond's atoms has been marked as one all of whose
+        //      bonds are to be included
+        //    - any pair of atoms in the bond has been marked as a pair all of
+        //      whose bonded interactions are to be included (these might not be
+        //      adjacent in the bonded sequence)
+        //    - similar conditions for the bodies to which the atoms are attached
+        // Note that this can drag in more atoms than were explicitly included.
+        // For example say we have 1-2-3-4 torsion bond. If only atom 3 has been
+        // designated "include my bonds", then atoms 1,2, and 4 also become
+        // included, though only for the purpose of bonds including atom 3.
+        //
+        // Finally, any of the sequences 1-2 through 1-...-5 will come up twice,
+        // once when we process the first atom and once for the last. We don't
+        // want to double-count so we only keep the one in which the atom index
+        // of the first atom is smaller than the atom index of the last atom.
+        // (This does not apply to improper torsions.)
+        //
+        // After having decided which bonds to keep for atom i, if there are
+        // any remaining for which atom i serves as atom 1 then we add i to
+        // the list of bondStartAtoms; those are the only atoms for which we
+        // need to do bond processing.
+    
+    
+        // This is a group of lists which identify atoms nearby in the molecule's
+        // bond structure. Each atom's bond12 list already contains the directly
+        // bonded (1-2) atoms; the 13 list below has the 1-(2)-3 bonded atoms (that
+        // is, it includes the path to the "3" atom), etc. The current Atom is
+        // always atom "1" so it isn't stored.
+        //
+        // Note that the shortPath and xshortPath arrays give the shortest path
+        // between two atoms, while the bond and xbond arrays give *all*
+        // connection paths, with bonds3Atoms giving at most one. Forces must
+        // be calculated for all paths between two atoms, but scaling is only
+        // done according to the shortest path.
+    
+        Array_<AtomIndexPair,  unsigned short>      bond13;
+        Array_<AtomIndexTriple,unsigned short>      bond14;
+        Array_<AtomIndexQuad,  unsigned short>      bond15;
+        Array_<AtomIndexPair,  unsigned short>      shortPath13;
+        Array_<AtomIndexTriple,unsigned short>      shortPath14;
+        Array_<AtomIndexQuad,  unsigned short>      shortPath15;
+    
+        // This will be invalid unless we find that the current atom is directly
+        // bonded to exactly three other atoms, in which case their atom indices
+        // will be stored here and isValid() will return true.
+        AtomIndexTriple                             bonds3Atoms;
+    
+        // This set is used to avoid duplicate paths in the shortestPath
+        // calculation.
+        std::set<DuMM::AtomIndex>                   allBondedSoFar;
+    
+        // We have to save these for each atom during a first pass, then
+        // we'll use them to fill in the per-atom bond force and scaling
+        // arrays in a second pass where the included atom indices are known.
+        Array_<CrossBodyBondInfo, DuMM::AtomIndex>  crossBodyBondInfo(atoms.size());
+    
+        // need to chase bonds to fill in the bonded data
+        // Be sure to distinguish the *shortest* path between two atoms from
+        // the set of all paths between atoms.
+        for (DuMM::AtomIndex anum(0); anum < atoms.size(); ++anum) {
+            DuMMAtom&          a = mutableThis->atoms[anum];
+            CrossBodyBondInfo& x = crossBodyBondInfo[anum];
+    
+            // Make sure all the reusable temporary lists defined above are
+            // cleared before their first use for the current atom a.
+    
+            // Only the bond12 list has been filled in so far. We'll sort
+            // all the lists when they're done for good hygiene.
+            std::sort(a.bond12.begin(), a.bond12.end());
+    
+            allBondedSoFar.clear();
+            // Add this atom and its direct (1-2) bonds to the list of all bonded
+            // atoms.
+            allBondedSoFar.insert(anum);
+            allBondedSoFar.insert(a.bond12.begin(), a.bond12.end());
+    
+            // Find longer bond paths by building each list in turn from
+            // the direct bonds of the atoms in the previous list.
+    
+            // build the bond13 and shortPath13 lists
+            // - bond1x list gives *all* paths between bonded atoms where all the
+            // atoms are distinct (i.e., no fair retracing one of the bonds or
+            // running around a short loop to get back to the first atom again).
+            // - shortPath1x list gives *shortest* path between bonded atoms
+            bond13.clear();
+            shortPath13.clear();
+            for (int j=0; j < (int)a.bond12.size(); ++j) {
+                const DuMMAtom&       a12 = atoms[a.bond12[j]];
+                const ShortAtomArray& a12_12 = a12.bond12;
+                for (int k=0; k < (int)a12_12.size(); ++k) {
+                    const DuMM::AtomIndex newAtom = a12_12[k];
+                    assert(newAtom != a.bond12[j]);
+                    if (newAtom == anum)
+                        continue; // no loop backs!
+                    bond13.push_back(AtomIndexPair(a.bond12[j], newAtom));
+    
+                    // if no shorter path, note this short route
+                    if (allBondedSoFar.find(newAtom) == allBondedSoFar.end()) {
+                        allBondedSoFar.insert(newAtom);
+                        shortPath13.push_back(AtomIndexPair(a.bond12[j], newAtom));
+                    }
+                }
+            }
+            std::sort(bond13.begin(), bond13.end());
+            std::sort(shortPath13.begin(), shortPath13.end());
+    
+            // Randy was too big of a sissy to combine the bond14 and shortPath14
+            // computations! Or, discretion is sometimes the better part of valor.
+    
+            // build the bond14 list (all non-overlapping, non-looped paths)
+            bond14.clear();
+            for (int j=0; j < (int)bond13.size(); ++j) {
+                const DuMMAtom&       a13 = atoms[bond13[j][1]];
+                const ShortAtomArray& a13_12 = a13.bond12;
+                for (int k=0; k < (int)a13_12.size(); ++k) {
+                    const DuMM::AtomIndex newAtom = a13_12[k];
+                    assert(newAtom != bond13[j][1]);
+                    // avoid repeated atoms (loop back)
+                    if (newAtom!=anum && newAtom!=bond13[j][0]) {
+                        bond14.push_back(AtomIndexTriple(bond13[j][0],
+                                                     bond13[j][1], newAtom));
+                    }
+                }
+            }
+            std::sort(bond14.begin(), bond14.end());
+    
+            // build the shortPath14 list
+            shortPath14.clear();
+            for (int j=0; j < (int)shortPath13.size(); ++j) {
+                const DuMMAtom&       a13 = atoms[shortPath13[j][1]];
+                const ShortAtomArray& a13_12 = a13.bond12;
+                for (int k=0; k < (int)a13_12.size(); ++k) {
+                    const DuMM::AtomIndex newAtom = a13_12[k];
+    
+                     // check if there was already a shorter path
+                    if (allBondedSoFar.find(newAtom) == allBondedSoFar.end()) {
+                        allBondedSoFar.insert(newAtom);
+                        shortPath14.push_back(AtomIndexTriple(shortPath13[j][0],
+                                                    shortPath13[j][1], newAtom));
+                    }
+                }
+            }
+            std::sort(shortPath14.begin(), shortPath14.end());
+    
+    
+            // build the bond15 list
+            bond15.clear();
+            for (int j=0; j < (int)bond14.size(); ++j) {
+                const DuMMAtom&       a14    = atoms[bond14[j][2]];
+                const ShortAtomArray& a14_12 = a14.bond12;
+                for (int k=0; k < (int)a14_12.size(); ++k) {
+                    const DuMM::AtomIndex newAtom = a14_12[k];
+                    assert(newAtom != bond14[j][2]);
+    
+                    // avoid repeats and loop back
+                    if (newAtom!=anum && newAtom!=bond14[j][0] && newAtom!=bond14[j][1]) {
+                        bond15.push_back(AtomIndexQuad(bond14[j][0],
+                                                   bond14[j][1],
+                                                   bond14[j][2], newAtom));
+                    }
+                }
+            }
+            std::sort(bond15.begin(), bond15.end());
+    
+            // build the shortPath15 list
+            shortPath15.clear();
+            for (int j=0; j < (int)shortPath14.size(); ++j) {
+                const DuMMAtom&       a14    = atoms[shortPath14[j][2]];
+                const ShortAtomArray& a14_12 = a14.bond12;
+                for (int k=0; k < (int)a14_12.size(); ++k) {
+                    const DuMM::AtomIndex newAtom = a14_12[k];
+    
+                    // check if there was already a shorter path
+                    if (allBondedSoFar.find(newAtom) == allBondedSoFar.end()) {
+                        allBondedSoFar.insert(newAtom);
+                        shortPath15.push_back(AtomIndexQuad(shortPath14[j][0],
+                                                        shortPath14[j][1],
+                                                        shortPath14[j][2], newAtom));
+                    }
+                }
+            }
+            std::sort(shortPath15.begin(), shortPath15.end());
+    
+            // Find all atom that are connected to three (and only three) other
+            // atoms, then add all orderings of this to the improper torsion list.
+            bonds3Atoms.invalidate();
+            if (a.bond12.size() == 3) {
+                bonds3Atoms = AtomIndexTriple(a.bond12[0], a.bond12[1], a.bond12[2]);
+            }
+    
+            // Fill in the cross-body bond lists. We only keep bonds that involve
+            // atoms which are not all attached to the same body. Also, we throw
+            // away any bond sequences for which the atom index of atom 1 is
+            // greater than the atom index of the last atom. That prevents
+            // double counting since the bond sequence will show up in both orders
+            // eventually. (This doesn't apply to improper torsions.)
+    
+            // TODO: need a way to weed out cross-body bonded terms when the
+            // mobilities available prevent any use of that term. For example, if
+            // there is only a torsion dof between two bodies, and it is aligned
+            // with atoms A and B, then a bond stretch term between A and B
+            // can't do anything and shouldn't be kept on the list below.
+    
+            x.xbond12.clear(); x.xbond12All.clear();
+            for (int j=0; j < (int)a.bond12.size(); ++j) {
+                if (anum > a.bond12[j]) continue;
+                if (atoms[a.bond12[j]].mobodIx != a.mobodIx)
+                    x.xbond12.push_back(a.bond12[j]); 
+                x.xbond12All.push_back( a.bond12[j] );
+            }
+    
+            x.xbond13.clear(); x.xbond13All.clear();
+            for (int j=0; j < (int)bond13.size(); ++j) {
+                if (anum > bond13[j][1]) continue;
+                if (   atoms[bond13[j][0]].mobodIx != a.mobodIx
+                    || atoms[bond13[j][1]].mobodIx != a.mobodIx)
+                    x.xbond13.push_back(bond13[j]);
+                x.xbond13All.push_back( bond13[j] );
+            }
+    
+            x.xbond14.clear(); x.xbond14All.clear();
+            for (int j=0; j < (int)bond14.size(); ++j) {
+                if (anum > bond14[j][2]) continue;
+                if (   atoms[bond14[j][0]].mobodIx != a.mobodIx
+                    || atoms[bond14[j][1]].mobodIx != a.mobodIx
+                    || atoms[bond14[j][2]].mobodIx != a.mobodIx)
+                    x.xbond14.push_back(bond14[j]);
+                x.xbond14All.push_back( bond14[j] );
+            }
+    
+            x.xbond15.clear(); x.xbond15All.clear();
+            for (int j=0; j < (int)bond15.size(); ++j) {
+                if (anum > bond15[j][3]) continue;
+                if (   atoms[bond15[j][0]].mobodIx != a.mobodIx
+                    || atoms[bond15[j][1]].mobodIx != a.mobodIx
+                    || atoms[bond15[j][2]].mobodIx != a.mobodIx
+                    || atoms[bond15[j][3]].mobodIx != a.mobodIx)
+                    x.xbond15.push_back(bond15[j]);
+    	    x.xbond15All.push_back( bond15[j] );
+    
+            }
+    
+            x.xbonds3Atoms.invalidate(); x.xbonds3AtomsAll.invalidate();
+            // If there were exactly 3 bonds, and at least one of them is
+            // on a different body, then we win!
+            if (bonds3Atoms.isValid() &&
+                (   atoms[bonds3Atoms[0]].mobodIx != a.mobodIx
+                 || atoms[bonds3Atoms[1]].mobodIx != a.mobodIx
+                 || atoms[bonds3Atoms[2]].mobodIx != a.mobodIx))
+                x.xbonds3Atoms = bonds3Atoms;
+    	    if (bonds3Atoms.isValid())
+    	        x.xbonds3AtomsAll = bonds3Atoms;
+    
+    
+            // By default, or if this atom or its body are on the "must include"
+            // list then we have to keep all the cross-body bonds we just
+            // discovered. Otherwise, we only keep the ones for which some other
+            // atoms or bodies provides the necessity.
+            if (!(   inclList.useDefaultBondList
+                  || inclList.isBondAtom(anum)
+                  || inclList.isBondBody(a.mobodIx)))
+            {
+                for (int j=0; j < (int)x.xbond12.size();) {
+                    bool keep = false;
+                    const DuMM::AtomIndex bnum = x.xbond12[j];
+                    const MobodIndex      mbx  = atoms[bnum].mobodIx;
+                         if (inclList.isBondAtom(bnum)) keep=true;
+                    else if (inclList.isBondBody(mbx))  keep=true;
+                    else if (inclList.isBondAtomPair(anum, bnum))    keep=true;
+                    else if (inclList.isBondBodyPair(a.mobodIx, mbx)) keep=true;
+                    if (keep) ++j;
+                    else {
+    			x.xbond12.erase(&x.xbond12[j]); // don't increment j		
+    		    }
+                }
+    
+                for (int j=0; j < (int)x.xbond13.size();) {
+                    bool keep = false;
+                    for (int k=0; k < 2 && !keep; ++k) {
+                        const DuMM::AtomIndex bnum = x.xbond13[j][k];
+                        const MobodIndex      mbx  = atoms[bnum].mobodIx;
+                             if (inclList.isBondAtom(bnum)) keep=true;
+                        else if (inclList.isBondBody(mbx))  keep=true;
+                        else if (inclList.isBondAtomPair(anum, bnum))    keep=true;
+                        else if (inclList.isBondBodyPair(a.mobodIx, mbx)) keep=true;
+                        for (int c=k+1; c < 2 && !keep; ++c) {
+                            const DuMM::AtomIndex cnum = x.xbond13[j][c];
+                            const MobodIndex      mcx  = atoms[cnum].mobodIx;
+                                 if (inclList.isBondAtomPair(bnum, cnum)) keep=true;
+                            else if (inclList.isBondBodyPair(mbx, mcx))   keep=true;
+                        }
+                    }
+                    if (keep) ++j;
+                    else x.xbond13.erase(&x.xbond13[j]); // don't increment j
+                }
+    
+                for (int j=0; j < (int)x.xbond14.size();) {
+                    bool keep = false;
+                    for (int k=0; k < 3 && !keep; ++k) {
+                        const DuMM::AtomIndex bnum = x.xbond14[j][k];
+                        const MobodIndex      mbx  = atoms[bnum].mobodIx;
+                             if (inclList.isBondAtom(bnum)) keep=true;
+                        else if (inclList.isBondBody(mbx))  keep=true;
+                        else if (inclList.isBondAtomPair(anum, bnum))    keep=true;
+                        else if (inclList.isBondBodyPair(a.mobodIx, mbx)) keep=true;
+                        for (int c=k+1; c < 3 && !keep; ++c) {
+                            const DuMM::AtomIndex cnum = x.xbond14[j][c];
+                            const MobodIndex      mcx  = atoms[cnum].mobodIx;
+                                 if (inclList.isBondAtomPair(bnum, cnum)) keep=true;
+                            else if (inclList.isBondBodyPair(mbx, mcx))   keep=true;
+                        }
+                    }
+                    if (keep) ++j;
+                    else x.xbond14.erase(&x.xbond14[j]); // don't increment j
+                }
+    
+                for (int j=0; j < (int)x.xbond15.size();) {
+                    bool keep = false;
+                    for (int k=0; k < 4 && !keep; ++k) {
+                        const DuMM::AtomIndex bnum = x.xbond15[j][k];
+                        const MobodIndex      mbx  = atoms[bnum].mobodIx;
+                             if (inclList.isBondAtom(bnum)) keep=true;
+                        else if (inclList.isBondBody(mbx))  keep=true;
+                        else if (inclList.isBondAtomPair(anum, bnum))    keep=true;
+                        else if (inclList.isBondBodyPair(a.mobodIx, mbx)) keep=true;
+                        for (int c=k+1; c < 4 && !keep; ++c) {
+                            const DuMM::AtomIndex cnum = x.xbond15[j][c];
+                            const MobodIndex      mcx  = atoms[cnum].mobodIx;
+                                 if (inclList.isBondAtomPair(bnum, cnum)) keep=true;
+                            else if (inclList.isBondBodyPair(mbx, mcx))   keep=true;
+                        }
+                    }
+                    if (keep) ++j;
+                    else x.xbond15.erase(&x.xbond15[j]); // don't increment j
+                }
+    
+                if (x.xbonds3Atoms.isValid()) { // there is only one of these
+                    bool keep = false;
+                    for (int k=0; k < 3 && !keep; ++k) {
+                        const DuMM::AtomIndex bnum = x.xbonds3Atoms[k];
+                        const MobodIndex      mbx  = atoms[bnum].mobodIx;
+                             if (inclList.isBondAtom(bnum)) keep=true;
+                        else if (inclList.isBondBody(mbx))  keep=true;
+                        else if (inclList.isBondAtomPair(anum, bnum))    keep=true;
+                        else if (inclList.isBondBodyPair(a.mobodIx, mbx)) keep=true;
+                        for (int c=k+1; c < 3 && !keep; ++c) {
+                            const DuMM::AtomIndex cnum = x.xbonds3Atoms[c];
+                            const MobodIndex      mcx  = atoms[cnum].mobodIx;
+                                 if (inclList.isBondAtomPair(bnum, cnum)) keep=true;
+                            else if (inclList.isBondBodyPair(mbx, mcx))   keep=true;
+                        }
+                    }
+                    if (!keep) x.xbonds3Atoms.invalidate();
+                }
+            }
+    
+            // At this point the cross-body bond arrays contain only bonds that we
+            // are keeping. Every atom mentioned in any of the kept bonds should be
+            // made an included atom, and each of those atoms' mobilized bodies
+            // should be made an included body. The present atom "a" and its body
+            // are included if we kept any bonds at all, and we also note that
+            // atom "a" is a "bond starter" atom, that is, it serves as atom 1
+            // for some bond.
+            if (x.xbond12.size() || x.xbond13.size() || x.xbond14.size()
+             || x.xbond15.size() || x.xbonds3Atoms.isValid())
+            {
+                // We kept at least one bond.
+                a.inclAtomIndex = DuMM::IncludedAtomIndex(1); // just mark it
+                allIncludedMobods.insert(a.mobodIx);
+                a.bondStarterIndex = DuMMBondStarterIndex(1); // mark
+    
+                for (int j=0; j < (int)x.xbond12.size(); ++j) {
+                    DuMMAtom& b = mutableThis->atoms[x.xbond12[j]];
+                    b.inclAtomIndex = DuMM::IncludedAtomIndex(1);
+                    allIncludedMobods.insert(b.mobodIx);
+                }
+    
+                for (int j=0; j < (int)x.xbond13.size(); ++j)
+                    for (int k=0; k < 2; ++k) {
+                        DuMMAtom& b = mutableThis->atoms[x.xbond13[j][k]];
+                        b.inclAtomIndex = DuMM::IncludedAtomIndex(1);
+                        allIncludedMobods.insert(b.mobodIx);
+                    }
+    
+                for (int j=0; j < (int)x.xbond14.size(); ++j)
+                    for (int k=0; k < 3; ++k) {
+                        DuMMAtom& b = mutableThis->atoms[x.xbond14[j][k]];
+                        b.inclAtomIndex = DuMM::IncludedAtomIndex(1);
+                        allIncludedMobods.insert(b.mobodIx);
+                    }
+    
+                for (int j=0; j < (int)x.xbond15.size(); ++j)
+                    for (int k=0; k < 4; ++k) {
+                        DuMMAtom& b = mutableThis->atoms[x.xbond15[j][k]];
+                        b.inclAtomIndex = DuMM::IncludedAtomIndex(1);
+                        allIncludedMobods.insert(b.mobodIx);
+                    }
+    
+                if (x.xbonds3Atoms.isValid())
+                    for (int k=0; k < 3; ++k) {
+                        DuMMAtom& b = mutableThis->atoms[x.xbonds3Atoms[k]];
+                        b.inclAtomIndex = DuMM::IncludedAtomIndex(1);
+                        allIncludedMobods.insert(b.mobodIx);
+                    }
+            }
+    
+    
+    	    // Adding the same for GMolModel for All bonds.
+            a.AllAtomIndex = DuMM::IncludedAtomIndex(1); // just mark it
+            allAllMobods.insert(a.mobodIx);
+            a.AllbondStarterIndex = DuMMBondStarterIndex(1); // mark
+    
+    	    for (int j=0; j < (int)x.xbond12All.size(); ++j) {
+                    DuMMAtom& b = mutableThis->atoms[x.xbond12All[j]];
+                    b.AllAtomIndex = DuMM::IncludedAtomIndex(1);
+                    allAllMobods.insert(b.mobodIx);
+            	}
+    
+            for (int j=0; j < (int)x.xbond13All.size(); ++j)
+                    for (int k=0; k < 2; ++k) {
+                        DuMMAtom& b = mutableThis->atoms[x.xbond13All[j][k]];
+                        b.AllAtomIndex = DuMM::IncludedAtomIndex(1);
+                        allAllMobods.insert(b.mobodIx);
+            	}
+    
+            for (int j=0; j < (int)x.xbond14All.size(); ++j)
+                    for (int k=0; k < 3; ++k) {
+                        DuMMAtom& b = mutableThis->atoms[x.xbond14All[j][k]];
+                        b.AllAtomIndex = DuMM::IncludedAtomIndex(1);
+                        allAllMobods.insert(b.mobodIx);
+                    }
+    
+            for (int j=0; j < (int)x.xbond15All.size(); ++j)
+                    for (int k=0; k < 4; ++k) {
+                        DuMMAtom& b = mutableThis->atoms[x.xbond15All[j][k]];
+                        b.AllAtomIndex = DuMM::IncludedAtomIndex(1);
+                        allAllMobods.insert(b.mobodIx);
+                    }
+    
+            if (x.xbonds3AtomsAll.isValid())
+                    for (int k=0; k < 3; ++k) {
+                        DuMMAtom& b = mutableThis->atoms[x.xbonds3AtomsAll[k]];
+                        b.AllAtomIndex = DuMM::IncludedAtomIndex(1);
+                        allAllMobods.insert(b.mobodIx);
+                    }
+    
+    
+    
+    
+    
+            // Next we're going to work on the shortest-path interconnections
+            // that will be used for nonbond scaling. We'll include
+            // any shortest path connections that cross a body, provided that
+            // both the first (i.e. current atom "a") and last atom are nonbond
+            // atoms. Note that we want these bond paths to show up
+            // in both orders so that we can do nonbond scaling from either end.
+    
+            x.xshortPath12.clear(); x.xshortPath13.clear();
+            x.xshortPath14.clear(); x.xshortPath15.clear();
+    
+            x.xshortPath12All.clear(); x.xshortPath13All.clear();
+            x.xshortPath14All.clear(); x.xshortPath15All.clear();
+    
+            if (a.isNonbondAtom()) {
+                for (int j=0; j < (int)a.bond12.size(); ++j) {
+                    if (!atoms[a.bond12[j]].isNonbondAtom()) continue;
+                    if (atoms[a.bond12[j]].mobodIx != a.mobodIx)
+                        x.xshortPath12.push_back(a.bond12[j]);
+    		        x.xshortPath12All.push_back( a.bond12[j] );
+                }
+    
+                for (int j=0; j < (int)shortPath13.size(); ++j) {
+                    if (!atoms[shortPath13[j][1]].isNonbondAtom()) continue;
+                    if (   atoms[shortPath13[j][0]].mobodIx != a.mobodIx
+                        || atoms[shortPath13[j][1]].mobodIx != a.mobodIx)
+                        x.xshortPath13.push_back(shortPath13[j]);
+    	            x.xshortPath13All.push_back( shortPath13[j] );
+                }
+    
+    
+                for (int j=0; j < (int)shortPath14.size(); ++j) {
+                    if (!atoms[shortPath14[j][2]].isNonbondAtom()) continue;
+                    if (   atoms[shortPath14[j][0]].mobodIx != a.mobodIx
+                        || atoms[shortPath14[j][1]].mobodIx != a.mobodIx
+                        || atoms[shortPath14[j][2]].mobodIx != a.mobodIx)
+                        x.xshortPath14.push_back(shortPath14[j]);
+    	            x.xshortPath14All.push_back(shortPath14[j]);
+                }
+    
+                for (int j=0; j < (int)shortPath15.size(); ++j) {
+                    if (!atoms[shortPath15[j][3]].isNonbondAtom()) continue;
+                    if (   atoms[shortPath15[j][0]].mobodIx != a.mobodIx
+                        || atoms[shortPath15[j][1]].mobodIx != a.mobodIx
+                        || atoms[shortPath15[j][2]].mobodIx != a.mobodIx
+                        || atoms[shortPath15[j][3]].mobodIx != a.mobodIx)
+                        x.xshortPath15.push_back(shortPath15[j]);
+                    x.xshortPath15All.push_back(shortPath15[j]);
+                }
+            }
+        }
+    
+        // We have processed all the atoms and marked them included if they
+        // will appear in any nonbonded or bonded force calculation. The
+        // nonbond atoms have been separately marked. We have also created a
+        // set allIncludedMobods that contains the mobilized body index of
+        // every body that has at least one included atom attached to it.
+        // Now we want to build data structures suitable for high-speed
+        // processing at run time. We're going to run through the included bodies
+        // in order, look at the attached atoms, and assign included atom and
+        // nonbond atom indices in order so that they are grouped by included body.
+        // Then we can just keep (start,length) pairs with each included body
+        // to locate its subset of included, nonbond, and bondstart atoms.
+    
+      // Build a temporary map of included bodies to their included atoms.
+        std::map<MobodIndex, Array_<DuMM::AtomIndex> > inclBods2Atoms;
+        unsigned numIncludedAtoms = 0;
+        for (DuMM::AtomIndex ax(0); ax < atoms.size(); ++ax) {
+            const DuMMAtom& atom = atoms[ax];
+            if (!atom.isIncludedAtom()) continue;
+            assert(atom.isAttachedToBody());
+            inclBods2Atoms[atom.getMobodIndex()].push_back(ax);
+            ++numIncludedAtoms;
+        }
+    
+    
+      // same for GMolModel 
+        std::map<MobodIndex, Array_<DuMM::AtomIndex> > AllBods2Atoms;
+        unsigned numAllAtoms = 0;
+        for (DuMM::AtomIndex ax(0); ax < atoms.size(); ++ax) {
+            const DuMMAtom& atom = atoms[ax];
+            AllBods2Atoms[atom.getMobodIndex()].push_back(ax);
+            ++numAllAtoms;
+        }
+    
+    
+        SimTK_ASSERT_ALWAYS(inclBods2Atoms.size() == allIncludedMobods.size(),
+            "DuMMForceFieldSubsystem::realizeTopology(): inconsistent lists "
+            "of included bodies generated.");
+      
+        // Allocate with default construction the included bodies and included
+        // atoms arrays. We'll fill them in below.
+        mutableThis->includedBodies.resize((unsigned)allIncludedMobods.size());
+        mutableThis->includedAtoms.resize(numIncludedAtoms);
+        mutableThis->includedAtomStations.resize(numIncludedAtoms);
+    
+    
+    
+        DuMMIncludedBodyIndex   nextInclBodyIx(0);
+        DuMM::IncludedAtomIndex nextInclAtomIx(0);
+        for (std::set<MobodIndex>::const_iterator p = allIncludedMobods.begin();
+             p != allIncludedMobods.end(); ++p, ++nextInclBodyIx)
+        {
+            IncludedBody& inclBody = mutableThis->includedBodies[nextInclBodyIx];
+            inclBody.mobodIx = *p;
+            inclBody.beginIncludedAtoms    = inclBody.endIncludedAtoms =
+                DuMM::IncludedAtomIndex(nextInclAtomIx);
+            inclBody.beginNonbondAtoms     = inclBody.endNonbondAtoms =
+                DuMM::NonbondAtomIndex(nonbondAtoms.size());
+            inclBody.beginBondStarterAtoms = inclBody.endBondStarterAtoms =
+                DuMMBondStarterIndex(bondStarterAtoms.size());
+    
+            const Array_<DuMM::AtomIndex>& inclBodAtoms = inclBods2Atoms[*p];
+            for (unsigned i=0; i < inclBodAtoms.size(); ++i, ++nextInclAtomIx) {
+                DuMMAtom& a = mutableThis->atoms[inclBodAtoms[i]];
+                assert(a.atomIndex == inclBodAtoms[i]);
+                assert(a.inclAtomIndex.isValid()); // should have been marked "1"
+                a.inclAtomIndex = nextInclAtomIx;
+                a.inclBodyIndex = nextInclBodyIx;
+                IncludedAtom& ia = mutableThis->includedAtoms[nextInclAtomIx];
+                Vec3&         station_B = mutableThis->includedAtomStations[nextInclAtomIx];
+                ia.setIndices(a.inclAtomIndex, a.inclBodyIndex,
+                              a.atomIndex, a.chargedAtomTypeIndex);
+                station_B = a.station_B;
+                ++inclBody.endIncludedAtoms;
+                if (a.nonbondAtomIndex.isValid()) {
+                    a.nonbondAtomIndex = DuMM::NonbondAtomIndex(nonbondAtoms.size());
+                    mutableThis->nonbondAtoms.push_back(a.inclAtomIndex);
+                    ++inclBody.endNonbondAtoms;
+                }
+                if (a.bondStarterIndex.isValid()) {
+                    a.bondStarterIndex = DuMMBondStarterIndex(bondStarterAtoms.size());
+                    mutableThis->bondStarterAtoms.push_back(a.inclAtomIndex);
+                    ++inclBody.endBondStarterAtoms;
+                }
+            }
+    
+        }
+    
+    
+      // same for GMolModel
+        mutableThis->AllBodies.resize((unsigned)allAllMobods.size());
+        mutableThis->AllAtoms.resize(numAllAtoms);
+        mutableThis->AllAtomStations.resize(numAllAtoms);
+    
+        DuMMIncludedBodyIndex   nextAllBodyIx(0);
+        DuMM::IncludedAtomIndex nextAllAtomIx(0);
+        for (std::set<MobodIndex>::const_iterator p = allAllMobods.begin();
+             p != allAllMobods.end(); ++p, ++nextAllBodyIx)
+        {
+            IncludedBody& AllBody = mutableThis->AllBodies[nextAllBodyIx];
+            AllBody.mobodIx = *p;
+            AllBody.beginAllAtoms    = AllBody.endAllAtoms =
+                DuMM::IncludedAtomIndex(nextAllAtomIx);
+            AllBody.beginAllNonbondAtoms     = AllBody.endAllNonbondAtoms =
+                DuMM::NonbondAtomIndex(AllnonbondAtoms.size());
+            AllBody.beginAllBondStarterAtoms = AllBody.endAllBondStarterAtoms =
+                DuMMBondStarterIndex(AllbondStarterAtoms.size());
+    
+            const Array_<DuMM::AtomIndex>& AllBodAtoms = AllBods2Atoms[*p];
+            for (unsigned i=0; i < AllBodAtoms.size(); ++i, ++nextAllAtomIx) {
+                DuMMAtom& a = mutableThis->atoms[AllBodAtoms[i]];
+                assert(a.atomIndex == AllBodAtoms[i]);
+                assert(a.AllAtomIndex.isValid()); // should have been marked "1"
+                a.AllAtomIndex = nextAllAtomIx;
+                a.AllBodyIndex = nextAllBodyIx;
+    
+                IncludedAtom& ia = mutableThis->AllAtoms[nextAllAtomIx];
+    
+                Vec3&         station_B_All = mutableThis->AllAtomStations[nextAllAtomIx];
+                ia.setIndices(a.AllAtomIndex, a.AllBodyIndex,
+                              a.atomIndex, a.chargedAtomTypeIndex);
+                station_B_All = a.station_B;
+    
+                ++AllBody.endAllAtoms;
+    
+                if (a.AllnonbondAtomIndex.isValid()) {
+                    a.AllnonbondAtomIndex = DuMM::NonbondAtomIndex(AllnonbondAtoms.size());
+                    mutableThis->AllnonbondAtoms.push_back(a.AllAtomIndex);
+                    ++AllBody.endAllNonbondAtoms;
+    
+                }
+                if (a.AllbondStarterIndex.isValid()) {
+                    a.AllbondStarterIndex = DuMMBondStarterIndex(AllbondStarterAtoms.size());
+                    mutableThis->AllbondStarterAtoms.push_back(a.AllAtomIndex);
+                    ++AllBody.endAllBondStarterAtoms;
+                }
+            }
+    
+        }
+    
+    
+        // Now that included atom index assignments have been made, we can
+        // allocate the includedAtoms array and fill each IncludedAtom with
+        // bonded force arrays that use included atom indices rather than full
+        // atom indices. Similarly, we can create nonbond scaling arrays that
+        // use nonbond atom indices.
+    
+        for (DuMM::IncludedAtomIndex iax(0); iax < includedAtoms.size(); ++iax) {
+            const DuMM::AtomIndex ax = getAtomIndexOfIncludedAtom(iax);
+            const CrossBodyBondInfo& x = crossBodyBondInfo[ax]; // computed above
+            IncludedAtom& ia = mutableThis->updIncludedAtom(iax);
+    
+            ia.scale12.clear(); ia.scale13.clear();
+            ia.scale14.clear(); ia.scale15.clear();
+    
+            for (int j=0; j < (int)x.xshortPath12.size(); ++j) {
+                const DuMM::AtomIndex a2x = x.xshortPath12[j];
+                assert(atoms[a2x].nonbondAtomIndex.isValid());
+                ia.scale12.push_back(atoms[a2x].nonbondAtomIndex);
+            }
+            for (int j=0; j < (int)x.xshortPath13.size(); ++j) {
+                const DuMM::AtomIndex a3x = x.xshortPath13[j][1];
+                assert(atoms[a3x].nonbondAtomIndex.isValid());
+                ia.scale13.push_back(atoms[a3x].nonbondAtomIndex);
+            }
+            for (int j=0; j < (int)x.xshortPath14.size(); ++j) {
+                const DuMM::AtomIndex a4x = x.xshortPath14[j][2];
+                assert(atoms[a4x].nonbondAtomIndex.isValid());
+                ia.scale14.push_back(atoms[a4x].nonbondAtomIndex);
+            }
+            for (int j=0; j < (int)x.xshortPath15.size(); ++j) {
+                const DuMM::AtomIndex a4x = x.xshortPath15[j][3];
+                assert(atoms[a4x].nonbondAtomIndex.isValid());
+                ia.scale15.push_back(atoms[a4x].nonbondAtomIndex);
+            }
+    
+            const DuMM::AtomClassIndex c1 = getAtomClassIndex(ax);
+    
+            // Save a BondStretch entry for each cross-body 1-2 bond
+            ia.force12.resize(x.xbond12.size());
+            ia.stretch.resize(x.xbond12.size());
+    
+    
+            for (int b12=0; b12 < (int)x.xbond12.size(); ++b12) {
+                const DuMM::AtomIndex bx = x.xbond12[b12];
+                ia.force12[b12] = atoms[bx].inclAtomIndex;
+    
+                const DuMM::AtomClassIndex c2 = getAtomClassIndex(bx);
+                ia.stretch[b12] = getBondStretch(c1, c2);
+    
+                SimTK_REALIZECHECK2_ALWAYS(ia.stretch[b12],
+                    Stage::Topology, getMySubsystemIndex(), getName(),
+                    "Couldn't find bond stretch parameters for included "
+                    "cross-body atom class pair (%d,%d).", (int)c1, (int)c2);
+            }
+    
+            // Save a BondBend entry for each cross-body 1-3 bond
+            ia.force13.resize(x.xbond13.size());
+            ia.bend.resize(x.xbond13.size());
+    
+    
+            for (int b13=0; b13 < (int)x.xbond13.size(); ++b13) {
+                const AtomIndexPair& bx = x.xbond13[b13];
+                ia.force13[b13][0] = atoms[bx[0]].inclAtomIndex;
+                ia.force13[b13][1] = atoms[bx[1]].inclAtomIndex;
+    
+                const DuMM::AtomClassIndex c2 = getAtomClassIndex(bx[0]);
+                const DuMM::AtomClassIndex c3 = getAtomClassIndex(bx[1]);
+                ia.bend[b13] = getBondBend(c1, c2, c3);
+    
+                SimTK_REALIZECHECK3_ALWAYS(ia.bend[b13],
+                    Stage::Topology, getMySubsystemIndex(), getName(),
+                    "Couldn't find bond bend parameters for included "
+                    "cross-body atom class triple (%d,%d,%d).",
+                    (int)c1, (int)c2, (int)c3);
+            }
+    
+            // Save a BondTorsion entry for each cross-body 1-4 bond
+            ia.force14.resize(x.xbond14.size());
+            ia.torsion.resize(x.xbond14.size());
+    
+            for (int b14=0; b14 < (int)x.xbond14.size(); ++b14) {
+                const AtomIndexTriple& bx = x.xbond14[b14];
+                ia.force14[b14][0] = atoms[bx[0]].inclAtomIndex;
+                ia.force14[b14][1] = atoms[bx[1]].inclAtomIndex;
+                ia.force14[b14][2] = atoms[bx[2]].inclAtomIndex;
+    
+                const DuMM::AtomClassIndex c2 = getAtomClassIndex(bx[0]);
+                const DuMM::AtomClassIndex c3 = getAtomClassIndex(bx[1]);
+                const DuMM::AtomClassIndex c4 = getAtomClassIndex(bx[2]);
+                ia.torsion[b14] = getBondTorsion(c1, c2, c3, c4);
+    
+                SimTK_REALIZECHECK4_ALWAYS(ia.torsion[b14],
+                    Stage::Topology, getMySubsystemIndex(), getName(),
+                    "Couldn't find bond torsion parameters for included "
+                    "cross-body atom class quad (%d,%d,%d,%d).",
+                    (int)c1, (int)c2, (int)c3, (int)c4);
+            }
+    
+    
+            // Save *all* Amber improper torsion entries if this atom is bonded to
+            // three, and only three other atoms, *and* a matching Amber improper
+            // torsion term is found in the amberImproperTorsion array. Note that
+            // by convention, the center atom is in the third position. Also note
+            // that unlike Amber, which keeps only *one* match, we keep *all*.
+            // To correct for this we also scale my the total number of matches.
+            // This is how Tinker implements Amber's improper torsions.
+            ia.aImproperTorsion.clear();   // the BondTorsion term
+            ia.forceImproper14.clear(); // the other three atoms
+            if (x.xbonds3Atoms.isValid()) {
+                for (int i2=0; i2<3; i2++) {
+                    for (int i3=0; i3<3; i3++) {
+                        if (i3==i2) continue;
+                        for (int i4=0; i4<3; i4++) {
+                            if (i4==i2 || i4==i3) continue;
+                            const AtomIndexTriple bx(x.xbonds3Atoms[i2],
+                                                     x.xbonds3Atoms[i3],
+                                                     x.xbonds3Atoms[i4]);
+    
+                            // Not heap allocated; just a reference if non-null.
+                            const BondTorsion* bt = getAmberImproperTorsion(
+                                            getAtomClassIndex(bx[0]),
+                                            getAtomClassIndex(bx[1]),
+                                            c1,
+                                            getAtomClassIndex(bx[2]));
+                            if (bt) {
+                                ia.forceImproper14.push_back(IncludedAtomIndexTriple(
+                                                    atoms[bx[0]].inclAtomIndex,
+                                                    atoms[bx[1]].inclAtomIndex,
+                                                    atoms[bx[2]].inclAtomIndex));
+                                ia.aImproperTorsion.push_back(bt);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    
+    
+    
+    // GMolModel - Same for AllAtomIndex ....this can be optimised
+    
+        for (DuMM::IncludedAtomIndex iax(0); iax < AllAtoms.size(); ++iax) {
+            const DuMM::AtomIndex ax = getAtomIndexOfAllAtom(iax);
+            const CrossBodyBondInfo& x = crossBodyBondInfo[ax]; // computed above
+            IncludedAtom& ia = mutableThis->updAllAtom(iax);
+    
+            ia.scale12All.clear(); ia.scale13All.clear();
+            ia.scale14All.clear(); ia.scale15All.clear();
+    
+            for (int j=0; j < (int)x.xshortPath12All.size(); ++j) {
+                const DuMM::AtomIndex a2x = x.xshortPath12All[j];
+                assert(atoms[a2x].AllnonbondAtomIndex.isValid());
+                ia.scale12All.push_back(atoms[a2x].AllnonbondAtomIndex);
+            }
+            for (int j=0; j < (int)x.xshortPath13All.size(); ++j) {
+                const DuMM::AtomIndex a3x = x.xshortPath13All[j][1];
+                assert(atoms[a3x].AllnonbondAtomIndex.isValid());
+                ia.scale13All.push_back(atoms[a3x].AllnonbondAtomIndex);
+            }
+            for (int j=0; j < (int)x.xshortPath14All.size(); ++j) {
+                const DuMM::AtomIndex a4x = x.xshortPath14All[j][2];
+                assert(atoms[a4x].AllnonbondAtomIndex.isValid());
+                ia.scale14All.push_back(atoms[a4x].AllnonbondAtomIndex);
+            }
+            for (int j=0; j < (int)x.xshortPath15All.size(); ++j) {
+                const DuMM::AtomIndex a4x = x.xshortPath15All[j][3];
+                assert(atoms[a4x].AllnonbondAtomIndex.isValid());
+                ia.scale15All.push_back(atoms[a4x].AllnonbondAtomIndex);
+            }
+    
+    
+            const DuMM::AtomClassIndex c1 = getAtomClassIndex(ax);
+    
+            // Save a BondStretch entry for each cross-body 1-2 bond
+            ia.force12All.resize(x.xbond12All.size());
+            ia.stretchAll.resize(x.xbond12All.size());
+    
+            for (int b12=0; b12 < (int)x.xbond12All.size(); ++b12) {
+                const DuMM::AtomIndex bx = x.xbond12All[b12];
+                ia.force12All[b12] = atoms[bx].AllAtomIndex;
+    
+                const DuMM::AtomClassIndex c2 = getAtomClassIndex(bx);
+                ia.stretchAll[b12] = getBondStretch(c1, c2);
+            }
+    
+    
+    
+            // Save a BondBend entry for each cross-body 1-3 bond
+    
+            ia.force13All.resize(x.xbond13All.size());
+            ia.bendAll.resize(x.xbond13All.size());
+            for (int b13=0; b13 < (int)x.xbond13All.size(); ++b13) {
+                const AtomIndexPair& bx = x.xbond13All[b13];
+                ia.force13All[b13][0] = atoms[bx[0]].AllAtomIndex;
+                ia.force13All[b13][1] = atoms[bx[1]].AllAtomIndex;
+    
+                const DuMM::AtomClassIndex c2 = getAtomClassIndex(bx[0]);
+                const DuMM::AtomClassIndex c3 = getAtomClassIndex(bx[1]);
+                ia.bendAll[b13] = getBondBend(c1, c2, c3);
+            }
+    
+    
+            // Save a BondTorsion entry for each cross-body 1-4 bond
+            ia.force14All.resize(x.xbond14All.size());
+            ia.torsionAll.resize(x.xbond14All.size());
+            for (int b14=0; b14 < (int)x.xbond14All.size(); ++b14) {
+                const AtomIndexTriple& bx = x.xbond14All[b14];
+                ia.force14All[b14][0] = atoms[bx[0]].AllAtomIndex;
+                ia.force14All[b14][1] = atoms[bx[1]].AllAtomIndex;
+                ia.force14All[b14][2] = atoms[bx[2]].AllAtomIndex;
+    
+                const DuMM::AtomClassIndex c2 = getAtomClassIndex(bx[0]);
+                const DuMM::AtomClassIndex c3 = getAtomClassIndex(bx[1]);
+                const DuMM::AtomClassIndex c4 = getAtomClassIndex(bx[2]);
+                ia.torsionAll[b14] = getBondTorsion(c1, c2, c3, c4);
+            }
+    
+            ia.aImproperTorsionAll.clear();   // the BondTorsion term
+            ia.forceImproper14All.clear(); // the other three atoms
+            if (x.xbonds3AtomsAll.isValid()) {
+                for (int i2=0; i2<3; i2++) {
+                    for (int i3=0; i3<3; i3++) {
+                        if (i3==i2) continue;
+                        for (int i4=0; i4<3; i4++) {
+                            if (i4==i2 || i4==i3) continue;
+                            const AtomIndexTriple bx(x.xbonds3AtomsAll[i2],
+                                                     x.xbonds3AtomsAll[i3],
+                                                     x.xbonds3AtomsAll[i4]);
+    
+                            const BondTorsion* bt = getAmberImproperTorsion(
+                                            getAtomClassIndex(bx[0]),
+                                            getAtomClassIndex(bx[1]),
+                                            c1,
+                                            getAtomClassIndex(bx[2]));
+                            if (bt) {
+                                ia.forceImproper14All.push_back(IncludedAtomIndexTriple(
+                                                    atoms[bx[0]].AllAtomIndex,
+                                                    atoms[bx[1]].AllAtomIndex,
+                                                    atoms[bx[2]].AllAtomIndex));
+                                ia.aImproperTorsionAll.push_back(bt);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    
+    
+    
+            /////////////////////////////
+            // Fill in GBSA parameters //
+            /////////////////////////////
+    
+        if (gbsaGlobalScaleFactor != 0 && getNumNonbondAtoms()) {
+            // These parameters will be used either by our local GBSA implemention or
+            // by OpenMM's if we're using that. Note that we're working only with
+            // nonbond atoms so must refer to them by nonbond index rather than
+            // atom index or included atom index.
+            mutableThis->gbsaAtomicPartialCharges.resize(getNumNonbondAtoms());
+            mutableThis->gbsaAtomicNumbers.resize(getNumNonbondAtoms());
+            mutableThis->gbsaNumberOfCovalentBondPartners.resize(getNumNonbondAtoms());
+            mutableThis->atomicNumberOfHCovalentPartner.resize(getNumNonbondAtoms());
+    
+            for (DuMM::NonbondAtomIndex nbx(0); nbx < getNumNonbondAtoms(); ++nbx) {
+                const DuMMAtom& atom = getAtom(getAtomIndexOfNonbondAtom(nbx));
+                const ChargedAtomType& atype      = chargedAtomTypes[atom.chargedAtomTypeIndex];
+                const Real             charge     = atype.partialCharge;
+                const AtomClass&       aclass     = atomClasses[atype.atomClassIx];
+                const int              element    = aclass.element;
+    
+                mutableThis->gbsaAtomicPartialCharges[nbx]         = charge;
+                mutableThis->gbsaAtomicNumbers[nbx]                = element;
+                // Note that the number of covalent partners is topological information
+                // needed by GBSA to identify the right parameters to use for this atom;
+                // it does *not* depend on whether we're crossing bodies, or whether
+                // covalent partners are themselves nonbonded atoms.
+                mutableThis->gbsaNumberOfCovalentBondPartners[nbx] = atom.bond12.size();
+                // This is used only for hydrogens which will only have one bond.
+                mutableThis->atomicNumberOfHCovalentPartner[nbx] = -1;
+                if (atom.bond12.size()==1) {
+                    const DuMMAtom& partner = getAtom(atom.bond12[0]);
+                    const ChargedAtomType& ptype =
+                        chargedAtomTypes[partner.chargedAtomTypeIndex];
+                    const AtomClass& pclass = atomClasses[ptype.atomClassIx];
+                    mutableThis->atomicNumberOfHCovalentPartner[nbx] = pclass.element;
+                }
+            }
+    
+            // look up obc scale factor for each atom
+            mutableThis->gbsaObcScaleFactors.resize(getNumNonbondAtoms());
+            int returnValue = getObcScaleFactors(getNumNonbondAtoms(),
+                                                 &gbsaAtomicNumbers.front(),
+                                                 &mutableThis->gbsaObcScaleFactors.front());
+            SimTK_ASSERT_ALWAYS(returnValue == 0, "Couldn't get GBSA scale factors.");
+    
+            mutableThis->gbsaRadii.resize(getNumNonbondAtoms());
+            returnValue = getGbsaRadii(getNumNonbondAtoms(),
+                                       &gbsaAtomicNumbers.front(),
+                                       &gbsaNumberOfCovalentBondPartners.front(),
+                                       &atomicNumberOfHCovalentPartner.front(),
+                                       &mutableThis->gbsaRadii.front());
+            SimTK_ASSERT_ALWAYS(returnValue == 0, "Couldn't get GBSA input radii.");
+    
+            // Don't delete this object here.
+            ObcParameters* obcParameters =
+                new ObcParameters(getNumNonbondAtoms(), ObcParameters::ObcTypeII);
+            obcParameters->setScaledRadiusFactors( &gbsaObcScaleFactors.front() );
+            obcParameters->setAtomicRadii(&gbsaRadii.front(),
+                                          SimTKOpenMMCommon::KcalAngUnits);
+            obcParameters->setSolventDielectric(gbsaSolventDielectric);
+            obcParameters->setSoluteDielectric(gbsaSoluteDielectric);
+            mutableThis->gbsaCpuObc = new CpuObc(obcParameters); // CpuObc takes ownership of the parameters object
+            gbsaCpuObc->setIncludeAceApproximation((int)gbsaIncludeAceApproximation);
+    
+            // The cpu GBSA requires vectors of pointers to locations and forces.
+            // Allocate those now. Note that forces have to be zeroed each step.
+            gbsaRawCoordinates.resize(3 * getNumNonbondAtoms(), NaN); // [x,y,z,x,y,z,...], Angstrom(!) units
+            gbsaAtomicForces.resize  (3 * getNumNonbondAtoms(), NaN);
+            mutableThis->gbsaCoordinatePointers.resize (getNumNonbondAtoms()); // [&x0,&x1,&x2...]
+            mutableThis->gbsaAtomicForcePointers.resize(getNumNonbondAtoms()); // [&x0,&x1,&x2...]
+            // Load the pointers -- after this they don't change.
+            for (DuMM::NonbondAtomIndex a(0); a < getNumNonbondAtoms(); ++a) {
+                mutableThis->gbsaCoordinatePointers[a]  = &gbsaRawCoordinates[3*a];
+                mutableThis->gbsaAtomicForcePointers[a] = &gbsaAtomicForces[3*a];
+            }
+        }
+    
+            ///////////////////////////////////////////
+            // Initialize OpenMM if it is being used //
+            ///////////////////////////////////////////
+    
+        // OpenMM has to be enabled at run time to be used. And if
+        // all we can find is a slow reference implementation we still won't use it
+        // unless the reference platform has been explicitly allowed.
+    
+        // Using "while" here just so we can break out; this won't ever loop. If we
+        // decide to use OpenMM, the flag usingOpenMM will be set true.
+        mutableThis->usingOpenMM = false;
+        while (wantOpenMMAcceleration && getNumNonbondAtoms()) {
+            if (!mutableThis->openMMPlugin.load()) {
+                if (tracing)
+                    std::clog << "WARNING: DuMM: Failed to load OpenMM plugin with message: "
+                        << openMMPlugin.getLastErrorMessage() << std::endl;
+                break;
+            }
+    
+            if (tracing)
+                std::clog << "NOTE: DuMM: successfully loaded OpenMM plugin\n";
+    
+            if (!openMMPlugin.has_SimTK_createOpenMMPluginInterface()) {
+                if (tracing)
+                    std::clog
+                        << "WARNING: DuMM: OpenMM plugin "
+                        << openMMPlugin.getLoadedPathname()
+                        << " did not export required function SimTK_createOpenMMPluginInterface()"
+                        << " so can't be used.\n";
+                mutableThis->openMMPlugin.unload();
+                break;
+            }
+    
+            mutableThis->openMMPluginIfc = openMMPlugin.SimTK_createOpenMMPluginInterface(*this);
+            if (!openMMPluginIfc) {
+                if (tracing)
+                    std::clog << "WARNING: DuMM: Failed to get OpenMM interface from plugin.\n";
+                mutableThis->openMMPlugin.unload();
+                break;
+            }
+    
+            if (tracing) {
+                std::clog << "NOTE: DuMM: successfully obtained OpenMM interface from plugin.\n";
+                std::clog << "NOTE: DuMM: OpenMM plugin was built with Molmodel version "
+                    << openMMPluginIfc->getMolmodelVersion() << std::endl;
+            }
+    
+            std::vector<std::string> messages;
+            mutableThis->openMMPlatformInUse =
+                openMMPluginIfc->initializeOpenMM(allowOpenMMReference, messages);
+    
+            if (tracing)
+                for (unsigned i=0; i < messages.size(); ++i)
+                    std::clog << messages[i] << std::endl;
+    
+            if (openMMPlatformInUse.empty()) {
+                if (tracing)
+                    std::clog << "WARNING: DuMM: failed to initialize OpenMM\n";
+                delete mutableThis->openMMPluginIfc; mutableThis->openMMPluginIfc=0;
+                mutableThis->openMMPlugin.unload();
+                break;
+            }
+    
+            if (tracing)
+                std::clog << "NOTE: DuMM: using OpenMM platform '" << openMMPlatformInUse << "'\n";
+    
+            mutableThis->usingOpenMM = true;
+            break; // don't loop
+        }
+    
+        if (!usingOpenMM) {
+            // If the caller specified how many threads to use, even if only one,
+            // and says "useMultithreadedComputation" then we will use the
+            // multithreaded code.
+            const bool wantParallel =
+                useMultithreadedComputation
+                && (   numThreadsRequested > 0
+                    || ParallelExecutor::getNumProcessors() > 1);
+    
+            const bool anyNonbonded = getNumNonbondAtoms()
+                                      && (   coulombGlobalScaleFactor !=0
+                                          || vdwGlobalScaleFactor     !=0
+                                          || gbsaGlobalScaleFactor    !=0);
+    
+            if (wantParallel) {
+                mutableThis->usingMultithreaded = true;
+                if (!anyNonbonded) {
+                    mutableThis->usingMultithreaded = false;
+                    if (tracing)
+                        // EU BEGIN COMMENT
+                        std::clog << "NOTE: DuMM: not using multithreading because"
+                                     " there are no nonbonded or implicit solvent"
+                                     " terms to calculate.\n";
+    
+                }
+                // This will probably never happen.
+                if (ParallelExecutor::isWorkerThread()) {
+                    mutableThis->usingMultithreaded = false;
+                    if (tracing)
+                        // EU BEGIN COMMENT
+                        std::clog << "NOTE: DuMM: can't use multithreading because"
+                                     " the main thread is already a ParallelExecutor"
+                                     " worker thread.\n";
+                }
+            }
+        }
+    
+        // If we're not using openMM, but we are using multithreaded computation, create
+        // Parallel2DExecutors for parallelizing expensive force calculations.
+        mutableThis->numThreadsInUse = 1;
+        if (usingMultithreaded) {
+            const int numThreadsWanted = numThreadsRequested > 0
+                                ? numThreadsRequested
+                                : ParallelExecutor::getNumProcessors();
+            mutableThis->numThreadsInUse = std::min(numThreadsWanted,
+                                                    std::max(1, getNumNonbondAtoms()/2));
+    
+            if (tracing && (numThreadsInUse < numThreadsWanted))
+                std::clog << "NOTE: DuMM: reduced number of threads from "
+                          << numThreadsWanted << " to " << numThreadsInUse
+                          << " because there were only " << getNumNonbondAtoms()
+                          << " atoms included in nonbonded force calculations.\n";
+    
+            //mutableThis->executor = new ParallelExecutor(numThreadsInUse);
+    
+            if (tracing)
+                std::clog << "NOTE: DuMM: using multithreading code with "
+                          << numThreadsInUse << " threads.\n";
+    
+            mutableThis->nonbondedExecutor =
+                //new Parallel2DExecutor(includedBodies.size(), *executor);
+                new Parallel2DExecutor(includedBodies.size(), numThreadsInUse);
+            mutableThis->gbsaExecutor =
+                //new Parallel2DExecutor(getNumNonbondAtoms(), *executor);
+                new Parallel2DExecutor(getNumNonbondAtoms(), numThreadsInUse);
+    
+            // gmolmodel
+            mutableThis->NonbondedFullExecutor =
+                    new Parallel2DExecutor( AllBodies.size(), numThreadsInUse) ;
+        }
+    
+        if (!(usingOpenMM || usingMultithreaded)) {
+            if (tracing)
+                // EU BEGIN COMMENT
+                std::clog << "NOTE: DuMM: using single threaded code.\n";
+    
+    
+            // Using single threaded -- allocate global temporaries
+            vdwScaleSingleThread.resize(getNumNonbondAtoms(), Real(1));
+            coulombScaleSingleThread.resize(getNumNonbondAtoms(), Real(1));
+    
+        }
+    
+        //GMolModel
+        vdwScaleAllSingleThread.resize(getNumAllNonbondAtoms(), Real(1));
+        coulombScaleAllSingleThread.resize(getNumAllNonbondAtoms(), Real(1));
+    
+    
+        // Create cache entries for storing position info and forces for included
+        // atoms and included bodies.
+    
+        // Included atom position information is realized unconditionally when
+        // realizeSubsystemPosition() is called.
+        mutableThis->inclAtomStationCacheIndex  = allocateCacheEntry
+           (s, Stage::Position, new Value<Vector_<Vec3> >());
+        mutableThis->inclAtomPositionCacheIndex = allocateCacheEntry
+           (s, Stage::Position, new Value<Vector_<Vec3> >());
+    
+        // Included atom velocity information is "lazy evaluated" because it
+        // usually isn't need for anything. We'll realize it if someone
+        // asks for it.
+        mutableThis->inclAtomVelocityCacheIndex = allocateLazyCacheEntry
+           (s, Stage::Velocity, // no earlier than this stage
+            new Value<Vector_<Vec3> >()); // don't allocate yet
+    
+        // Forces and potential energy here can be calculated any time
+        // after Position stage has been realized, but we won't calculate
+        // them until Dynamics stage unless someone asks for them earlier.
+        mutableThis->inclAtomForceCacheIndex = allocateCacheEntry
+           (s, Stage::Position, Stage::Dynamics,
+            new Value<Vector_<Vec3> >());
+    
+        // Allocate cache entry to hold rigid body moments and forces
+        // on included bodies, resulting from the included atom forces above.
+        mutableThis->inclBodyForceCacheIndex  = allocateCacheEntry
+           (s, Stage::Position, Stage::Dynamics,
+            new Value<Vector_<SpatialVec> >());
+    
+        mutableThis->energyCacheIndex = allocateCacheEntry
+           (s, Stage::Position, Stage::Dynamics, new Value<Real>());
+    
+        mutableThis->internalListsRealized = true;
+    
+            std::cout << "DuMMForceFieldSubsystemRep::realizeInternalLists END" << std::endl;
+    auto end = std::chrono::system_clock::now();
+    std::chrono::duration<double> diff = end-start;
+    //TRACE (("Realize Topology took " + std::to_string(diff.count()) +  " s \n").c_str());
+                      
+        return 0;
+    }else{
+        int realizeInternalListsResult = realizeInternalLists(s);
+        return realizeInternalListsResult;
+    }
+}
+// EU END
+
 // All the force field and molecule parameters have been set, as well as
 // instructions regarding which atoms should be allowed to participate in force
 // calculations. Here we precalculate everything we can that derives from these
@@ -198,6 +1516,7 @@ int DuMMForceFieldSubsystemRep::realizeInternalLists(State& s) const
 
 	auto start = std::chrono::system_clock::now();
 
+        std::cout << "DuMMForceFieldSubsystemRep::realizeInternalLists BEGIN" << std::endl;
     // At realization time, we need to verify that every atom has a valid atom
     // class id. TODO: should apply only to included atoms.
     for (DuMM::AtomIndex anum(0); anum < atoms.size(); ++anum) {
@@ -1509,6 +2828,7 @@ int DuMMForceFieldSubsystemRep::realizeInternalLists(State& s) const
 
     mutableThis->internalListsRealized = true;
 
+        std::cout << "DuMMForceFieldSubsystemRep::realizeInternalLists END" << std::endl;
 auto end = std::chrono::system_clock::now();
 std::chrono::duration<double> diff = end-start;
 //TRACE (("Realize Topology took " + std::to_string(diff.count()) +  " s \n").c_str());

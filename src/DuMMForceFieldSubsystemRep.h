@@ -2007,6 +2007,70 @@ private:
         return duMMBodyIndex;
     }
 
+    // EU BEGIN
+    void invalidateNecTopologicalCacheEntries() {
+        // If any of these objects are invalid, the invalidateTopologicalCache()
+        // call does nothing (i.e., it doesn't blow up!).
+
+        // molecule
+///* 4
+        for (DuMM::AtomIndex i(0); i < atoms.size(); ++i)
+            atoms[i].invalidateTopologicalCache();
+// 4 */
+/* 2
+        for (DuMM::ClusterIndex i(0); i < clusters.size(); ++i)
+            clusters[i].invalidateTopologicalCache();
+ 2 */
+/* 3
+        for (DuMMBodyIndex i(0); i < duMMSubsetOfBodies.size(); ++i)
+            duMMSubsetOfBodies[i].invalidateTopologicalCache();
+ 3 */
+        // force field
+/* 1
+        for (DuMM::AtomClassIndex i(0); i < atomClasses.size(); ++i)
+            atomClasses[i].invalidateTopologicalCache();
+ 1 */
+        gbsaAtomicPartialCharges.clear();
+        gbsaAtomicNumbers.clear();
+        atomicNumberOfHCovalentPartner.clear();
+        gbsaNumberOfCovalentBondPartners.clear();
+        gbsaRadii.clear();
+        gbsaObcScaleFactors.clear();
+        gbsaCoordinatePointers.clear();
+        gbsaAtomicForcePointers.clear();
+        gbsaRawCoordinates.clear();
+        gbsaAtomicForces.clear();
+
+        delete gbsaCpuObc;          gbsaCpuObc = 0;
+
+        usingOpenMM = false;
+        openMMPlatformInUse.clear();
+        delete openMMPluginIfc;     openMMPluginIfc = 0;
+        openMMPlugin.unload();  // nothing happens if it wasn't loaded
+
+        usingMultithreaded = false;
+        numThreadsInUse    = 0;
+        delete nonbondedExecutor;   nonbondedExecutor = 0;
+        delete gbsaExecutor;        gbsaExecutor = 0;
+        delete executor;            executor = 0;
+
+        vdwScaleSingleThread.clear();
+        coulombScaleSingleThread.clear();
+
+        //GMolModel
+        vdwScaleAllSingleThread.clear();
+        coulombScaleAllSingleThread.clear();
+
+        inclAtomStationCacheIndex.invalidate(); 
+        inclAtomPositionCacheIndex.invalidate();
+        inclAtomVelocityCacheIndex.invalidate();
+        inclAtomForceCacheIndex.invalidate();
+        inclBodyForceCacheIndex.invalidate();
+        energyCacheIndex.invalidate();
+    }
+
+    // END
+
     void invalidateAllTopologicalCacheEntries() {
         // If any of these objects are invalid, the invalidateTopologicalCache()
         // call does nothing (i.e., it doesn't blow up!).
