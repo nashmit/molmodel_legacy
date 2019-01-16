@@ -166,7 +166,9 @@ struct CrossBodyBondInfo {
 
 int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
 {
-    if(internalListsRealized){
+    std::cout << "DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl BEGIN" << std::endl;
+    //if(internalListsRealized){
+    if(includedAtomStations.size()){
         //int realizeInternalListsResult = realizeInternalLists(s);
         //return realizeInternalListsResult;
         // Take whatever is needed from realizeInternalLists
@@ -174,7 +176,6 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
 
 	auto start = std::chrono::system_clock::now();
 
-        std::cout << "DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl BEGIN" << std::endl;
         // At realization time, we need to verify that every atom has a valid atom
         // class id. TODO: should apply only to included atoms.
         for (DuMM::AtomIndex anum(0); anum < atoms.size(); ++anum) {
@@ -252,12 +253,14 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
     
         std::set<MobilizedBodyIndex> allIncludedMobods;
     
-    // for GMolModel
+        // for GMolModel
         std::set<MobilizedBodyIndex> allAllMobods;
     
-///* 4   
+        std::cout << "DuMM realizeSubsystemTopology:  mutableThis->includedAtomStations.size() " << mutableThis->includedAtomStations.size() << std::endl;
+/* 4   
         for (DuMMBodyIndex bnum(0); bnum < duMMSubsetOfBodies.size(); ++bnum) {
             const DuMMBody& b = duMMSubsetOfBodies[bnum];
+std::cout << "DuMM realizeSubsystemTopology:  b.isValid() " << b.isValid() << std::endl;
             if (!b.isValid())
                 continue;   // Unused body numbers are OK.
             const MobodIndex mbx = b.getMobilizedBodyIndex();
@@ -271,11 +274,15 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
                 DuMMAtom& a = mutableThis->atoms[ap.atomIndex]; assert(a.isValid());
                 assert(!a.isAttachedToBody()); // Can only be on one body!!
                 a.attachToBody(mbx, ap.station);
+std::cout << "DuMM realizeSubsystemTopology:  a.attachToBody(mbx, ap.station) " << mbx << " " << ap.station << std::endl;
     
                 if (inclList.useDefaultNonbondList
                  || inclList.isNonbondBody(mbx)
                  || inclList.isNonbondAtom(ap.atomIndex))
                 {
+std::cout << "DuMM realizeSubsystemTopology:  inclList.useDefaultNonbondList " << inclList.useDefaultNonbondList << std::endl;
+std::cout << "DuMM realizeSubsystemTopology:  inclList.isNonbondBody " << inclList.isNonbondBody(mbx) << std::endl;
+std::cout << "DuMM realizeSubsystemTopology:  inclList.isNonbondAtom(ap.atomIndex) " << inclList.isNonbondAtom(ap.atomIndex) << std::endl;
                     allIncludedMobods.insert(mbx);
     	
                     // These will be replaced by the actual assignments later.
@@ -291,7 +298,8 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
     
             }
         }
-// 4 */
+
+// 4.1 
 
         for (DuMM::AtomIndex ax(0); ax < atoms.size(); ++ax) {
             const DuMMAtom& a = getAtom(ax);
@@ -1215,9 +1223,10 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
                 }
             }
         }
-    
-    
-    
+
+// 4 */    
+
+/* 5    
             /////////////////////////////
             // Fill in GBSA parameters //
             /////////////////////////////
@@ -1295,7 +1304,9 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
                 mutableThis->gbsaAtomicForcePointers[a] = &gbsaAtomicForces[3*a];
             }
         }
-    
+ 5 */   
+
+/* 6 
             ///////////////////////////////////////////
             // Initialize OpenMM if it is being used //
             ///////////////////////////////////////////
@@ -1365,7 +1376,9 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
             mutableThis->usingOpenMM = true;
             break; // don't loop
         }
-    
+ 6 */   
+
+/* 7 
         if (!usingOpenMM) {
             // If the caller specified how many threads to use, even if only one,
             // and says "useMultithreadedComputation" then we will use the
@@ -1452,7 +1465,7 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
         //GMolModel
         vdwScaleAllSingleThread.resize(getNumAllNonbondAtoms(), Real(1));
         coulombScaleAllSingleThread.resize(getNumAllNonbondAtoms(), Real(1));
-    
+ 7 */    
     
         // Create cache entries for storing position info and forces for included
         // atoms and included bodies.
@@ -1489,7 +1502,8 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
     
         mutableThis->internalListsRealized = true;
     
-            std::cout << "DuMMForceFieldSubsystemRep::realizeInternalLists END" << std::endl;
+    std::cout << "DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl END" << std::endl;
+
     auto end = std::chrono::system_clock::now();
     std::chrono::duration<double> diff = end-start;
     //TRACE (("Realize Topology took " + std::to_string(diff.count()) +  " s \n").c_str());
@@ -1497,6 +1511,7 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
         return 0;
     }else{
         int realizeInternalListsResult = realizeInternalLists(s);
+    std::cout << "DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl END" << std::endl;
         return realizeInternalListsResult;
     }
 }
@@ -1514,9 +1529,9 @@ int DuMMForceFieldSubsystemRep::realizeInternalLists(State& s) const
 // EU END
 {
 
-	auto start = std::chrono::system_clock::now();
+    auto start = std::chrono::system_clock::now();
 
-        std::cout << "DuMMForceFieldSubsystemRep::realizeInternalLists BEGIN" << std::endl;
+    std::cout << "DuMMForceFieldSubsystemRep::realizeInternalLists BEGIN" << std::endl;
     // At realization time, we need to verify that every atom has a valid atom
     // class id. TODO: should apply only to included atoms.
     for (DuMM::AtomIndex anum(0); anum < atoms.size(); ++anum) {
@@ -1596,6 +1611,7 @@ int DuMMForceFieldSubsystemRep::realizeInternalLists(State& s) const
 // for GMolModel
     std::set<MobilizedBodyIndex> allAllMobods;
 
+    std::cout << "DuMM realizeInternalLists:  mutableThis->includedAtomStations.size() " << mutableThis->includedAtomStations.size() << std::endl;
 
     for (DuMMBodyIndex bnum(0); bnum < duMMSubsetOfBodies.size(); ++bnum) {
         const DuMMBody& b = duMMSubsetOfBodies[bnum];
@@ -2828,10 +2844,11 @@ int DuMMForceFieldSubsystemRep::realizeInternalLists(State& s) const
 
     mutableThis->internalListsRealized = true;
 
-        std::cout << "DuMMForceFieldSubsystemRep::realizeInternalLists END" << std::endl;
-auto end = std::chrono::system_clock::now();
-std::chrono::duration<double> diff = end-start;
-//TRACE (("Realize Topology took " + std::to_string(diff.count()) +  " s \n").c_str());
+    std::cout << "DuMMForceFieldSubsystemRep::realizeInternalLists END" << std::endl;
+
+    auto end = std::chrono::system_clock::now();
+    std::chrono::duration<double> diff = end-start;
+    //TRACE (("Realize Topology took " + std::to_string(diff.count()) +  " s \n").c_str());
                   
     return 0;
 }

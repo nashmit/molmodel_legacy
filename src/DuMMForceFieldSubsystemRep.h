@@ -1717,7 +1717,10 @@ public:
     const Vec3& getIncludedAtomStation(DuMM::IncludedAtomIndex incAtomIx) const
     {   return includedAtomStations[incAtomIx]; }
     Vec3& updIncludedAtomStation(DuMM::IncludedAtomIndex incAtomIx)
-    {   return includedAtomStations[incAtomIx]; }
+    {   
+std::cout << "DuMMForceFieldSubsystemRep::updIncludedAtomStation size incAtomIx " 
+<< includedAtomStations.size() << " " << incAtomIx  << std::endl << std::flush;
+return includedAtomStations[incAtomIx]; }
 
     // Nonbond included atoms
     int getNumNonbondAtoms() const {return (int)nonbondAtoms.size();}
@@ -2013,10 +2016,10 @@ private:
         // call does nothing (i.e., it doesn't blow up!).
 
         // molecule
-///* 4
+/* 4
         for (DuMM::AtomIndex i(0); i < atoms.size(); ++i)
             atoms[i].invalidateTopologicalCache();
-// 4 */
+ 4 */
 /* 2
         for (DuMM::ClusterIndex i(0); i < clusters.size(); ++i)
             clusters[i].invalidateTopologicalCache();
@@ -2030,6 +2033,8 @@ private:
         for (DuMM::AtomClassIndex i(0); i < atomClasses.size(); ++i)
             atomClasses[i].invalidateTopologicalCache();
  1 */
+
+/* 5
         gbsaAtomicPartialCharges.clear();
         gbsaAtomicNumbers.clear();
         atomicNumberOfHCovalentPartner.clear();
@@ -2042,12 +2047,16 @@ private:
         gbsaAtomicForces.clear();
 
         delete gbsaCpuObc;          gbsaCpuObc = 0;
+ 5 */
 
+/* 6
         usingOpenMM = false;
         openMMPlatformInUse.clear();
         delete openMMPluginIfc;     openMMPluginIfc = 0;
         openMMPlugin.unload();  // nothing happens if it wasn't loaded
+ 6 */
 
+/* 7
         usingMultithreaded = false;
         numThreadsInUse    = 0;
         delete nonbondedExecutor;   nonbondedExecutor = 0;
@@ -2060,6 +2069,7 @@ private:
         //GMolModel
         vdwScaleAllSingleThread.clear();
         coulombScaleAllSingleThread.clear();
+ 7 */
 
         inclAtomStationCacheIndex.invalidate(); 
         inclAtomPositionCacheIndex.invalidate();
@@ -2067,6 +2077,7 @@ private:
         inclAtomForceCacheIndex.invalidate();
         inclBodyForceCacheIndex.invalidate();
         energyCacheIndex.invalidate();
+
     }
 
     // END
