@@ -1717,10 +1717,7 @@ public:
     const Vec3& getIncludedAtomStation(DuMM::IncludedAtomIndex incAtomIx) const
     {   return includedAtomStations[incAtomIx]; }
     Vec3& updIncludedAtomStation(DuMM::IncludedAtomIndex incAtomIx)
-    {   
-std::cout << "DuMMForceFieldSubsystemRep::updIncludedAtomStation size incAtomIx " 
-<< includedAtomStations.size() << " " << incAtomIx  << std::endl << std::flush;
-return includedAtomStations[incAtomIx]; }
+    {   return includedAtomStations[incAtomIx]; }
 
     // Nonbond included atoms
     int getNumNonbondAtoms() const {return (int)nonbondAtoms.size();}

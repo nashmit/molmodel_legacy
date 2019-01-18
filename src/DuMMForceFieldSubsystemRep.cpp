@@ -166,15 +166,16 @@ struct CrossBodyBondInfo {
 
 int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
 {
-    std::cout << "DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl BEGIN" << std::endl;
+    //std::cout << "DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl BEGIN" << std::endl;
     //if(internalListsRealized){
     if(includedAtomStations.size()){
+    //if(0){
         //int realizeInternalListsResult = realizeInternalLists(s);
         //return realizeInternalListsResult;
         // Take whatever is needed from realizeInternalLists
         // e.g. calcMassProperties
 
-	auto start = std::chrono::system_clock::now();
+	//auto start = std::chrono::system_clock::now();
 
         // At realization time, we need to verify that every atom has a valid atom
         // class id. TODO: should apply only to included atoms.
@@ -256,7 +257,7 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
         // for GMolModel
         std::set<MobilizedBodyIndex> allAllMobods;
     
-        std::cout << "DuMM realizeSubsystemTopology:  mutableThis->includedAtomStations.size() " << mutableThis->includedAtomStations.size() << std::endl;
+        //std::cout << "DuMM realizeSubsystemTopology:  mutableThis->includedAtomStations.size() " << mutableThis->includedAtomStations.size() << std::endl;
 /* 4   
         for (DuMMBodyIndex bnum(0); bnum < duMMSubsetOfBodies.size(); ++bnum) {
             const DuMMBody& b = duMMSubsetOfBodies[bnum];
@@ -1502,16 +1503,16 @@ std::cout << "DuMM realizeSubsystemTopology:  inclList.isNonbondAtom(ap.atomInde
     
         mutableThis->internalListsRealized = true;
     
-    std::cout << "DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl END" << std::endl;
+        //std::cout << "DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl END" << std::endl;
 
-    auto end = std::chrono::system_clock::now();
-    std::chrono::duration<double> diff = end-start;
-    //TRACE (("Realize Topology took " + std::to_string(diff.count()) +  " s \n").c_str());
+    //auto end = std::chrono::system_clock::now();
+    //std::chrono::duration<double> diff = end-start;
+    //TRACE (("realizeSubsystemTopology took " + std::to_string(diff.count()) +  " s \n").c_str());
                       
         return 0;
     }else{
         int realizeInternalListsResult = realizeInternalLists(s);
-    std::cout << "DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl END" << std::endl;
+        //std::cout << "DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl END" << std::endl;
         return realizeInternalListsResult;
     }
 }
@@ -1529,9 +1530,9 @@ int DuMMForceFieldSubsystemRep::realizeInternalLists(State& s) const
 // EU END
 {
 
-    auto start = std::chrono::system_clock::now();
+    //auto start = std::chrono::system_clock::now();
 
-    std::cout << "DuMMForceFieldSubsystemRep::realizeInternalLists BEGIN" << std::endl;
+    //std::cout << "DuMMForceFieldSubsystemRep::realizeInternalLists BEGIN" << std::endl;
     // At realization time, we need to verify that every atom has a valid atom
     // class id. TODO: should apply only to included atoms.
     for (DuMM::AtomIndex anum(0); anum < atoms.size(); ++anum) {
@@ -1611,7 +1612,7 @@ int DuMMForceFieldSubsystemRep::realizeInternalLists(State& s) const
 // for GMolModel
     std::set<MobilizedBodyIndex> allAllMobods;
 
-    std::cout << "DuMM realizeInternalLists:  mutableThis->includedAtomStations.size() " << mutableThis->includedAtomStations.size() << std::endl;
+    //std::cout << "DuMM realizeInternalLists:  mutableThis->includedAtomStations.size() " << mutableThis->includedAtomStations.size() << std::endl;
 
     for (DuMMBodyIndex bnum(0); bnum < duMMSubsetOfBodies.size(); ++bnum) {
         const DuMMBody& b = duMMSubsetOfBodies[bnum];
@@ -2844,11 +2845,11 @@ int DuMMForceFieldSubsystemRep::realizeInternalLists(State& s) const
 
     mutableThis->internalListsRealized = true;
 
-    std::cout << "DuMMForceFieldSubsystemRep::realizeInternalLists END" << std::endl;
+    //std::cout << "DuMMForceFieldSubsystemRep::realizeInternalLists END" << std::endl;
 
-    auto end = std::chrono::system_clock::now();
-    std::chrono::duration<double> diff = end-start;
-    //TRACE (("Realize Topology took " + std::to_string(diff.count()) +  " s \n").c_str());
+    //auto end = std::chrono::system_clock::now();
+    //std::chrono::duration<double> diff = end-start;
+    //TRACE (("realizeInternalLists took " + std::to_string(diff.count()) +  " s \n").c_str());
                   
     return 0;
 }
@@ -2865,20 +2866,14 @@ int DuMMForceFieldSubsystemRep::realizeInternalLists(State& s) const
 // Cost is 18 flops per atom plus bookkeeping.
 int DuMMForceFieldSubsystemRep::
 realizeSubsystemPositionImpl(const State& s) const {
-    std::cout << "Started realizeSubsystemPositionImpl" << std::endl << std::flush; // EU DEBUG
     const MultibodySystem&        mbs    = getMultibodySystem();
     const SimbodyMatterSubsystem& matter = mbs.getMatterSubsystem();
 
-    std::cout << "Got mbs and matter" << std::endl << std::flush; // EU DEBUG
     Vector_<Vec3>& inclAtomStation_G = updIncludedAtomStationCache(s);
-    std::cout << "updIncludedAtomStationCache" << std::endl << std::flush; // EU DEBUG
     Vector_<Vec3>& inclAtomPos_G     = updIncludedAtomPositionCache(s);
-    std::cout << "updIncludedAtomPositionCache" << std::endl << std::flush; // EU DEBUG
 
     inclAtomStation_G.resize(getNumIncludedAtoms());
-    std::cout << "inclAtomStation_G" << std::endl << std::flush; // EU DEBUG
     inclAtomPos_G.resize(getNumIncludedAtoms());
-    std::cout << "inclAtomPos_G" << std::endl << std::flush; // EU DEBUG
 
     for (DuMMIncludedBodyIndex dbx(0); dbx < includedBodies.size(); ++dbx) {
         const IncludedBody&      inclBod = includedBodies[dbx];
@@ -3028,9 +3023,9 @@ void DuMMForceFieldSubsystemRep::calcBondStretch
 	assert(b2 != b1);
         energy += eStretch;
 
-//        TRACE("calcBondStretch: ");
-//        TRACE((std::to_string(energy)).c_str());
-//        TRACE("\n");
+        //TRACE("calcBondStretch: ");
+        //TRACE((std::to_string(energy)).c_str());
+        //TRACE("\n");
 
         inclBodyForces_G[b2] += SpatialVec( a2Station_G % f2, f2); // 15 flops
         inclBodyForces_G[b1] -= SpatialVec( a1Station_G % f2, f2); // 15 flops
@@ -3094,9 +3089,9 @@ void DuMMForceFieldSubsystemRep::calcBondBend
 
         energy += e;
 
-//        TRACE("calcBondBend: ");
-//        TRACE((std::to_string(e)).c_str());
-//        TRACE("\n");
+        //TRACE("calcBondBend: ");
+        //TRACE((std::to_string(e)).c_str());
+        //TRACE("\n");
 
         inclBodyForces_G[b1] += SpatialVec( a1Station_G % f1, f1); // 15 flops
         inclBodyForces_G[b2] += SpatialVec( a2Station_G % f2, f2); // 15 flops
@@ -3163,9 +3158,9 @@ void DuMMForceFieldSubsystemRep::calcBondTorsion
     
         energy += e;
 
-//        TRACE("calcBondTorsion: ");
-//        TRACE((std::to_string(e)).c_str());
-//        TRACE("\n");
+        //TRACE("calcBondTorsion: ");
+        //TRACE((std::to_string(e)).c_str());
+        //TRACE("\n");
 
         inclBodyForces_G[b1] += SpatialVec( a1Station_G % f1, f1); // 15 flops
         inclBodyForces_G[b2] += SpatialVec( a2Station_G % f2, f2); // 15 flops
