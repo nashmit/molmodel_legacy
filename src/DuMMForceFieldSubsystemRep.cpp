@@ -3026,6 +3026,10 @@ void DuMMForceFieldSubsystemRep::calcBondStretch
         //TRACE("calcBondStretch: ");
         //TRACE((std::to_string(energy)).c_str());
         //TRACE("\n");
+        std::cout << "calcBondStretch: " << a1num << " " << a2num << " " 
+        << a1Pos_G[0] << " " << a1Pos_G[1] << " " << a1Pos_G[2] << " | " 
+        << a2Pos_G[0] << " " << a2Pos_G[1] << " " << a2Pos_G[2] << " " 
+        << std::endl;
 
         inclBodyForces_G[b2] += SpatialVec( a2Station_G % f2, f2); // 15 flops
         inclBodyForces_G[b1] -= SpatialVec( a1Station_G % f2, f2); // 15 flops
@@ -4978,6 +4982,11 @@ Vector_<Vec3>  AllAtomPos_G ) const {
         const Vec3  r           = a2Pos_G - a1Pos_G;
         const Real  d           = r.norm();
         const BondStretch& bs = *a1.stretchAll[b12];
+
+    std::cout << "calcFullBondStretch: " << a1num << " " << a2num << " " 
+    << a1Pos_G[0] << " " << a1Pos_G[1] << " " << a1Pos_G[2] << " | " 
+    << a2Pos_G[0] << " " << a2Pos_G[1] << " " << a2Pos_G[2] << " " 
+    << std::endl;
 
 	if (bs.hasBuiltinTerm()) {
             const Real x = d - bs.d0;
