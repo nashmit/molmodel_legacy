@@ -192,6 +192,24 @@ int DuMMForceFieldSubsystemRep::realizeSubsystemTopologyImpl(State& s) const
     
         mutableThis->invalidateNecTopologicalCacheEntries();
     
+/*  MASS PROPERTIES 
+        // Set mass properties for clusters bodies. We need write access
+        // to mobilized bodies.
+        const MultibodySystem&        mbs    = getMultibodySystem();
+        const SimbodyMatterSubsystem& matter = mbs.getMatterSubsystem();
+        for (DuMM::ClusterIndex cnum(0); cnum < clusters.size(); ++cnum) {
+            Cluster& c = mutableThis->clusters[cnum];
+            assert(c.isValid()); // Shouldn't be any unused cluster numbers.
+            if(c.isTopLevelCluster()){
+                MobilizedBodyIndex mbx = c.mobodIx;
+                MobilizedBody&     mobod   = matter.updMobilizedBody(mbx);
+                const Transform tr;
+                const MassProperties& massProperties = c.calcMassProperties(tr, *mutableThis);
+                mobod.setDefaultMassProperties(massProperties);
+            }
+        }
+*/
+
             // force field
 /* 1    
         // Calculate effective van der Waals parameters for all pairs of atom

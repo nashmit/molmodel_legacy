@@ -13,6 +13,7 @@ namespace SimTK {
 
 void SimTK::CompoundSystem::modelCompounds(String mobilizedBodyType) 
 {
+    std::cout << "CompoundSystem::modelCompounds" << std::endl;
     // Turn off default decorations, since we'll make our own decorations.
     updMatterSubsystem().setShowDefaultGeometry(false); 
     for (CompoundSystem::CompoundIndex c(0); c < getNumCompounds(); ++c) 
