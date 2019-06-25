@@ -199,6 +199,20 @@ public:
 
         return *this;
     }
+
+    Bond& setBallBody(MobilizedBody::Ball& ball)
+    {
+        pinJointId = ball.getMobilizedBodyIndex();
+
+        SimTK::Rotation R_FM;
+        R_FM.setRotationFromAngleAboutX(0.0);
+        R_FM.setRotationFromAngleAboutY(0.0);
+        R_FM.setRotationFromAngleAboutZ(defaultDihedral);
+        ball.setDefaultRotation(R_FM);
+
+        return *this;
+    }
+
 // GMolModel */
 
     Bond& setRiboseBody(MobilizedBody::FunctionBased& pin) 
