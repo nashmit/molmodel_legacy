@@ -166,8 +166,14 @@ public:
     Bond& setDihedralAngle(State& state, SimbodyMatterSubsystem& matter, Angle angleInRadians) {
         assert(pinJointId.isValid());
 
-        MobilizedBody::Pin& pin = (MobilizedBody::Pin&) matter.updMobilizedBody(pinJointId);
-        pin.setAngle(state, angleInRadians);
+        if(mobility == BondMobility::Torsion) {
+            MobilizedBody::Pin &pin = (MobilizedBody::Pin &) matter.updMobilizedBody(pinJointId);
+            pin.setAngle(state, angleInRadians);
+        }else if(mobility == BondMobility::Ball){ // Gmol
+            MobilizedBody::Ball &ball = (MobilizedBody::Ball &) matter.updMobilizedBody(pinJointId);
+            ball.setQ(state, SimTK::Rotation(angleInRadians,
+                    CoordinateAxis::ZCoordinateAxis()).convertRotationToQuaternion().asVec4());
+        }
 
         return *this;
     }
@@ -229,9 +235,33 @@ public:
     Angle getDihedralAngle(const State& state, const SimbodyMatterSubsystem& matter) const {
         assert(pinJointId.isValid());
 
-        const MobilizedBody::Pin& pin = (const MobilizedBody::Pin&) matter.getMobilizedBody(pinJointId);
+        if(mobility == BondMobility::Torsion) {
 
-        return pin.getAngle(state);
+            const MobilizedBody::Pin& pin = (const MobilizedBody::Pin&) matter.getMobilizedBody(pinJointId);
+            return pin.getAngle(state);
+
+        }else if(mobility == BondMobility::Ball){ // Gmol
+
+            const MobilizedBody::Ball &ball = (const MobilizedBody::Ball &) matter.getMobilizedBody(pinJointId);
+
+            // Return psi Euler angle and ignore phi and theta
+            Vec4 q = SimTK::Quaternion(ball.getQ(state));
+            double psi;
+            // Deal with singularity
+            if( (std::abs((q[1] * q[2]) + (q[3] * q[0])) - 0.5) < 0.01 ){
+                psi = 0.0;
+            }else {
+                double q0q3 = q[0] * q[3];
+                double q1q2 = q[1] * q[2];
+                double q2sq = q[2] * q[2];
+                double q3sq = q[3] * q[3];
+                psi = atan2(2 * (q0q3 + q1q2),
+                        1 - 2 * (q2sq + q3sq));
+            }
+            return (Angle)psi;
+
+        }
+
     }
 
     Bond& setDefaultBondLength(mdunits::Length d) {

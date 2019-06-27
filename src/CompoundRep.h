@@ -833,15 +833,25 @@ public:
 
         // case1 : Pin dihedral
         if (bond.getPinJointId().isValid()) {
-            SimbodyMatterSubsystem& matter = ownerSystem->updMatterSubsystem();
-            MobilizedBody::Pin& body = (MobilizedBody::Pin&) matter.updMobilizedBody(bond.getPinJointId());
-
-            // TODO - create calcDihedralOffset(State&...) method and use it here, instead of default
-            Angle internalOffset = calcDefaultInternalDihedralOffsetAngle(dihedral.getBondCenter1Id(), dihedral.getBondCenter2Id());
-
-            // nominal = internal + offset
-            Angle internalAngle = angleInRadians - internalOffset - dihedral.getNomenclatureOffset();
-            body.setAngle(state, internalAngle);
+            SimbodyMatterSubsystem &matter = ownerSystem->updMatterSubsystem();
+            if(bond.getMobility() == BondMobility::Torsion) {
+                MobilizedBody::Pin &body = (MobilizedBody::Pin &) matter.updMobilizedBody(bond.getPinJointId());
+                // TODO - create calcDihedralOffset(State&...) method and use it here, instead of default
+                Angle internalOffset = calcDefaultInternalDihedralOffsetAngle(dihedral.getBondCenter1Id(),
+                                                                              dihedral.getBondCenter2Id());
+                // nominal = internal + offset
+                Angle internalAngle = angleInRadians - internalOffset - dihedral.getNomenclatureOffset();
+                body.setAngle(state, internalAngle);
+            }else if(bond.getMobility() == BondMobility::Ball) { // Gmol
+                MobilizedBody::Ball &ball = (MobilizedBody::Ball &) matter.updMobilizedBody(bond.getPinJointId());
+                // TODO - create calcDihedralOffset(State&...) method and use it here, instead of default
+                Angle internalOffset = calcDefaultInternalDihedralOffsetAngle(dihedral.getBondCenter1Id(),
+                                                                              dihedral.getBondCenter2Id());
+                // nominal = internal + offset
+                Angle internalAngle = angleInRadians - internalOffset - dihedral.getNomenclatureOffset();
+                ball.setQ(state, SimTK::Rotation(internalAngle,
+                        CoordinateAxis::ZCoordinateAxis()).convertRotationToQuaternion().asVec4());
+            }
         }
 
         else  // TODO
@@ -2420,8 +2430,29 @@ protected:
         {
             assert(ownerSystem != NULL);
             const SimbodyMatterSubsystem& matter = ownerSystem->getMatterSubsystem();
-            const MobilizedBody::Pin& body = (const MobilizedBody::Pin&)matter.getMobilizedBody(bodyId);
-            Angle internalAngle = body.getAngle(state);
+
+            Angle internalAngle;
+            if(bond.getMobility() == BondMobility::Torsion) {
+                const MobilizedBody::Pin &body = (const MobilizedBody::Pin &) matter.getMobilizedBody(bodyId);
+                internalAngle = body.getAngle(state);
+            }else if(bond.getMobility() == BondMobility::Ball){// Gmol
+                const MobilizedBody::Ball &ball = (const MobilizedBody::Ball &) matter.getMobilizedBody(bodyId);
+                // Return psi Euler angle and ignore phi and theta
+                Vec4 q = SimTK::Quaternion(ball.getQ(state));
+                double psi;
+                // Deal with singularity
+                if( (std::abs((q[1] * q[2]) + (q[3] * q[0])) - 0.5) < 0.01 ){
+                    psi = 0.0;
+                }else {
+                    double q0q3 = q[0] * q[3];
+                    double q1q2 = q[1] * q[2];
+                    double q2sq = q[2] * q[2];
+                    double q3sq = q[3] * q[3];
+                    psi = atan2(2 * (q0q3 + q1q2),
+                                1 - 2 * (q2sq + q3sq));
+                    internalAngle = psi;
+                }
+            }
 
             // TODO - use simtime offset, not default
 
@@ -2453,9 +2484,28 @@ protected:
             std::cout << "Pin joint id = " << bodyId;
             std::cout << "\t";
             const SimbodyMatterSubsystem& matter = ownerSystem->getMatterSubsystem();
-            const MobilizedBody::Pin& body = (const MobilizedBody::Pin&)matter.getMobilizedBody(bodyId);
-            std::cout << "angle = " << body.getAngle(state) * DuMM::Rad2Deg << " degrees";
-            std::cout << std::endl;
+
+            if(bond.getMobility() == BondMobility::Torsion) {
+                const MobilizedBody::Pin &body = (const MobilizedBody::Pin &) matter.getMobilizedBody(bodyId);
+                std::cout << "angle = " << body.getAngle(state) * DuMM::Rad2Deg << " degrees";
+                std::cout << std::endl;
+            }else if(bond.getMobility() == BondMobility::Ball) { // Gmol
+                const MobilizedBody::Ball &body = (const MobilizedBody::Ball &) matter.getMobilizedBody(bodyId);
+                std::cout << "angle = ";
+
+                SimTK::Rotation R;
+                R.setRotationFromQuaternion(Quaternion(body.getQ(state)));
+                Angle theta1 = -1.0 * std::asin(R[2][0]);
+                Angle theta2 = SimTK::Pi - theta1;
+                double cosTheta1 = std::cos(theta1);
+                double cosTheta2 = std::cos(theta2);
+                Angle psi1 =  std::atan2(R[2][1] / cosTheta1, R[2][2] / cosTheta1);
+                Angle psi2 =  std::atan2(R[2][1] / cosTheta2, R[2][2] / cosTheta2);
+
+                std::cout << psi1 * DuMM::Rad2Deg;
+                std::cout << " degrees";
+                std::cout << std::endl;
+            }
 
             assert(bondBondCenter.isBonded());
             assert(bondBondCenter.getIndex() != bc21.getIndex());

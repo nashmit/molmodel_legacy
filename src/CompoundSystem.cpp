@@ -571,49 +571,46 @@ void CompoundSystem::modelOneCompound(CompoundIndex compoundId, String mobilized
 	            unit.bodyId = torsionBody.getMobilizedBodyIndex();
             }
             else {
-            	
-/* Molmodel: BEGIN
-	            MobilizedBody::Pin torsionBody(
-	                                           matter.updMobilizedBody(parentUnit.bodyId),
-	                                           P_X_M * M_X_pin,
-	                                           dumm.calcClusterMassProperties(unit.clusterIx),
-	                                           M_X_pin);
-	            // Save a pointer to the pin joint in the bond object
-	            // (ensure that the default angle of the MobilizedBody::Pin matches that of 
-	            // the bond, in Atom.h)
-	            // NOTE - setPinBody automatically sets the torsionBody default torsion angle
-	            bond.setPinBody(torsionBody);
-	            unit.bodyId = torsionBody.getMobilizedBodyIndex();
-// Molmodel: END */ 
 
-/* GMolModel: Try Cylinder
-	            MobilizedBody::Cylinder torsionBody(
-	                                           matter.updMobilizedBody(parentUnit.bodyId),
-	                                           P_X_M * M_X_pin,
-	                                           dumm.calcClusterMassProperties(unit.clusterIx),
-	                                           M_X_pin);
-	            // Save a pointer to the pin joint in the bond object
-	            // (ensure that the default angle of the MobilizedBody::Pin matches that of 
-	            // the bond, in Atom.h)
-	            // NOTE - setPinBody automatically sets the torsionBody default torsion angle
-	            bond.setCylinderBody(torsionBody);
-	            unit.bodyId = torsionBody.getMobilizedBodyIndex();
- GMolModel: END */
-
-///* GMolModel: Try Ball
-	            MobilizedBody::Ball torsionBody(
-	                                           matter.updMobilizedBody(parentUnit.bodyId),
-	                                           P_X_M * M_X_pin,
-	                                           dumm.calcClusterMassProperties(unit.clusterIx),
-	                                           M_X_pin);
-	            // Save a pointer to the pin joint in the bond object
-	            // (ensure that the default angle of the MobilizedBody::Pin matches that of
-	            // the bond, in Atom.h)
-	            // NOTE - setPinBody automatically sets the torsionBody default torsion angle
-	            bond.setBallBody(torsionBody);
-	            unit.bodyId = torsionBody.getMobilizedBodyIndex();
- // GMolModel: END */
-
+                if(bond.getMobility() == BondMobility::Torsion) {
+///* Molmodel: BEGIN
+                    MobilizedBody::Pin torsionBody(
+                            matter.updMobilizedBody(parentUnit.bodyId),
+                            P_X_M * M_X_pin,
+                            dumm.calcClusterMassProperties(unit.clusterIx),
+                            M_X_pin);
+                    // Save a pointer to the pin joint in the bond object
+                    // (ensure that the default angle of the MobilizedBody::Pin matches that of
+                    // the bond, in Atom.h)
+                    // NOTE - setPinBody automatically sets the torsionBody default torsion angle
+                    bond.setPinBody(torsionBody);
+                    unit.bodyId = torsionBody.getMobilizedBodyIndex();
+// Molmodel: END */
+                } else if(bond.getMobility() == BondMobility::Ball) {
+    	            MobilizedBody::Ball torsionBody(
+    	                    matter.updMobilizedBody(parentUnit.bodyId),
+    	                    P_X_M * M_X_pin,
+    	                    dumm.calcClusterMassProperties(unit.clusterIx),
+    	                    M_X_pin);
+	                // Save a pointer to the pin joint in the bond object
+	                // (ensure that the default angle of the MobilizedBody::Pin matches that of
+	                // the bond, in Atom.h)
+	                // NOTE - setPinBody automatically sets the torsionBody default torsion angle
+	                bond.setBallBody(torsionBody);
+	                unit.bodyId = torsionBody.getMobilizedBodyIndex();
+                } else if(bond.getMobility() == BondMobility::Cylinder) {
+                    MobilizedBody::Cylinder torsionBody(
+                               matter.updMobilizedBody(parentUnit.bodyId),
+                               P_X_M * M_X_pin,
+                               dumm.calcClusterMassProperties(unit.clusterIx),
+                               M_X_pin);
+                    // Save a pointer to the pin joint in the bond object
+                    // (ensure that the default angle of the MobilizedBody::Pin matches that of
+                    // the bond, in Atom.h)
+                    // NOTE - setPinBody automatically sets the torsionBody default torsion angle
+                    bond.setCylinderBody(torsionBody);
+                    unit.bodyId = torsionBody.getMobilizedBodyIndex();
+                }
             }
             
             dumm.attachClusterToBody(unit.clusterIx, unit.bodyId);

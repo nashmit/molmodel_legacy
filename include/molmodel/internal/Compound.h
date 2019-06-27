@@ -70,7 +70,9 @@ namespace BondMobility {
     enum Mobility {
         Free = 1, ///< Unrestricted bond, permitting changes in stretch, bend, and torsion modes
         Torsion = 2, ///< Bond has fixed length and angles, but permits rotation about the bond axis
-        Rigid = 3 ///< Bond links both atoms to the same rigid unit
+        Rigid = 3, ///< Bond links both atoms to the same rigid unit
+        Ball = 4, ///< Three rotational dofs. It allows  angle flexibility besides torsion.
+        Cylinder = 5 ///< Torsion plus translation along the bond TODO
     };
     static Mobility Default = Torsion;
 }
