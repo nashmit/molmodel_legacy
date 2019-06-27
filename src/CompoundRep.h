@@ -2493,6 +2493,7 @@ protected:
                 const MobilizedBody::Ball &body = (const MobilizedBody::Ball &) matter.getMobilizedBody(bodyId);
                 std::cout << "angle = ";
 
+                // Gregory G. Slabaugh description
                 SimTK::Rotation R;
                 R.setRotationFromQuaternion(Quaternion(body.getQ(state)));
                 Angle theta1 = -1.0 * std::asin(R[2][0]);
