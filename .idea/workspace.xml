@@ -1,0 +1,1316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
+    <generated>
+      <config projectName="Molmodel" targetName="ExampleLoadPdb" />
+      <config projectName="Molmodel" targetName="TestSanityDuMM" />
+      <config projectName="Molmodel" targetName="TestPdb" />
+      <config projectName="Molmodel" targetName="ContinuousMemCheck" />
+      <config projectName="Molmodel" targetName="TestNoseHooverThermostat" />
+      <config projectName="Molmodel" targetName="TestEthaneFromSimbody" />
+      <config projectName="Molmodel" targetName="ContinuousConfigure" />
+      <config projectName="Molmodel" targetName="ExampleRigidProtein" />
+      <config projectName="Molmodel" targetName="TestPositiveControl" />
+      <config projectName="Molmodel" targetName="TestWriteDefaultPdb" />
+      <config projectName="Molmodel" targetName="ExampleAdenylateMobilitiesVMD" />
+      <config projectName="Molmodel" targetName="ExperimentalStart" />
+      <config projectName="Molmodel" targetName="ContinuousSubmit" />
+      <config projectName="Molmodel" targetName="TestBallMobility" />
+      <config projectName="Molmodel" targetName="TestNucleotide2" />
+      <config projectName="Molmodel" targetName="TestSerineWithViz" />
+      <config projectName="Molmodel" targetName="TestPartitioner" />
+      <config projectName="Molmodel" targetName="TestDuMMForces" />
+      <config projectName="Molmodel" targetName="TestMemoryUse" />
+      <config projectName="Molmodel" targetName="TestSetTorsion" />
+      <config projectName="Molmodel" targetName="TestLoadVariantRnaAtomNames" />
+      <config projectName="Molmodel" targetName="ExampleSimpleRNA" />
+      <config projectName="Molmodel" targetName="TestSerine" />
+      <config projectName="Molmodel" targetName="Nightly" />
+      <config projectName="Molmodel" targetName="ContinuousStart" />
+      <config projectName="Molmodel" targetName="NightlyConfigure" />
+      <config projectName="Molmodel" targetName="TestBiopolymer" />
+      <config projectName="Molmodel" targetName="SimTKmolmodel_d" />
+      <config projectName="Molmodel" targetName="TestAtomTargetLocations" />
+      <config projectName="Molmodel" targetName="NightlyTest" />
+      <config projectName="Molmodel" targetName="RemoveMassCenterDrift" />
+      <config projectName="Molmodel" targetName="TestCompoundTransforms" />
+      <config projectName="Molmodel" targetName="TestGbsa" />
+      <config projectName="Molmodel" targetName="TestForeignBodyIds" />
+      <config projectName="Molmodel" targetName="ExampleTwoEthanes" />
+      <config projectName="Molmodel" targetName="TestSimpleProtein" />
+      <config projectName="Molmodel" targetName="NightlyMemoryCheck" />
+      <config projectName="Molmodel" targetName="Experimental" />
+      <config projectName="Molmodel" targetName="ExampleAdenylateMobilitiesViz" />
+      <config projectName="Molmodel" targetName="TestBallJointProtein" />
+      <config projectName="Molmodel" targetName="ExampleLoadPdb2" />
+      <config projectName="Molmodel" targetName="TestMethaneCartesian" />
+      <config projectName="Molmodel" targetName="TestWriteLargerPdb" />
+      <config projectName="Molmodel" targetName="NightlyUpdate" />
+      <config projectName="Molmodel" targetName="ContinuousUpdate" />
+      <config projectName="Molmodel" targetName="TestTorsionPartitioner" />
+      <config projectName="Molmodel" targetName="TestShortPdbLines" />
+      <config projectName="Molmodel" targetName="MolmodelInstallTest" />
+      <config projectName="Molmodel" targetName="TestFitMagnesiums" />
+      <config projectName="Molmodel" targetName="ExperimentalBuild" />
+      <config projectName="Molmodel" targetName="ExampleSimpleProtein" />
+      <config projectName="Molmodel" targetName="ExampleCreatePropane" />
+      <config projectName="Molmodel" targetName="TestBiotypeSelfCode" />
+      <config projectName="Molmodel" targetName="NightlyCoverage" />
+      <config projectName="Molmodel" targetName="ExperimentalCoverage" />
+      <config projectName="Molmodel" targetName="TestDihedrals2" />
+      <config projectName="Molmodel" targetName="ExampleTwoArgonAtoms" />
+      <config projectName="Molmodel" targetName="ExperimentalConfigure" />
+      <config projectName="Molmodel" targetName="NightlyBuild" />
+      <config projectName="Molmodel" targetName="TestSodiumWithViz" />
+      <config projectName="Molmodel" targetName="TestRiboseMobilizer" />
+      <config projectName="Molmodel" targetName="ExperimentalTest" />
+      <config projectName="Molmodel" targetName="TestLoneAtomCoordinates" />
+      <config projectName="Molmodel" targetName="TestEthane" />
+      <config projectName="Molmodel" targetName="TestProteinDihedrals" />
+      <config projectName="Molmodel" targetName="Continuous" />
+      <config projectName="Molmodel" targetName="TestPartitionerDihedrals" />
+      <config projectName="Molmodel" targetName="NightlyMemCheck" />
+      <config projectName="Molmodel" targetName="ExperimentalMemCheck" />
+      <config projectName="Molmodel" targetName="TestTinkerAmber" />
+      <config projectName="Molmodel" targetName="ExperimentalSubmit" />
+      <config projectName="Molmodel" targetName="TestMgSolvationEnergy" />
+      <config projectName="Molmodel" targetName="OpenMMPlugin" />
+      <config projectName="Molmodel" targetName="TestLoadPdb" />
+      <config projectName="Molmodel" targetName="TestGetAtomName" />
+      <config projectName="Molmodel" targetName="TestVelocityRescalingThermostat" />
+      <config projectName="Molmodel" targetName="NightlyStart" />
+      <config projectName="Molmodel" targetName="TestMethanol" />
+      <config projectName="Molmodel" targetName="TestWriteSimtimePdb" />
+      <config projectName="Molmodel" targetName="TestProtein" />
+      <config projectName="Molmodel" targetName="MolmodelInstallTestNoViz" />
+      <config projectName="Molmodel" targetName="TestOxygenMolecule" />
+      <config projectName="Molmodel" targetName="ContinuousTest" />
+      <config projectName="Molmodel" targetName="TestBodyIds" />
+      <config projectName="Molmodel" targetName="ContinuousCoverage" />
+      <config projectName="Molmodel" targetName="ExperimentalUpdate" />
+      <config projectName="Molmodel" targetName="RemoveMassCenterDriftWithOptimizer" />
+      <config projectName="Molmodel" targetName="TestRna" />
+      <config projectName="Molmodel" targetName="doxygen" />
+      <config projectName="Molmodel" targetName="ExampleFoldPolyalanine" />
+      <config projectName="Molmodel" targetName="ContinuousBuild" />
+      <config projectName="Molmodel" targetName="NightlySubmit" />
+    </generated>
+  </component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" GENERATION_DIR="build-debug" BUILD_OPTIONS="-j 12" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="69fc6958-11c7-434e-abfb-7e3af34920ff" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/simbody" beforeDir="false" afterPath="$PROJECT_DIR$/simbody" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/simbody/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/simbody/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/simbody/SimTKmath/Integrators/src/VerletIntegrator.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/simbody/SimTKmath/Integrators/src/VerletIntegrator.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/simbody/Simbody/src/RigidBodyNode.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/simbody/Simbody/src/RigidBodyNode.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/simbody/Simbody/src/RigidBodyNodeSpec.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/simbody/Simbody/src/RigidBodyNodeSpec.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/simbody/Simbody/src/RigidBodyNodeSpec.h" beforeDir="false" afterPath="$PROJECT_DIR$/simbody/Simbody/src/RigidBodyNodeSpec.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/simbody/Simbody/src/RigidBodyNodeSpec_Ball.h" beforeDir="false" afterPath="$PROJECT_DIR$/simbody/Simbody/src/RigidBodyNodeSpec_Ball.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/simbody/Simbody/src/RigidBodyNodeSpec_Free.h" beforeDir="false" afterPath="$PROJECT_DIR$/simbody/Simbody/src/RigidBodyNodeSpec_Free.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/simbody/Simbody/src/SimbodyMatterSubsystemRep.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/simbody/Simbody/src/SimbodyMatterSubsystemRep.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/simbody/examples/ExampleLongPendulum.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/simbody/examples/ExampleLongPendulum.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/CompoundAtom.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/CompoundAtom.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/CompoundSystem.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/CompoundSystem.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/TestMethaneCartesian.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/TestMethaneCartesian.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/TestMethanol.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/tests/TestMethanol.cpp" afterDir="false" />
+    </list>
+    <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
+    <ignored path="$PROJECT_DIR$/build-debug/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="225">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/DuMMForceFieldSubsystem.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="400">
+              <caret line="1505" selection-start-line="1505" selection-end-line="1505" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/CompoundSystem.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="171">
+              <caret line="598" selection-start-line="598" selection-end-line="598" />
+              <folding>
+                <element signature="e#0#45#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/tests/TestBallMobility.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="22">
+              <caret line="62" column="90" lean-forward="true" selection-start-line="62" selection-start-column="90" selection-end-line="62" selection-end-column="90" />
+              <folding>
+                <element signature="e#2402#2428#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/DuMMForceFieldSubsystemRep.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="130">
+              <caret line="3268" selection-start-line="3268" selection-end-line="3268" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/TestBallJointProtein.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="445">
+              <caret line="129" column="5" selection-start-line="129" selection-start-column="5" selection-end-line="129" selection-end-column="5" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file:///usr/local/include/simbody/SimTKcommon/internal/MassProperties.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="100">
+              <caret line="193" column="15" lean-forward="true" selection-start-line="193" selection-start-column="15" selection-end-line="193" selection-end-column="15" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>DEBUG</find>
+      <find>defineBond</find>
+      <find>TIME</find>
+      <find>GMol</find>
+      <find>mobilizedBodyType</find>
+      <find>setDihedralAngle</find>
+      <find>mobility</find>
+      <find>MobilizedBody</find>
+      <find>Pin</find>
+      <find>MobilizedBody::Pin</find>
+      <find>Torsion</find>
+      <find>Ball</find>
+      <find>Hydrogen</find>
+      <find>adoptCompound</find>
+      <find>h4</find>
+      <find>AIx</find>
+      <find>study</find>
+      <find>viz</find>
+      <find>dump</find>
+      <find>calcMassProper</find>
+      <find>frameInParentFrame</find>
+      <find>sqrt</find>
+      <find>Sqrt</find>
+      <find>Mk_G</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>DAIx</replace>
+      <replace>integrator</replace>
+      <replace>display</replace>
+    </replaceStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/simbody/SimTKmath/Integrators/src/TimeStepper.cpp" />
+        <option value="$PROJECT_DIR$/include/molmodel/internal/Compound.h" />
+        <option value="$PROJECT_DIR$/src/CompoundRep.h" />
+        <option value="$PROJECT_DIR$/tests/TestMethaneCartesian.cpp" />
+        <option value="$PROJECT_DIR$/tests/TestMethanol.cpp" />
+        <option value="$PROJECT_DIR$/src/CompoundAtom.h" />
+        <option value="$PROJECT_DIR$/tests/TestBallMobility.cpp" />
+        <option value="$PROJECT_DIR$/tests/TestBallJointProtein.cpp" />
+        <option value="$PROJECT_DIR$/simbody/examples/ExampleLongPendulum.cpp" />
+        <option value="$PROJECT_DIR$/src/CompoundSystem.cpp" />
+      </list>
+    </option>
+  </component>
+  <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
+  <component name="ProjectConfigurationFiles">
+    <option name="files">
+      <list>
+        <option value="$PROJECT_DIR$/.idea/molmodel_legacy.iml" />
+        <option value="$PROJECT_DIR$/.idea/misc.xml" />
+        <option value="$PROJECT_DIR$/.idea/vcs.xml" />
+        <option value="$PROJECT_DIR$/.idea/modules.xml" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="3840" />
+    <option name="y" value="23" />
+    <option name="width" value="1858" />
+    <option name="height" value="1177" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="Molmodel" type="b2602c69:ProjectViewProjectNode" />
+              <item name="molmodel_legacy" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/.." />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="settings.editor.selected.configurable" value="CMakeSettings" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="CMake Application.TestBallMobility">
+    <configuration name="Continuous" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="Continuous" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ContinuousBuild" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="ContinuousBuild" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="ContinuousBuild">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ContinuousConfigure" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="ContinuousConfigure" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="ContinuousConfigure">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ContinuousCoverage" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="ContinuousCoverage" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="ContinuousCoverage">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ContinuousMemCheck" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="ContinuousMemCheck" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="ContinuousMemCheck">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ContinuousStart" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="ContinuousStart" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="ContinuousStart">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ContinuousSubmit" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="ContinuousSubmit" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="ContinuousSubmit">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ContinuousTest" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="ContinuousTest" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="ContinuousTest">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ContinuousUpdate" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="ContinuousUpdate" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="ContinuousUpdate">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ExampleAdenylateMobilitiesVMD" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="ExampleAdenylateMobilitiesVMD" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="ExampleAdenylateMobilitiesVMD">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ExampleAdenylateMobilitiesViz" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="ExampleAdenylateMobilitiesViz" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="ExampleAdenylateMobilitiesViz">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ExampleCreatePropane" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="ExampleCreatePropane" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="ExampleCreatePropane">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ExampleFoldPolyalanine" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="ExampleFoldPolyalanine" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="ExampleFoldPolyalanine">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ExampleLoadPdb" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="ExampleLoadPdb" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="ExampleLoadPdb">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ExampleLoadPdb2" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="ExampleLoadPdb2" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="ExampleLoadPdb2">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ExampleRigidProtein" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="ExampleRigidProtein" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="ExampleRigidProtein">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ExampleSimpleProtein" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="ExampleSimpleProtein" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="ExampleSimpleProtein">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ExampleSimpleRNA" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="ExampleSimpleRNA" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="ExampleSimpleRNA">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ExampleTwoArgonAtoms" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="ExampleTwoArgonAtoms" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="ExampleTwoArgonAtoms">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ExampleTwoEthanes" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="ExampleTwoEthanes" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="ExampleTwoEthanes">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Experimental" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="Experimental" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ExperimentalBuild" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="ExperimentalBuild" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="ExperimentalBuild">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ExperimentalConfigure" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="ExperimentalConfigure" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="ExperimentalConfigure">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ExperimentalCoverage" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="ExperimentalCoverage" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="ExperimentalCoverage">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ExperimentalMemCheck" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="ExperimentalMemCheck" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="ExperimentalMemCheck">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ExperimentalStart" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="ExperimentalStart" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="ExperimentalStart">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ExperimentalSubmit" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="ExperimentalSubmit" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="ExperimentalSubmit">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ExperimentalTest" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="ExperimentalTest" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="ExperimentalTest">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ExperimentalUpdate" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="ExperimentalUpdate" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="ExperimentalUpdate">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MolmodelInstallTest" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="MolmodelInstallTest" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="MolmodelInstallTest">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MolmodelInstallTestNoViz" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="MolmodelInstallTestNoViz" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="MolmodelInstallTestNoViz">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Nightly" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="Nightly" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NightlyBuild" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="NightlyBuild" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="NightlyBuild">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NightlyConfigure" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="NightlyConfigure" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="NightlyConfigure">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NightlyCoverage" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="NightlyCoverage" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="NightlyCoverage">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NightlyMemCheck" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="NightlyMemCheck" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="NightlyMemCheck">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NightlyMemoryCheck" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="NightlyMemoryCheck" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="NightlyMemoryCheck">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NightlyStart" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="NightlyStart" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="NightlyStart">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NightlySubmit" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="NightlySubmit" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="NightlySubmit">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NightlyTest" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="NightlyTest" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="NightlyTest">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="NightlyUpdate" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="NightlyUpdate" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="NightlyUpdate">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="OpenMMPlugin" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="OpenMMPlugin" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="RemoveMassCenterDrift" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="RemoveMassCenterDrift" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="RemoveMassCenterDrift">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="RemoveMassCenterDriftWithOptimizer" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="RemoveMassCenterDriftWithOptimizer" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="RemoveMassCenterDriftWithOptimizer">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SimTKmolmodel_d" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="SimTKmolmodel_d" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestAtomTargetLocations" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestAtomTargetLocations" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestAtomTargetLocations">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestBallJointProtein" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestBallJointProtein" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestBallJointProtein">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestBallMobility" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestBallMobility" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestBallMobility">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestBiopolymer" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestBiopolymer" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestBiopolymer">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestBiotypeSelfCode" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestBiotypeSelfCode" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestBiotypeSelfCode">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestBodyIds" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestBodyIds" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestBodyIds">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestCompoundTransforms" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestCompoundTransforms" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestCompoundTransforms">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestDihedrals2" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestDihedrals2" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestDihedrals2">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestDuMMForces" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestDuMMForces" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestDuMMForces">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestEthane" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestEthane" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestEthane">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestEthaneFromSimbody" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestEthaneFromSimbody" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestEthaneFromSimbody">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestFitMagnesiums" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestFitMagnesiums" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestFitMagnesiums">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestForeignBodyIds" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestForeignBodyIds" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestForeignBodyIds">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestGbsa" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestGbsa" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestGbsa">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestGetAtomName" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestGetAtomName" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestGetAtomName">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestLoadPdb" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestLoadPdb" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestLoadPdb">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestLoadVariantRnaAtomNames" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestLoadVariantRnaAtomNames" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestLoadVariantRnaAtomNames">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestLoneAtomCoordinates" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestLoneAtomCoordinates" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestLoneAtomCoordinates">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestMemoryUse" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestMemoryUse" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestMemoryUse">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestMethaneCartesian" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestMethaneCartesian" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestMethaneCartesian">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestMethanol" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestMethanol" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestMethanol">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestMgSolvationEnergy" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestMgSolvationEnergy" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestMgSolvationEnergy">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestNoseHooverThermostat" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestNoseHooverThermostat" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestNoseHooverThermostat">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestNucleotide2" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestNucleotide2" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestNucleotide2">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestOxygenMolecule" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestOxygenMolecule" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestOxygenMolecule">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestPartitioner" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestPartitioner" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestPartitioner">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestPartitionerDihedrals" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestPartitionerDihedrals" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestPartitionerDihedrals">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestPdb" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestPdb" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestPdb">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestPositiveControl" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestPositiveControl" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestPositiveControl">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestProtein" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestProtein" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestProtein">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestProteinDihedrals" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestProteinDihedrals" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestProteinDihedrals">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestRiboseMobilizer" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestRiboseMobilizer" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestRiboseMobilizer">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestRna" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestRna" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestRna">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestSanityDuMM" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestSanityDuMM" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestSanityDuMM">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestSerine" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestSerine" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestSerine">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestSerineWithViz" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestSerineWithViz" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestSerineWithViz">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestSetTorsion" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestSetTorsion" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestSetTorsion">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestShortPdbLines" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestShortPdbLines" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestShortPdbLines">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestSimpleProtein" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestSimpleProtein" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestSimpleProtein">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestSodiumWithViz" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestSodiumWithViz" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestSodiumWithViz">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestTinkerAmber" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestTinkerAmber" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestTinkerAmber">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestTorsionPartitioner" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestTorsionPartitioner" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestTorsionPartitioner">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestVelocityRescalingThermostat" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestVelocityRescalingThermostat" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestVelocityRescalingThermostat">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestWriteDefaultPdb" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestWriteDefaultPdb" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestWriteDefaultPdb">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestWriteLargerPdb" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestWriteLargerPdb" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestWriteLargerPdb">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TestWriteSimtimePdb" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="TestWriteSimtimePdb" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Molmodel" RUN_TARGET_NAME="TestWriteSimtimePdb">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="doxygen" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Molmodel" TARGET_NAME="doxygen" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="CMake Application.ContinuousBuild" />
+      <item itemvalue="CMake Application.ContinuousConfigure" />
+      <item itemvalue="CMake Application.ContinuousCoverage" />
+      <item itemvalue="CMake Application.ContinuousMemCheck" />
+      <item itemvalue="CMake Application.ContinuousStart" />
+      <item itemvalue="CMake Application.ContinuousSubmit" />
+      <item itemvalue="CMake Application.ContinuousTest" />
+      <item itemvalue="CMake Application.ContinuousUpdate" />
+      <item itemvalue="CMake Application.Continuous" />
+      <item itemvalue="CMake Application.ExampleAdenylateMobilitiesVMD" />
+      <item itemvalue="CMake Application.ExampleAdenylateMobilitiesViz" />
+      <item itemvalue="CMake Application.ExampleCreatePropane" />
+      <item itemvalue="CMake Application.ExampleFoldPolyalanine" />
+      <item itemvalue="CMake Application.ExampleLoadPdb2" />
+      <item itemvalue="CMake Application.ExampleLoadPdb" />
+      <item itemvalue="CMake Application.ExampleRigidProtein" />
+      <item itemvalue="CMake Application.ExampleSimpleProtein" />
+      <item itemvalue="CMake Application.ExampleSimpleRNA" />
+      <item itemvalue="CMake Application.ExampleTwoArgonAtoms" />
+      <item itemvalue="CMake Application.ExampleTwoEthanes" />
+      <item itemvalue="CMake Application.ExperimentalBuild" />
+      <item itemvalue="CMake Application.ExperimentalConfigure" />
+      <item itemvalue="CMake Application.ExperimentalCoverage" />
+      <item itemvalue="CMake Application.ExperimentalMemCheck" />
+      <item itemvalue="CMake Application.ExperimentalStart" />
+      <item itemvalue="CMake Application.ExperimentalSubmit" />
+      <item itemvalue="CMake Application.ExperimentalTest" />
+      <item itemvalue="CMake Application.ExperimentalUpdate" />
+      <item itemvalue="CMake Application.Experimental" />
+      <item itemvalue="CMake Application.MolmodelInstallTestNoViz" />
+      <item itemvalue="CMake Application.MolmodelInstallTest" />
+      <item itemvalue="CMake Application.NightlyBuild" />
+      <item itemvalue="CMake Application.NightlyConfigure" />
+      <item itemvalue="CMake Application.NightlyCoverage" />
+      <item itemvalue="CMake Application.NightlyMemCheck" />
+      <item itemvalue="CMake Application.NightlyMemoryCheck" />
+      <item itemvalue="CMake Application.NightlyStart" />
+      <item itemvalue="CMake Application.NightlySubmit" />
+      <item itemvalue="CMake Application.NightlyTest" />
+      <item itemvalue="CMake Application.NightlyUpdate" />
+      <item itemvalue="CMake Application.Nightly" />
+      <item itemvalue="CMake Application.OpenMMPlugin" />
+      <item itemvalue="CMake Application.RemoveMassCenterDriftWithOptimizer" />
+      <item itemvalue="CMake Application.RemoveMassCenterDrift" />
+      <item itemvalue="CMake Application.SimTKmolmodel_d" />
+      <item itemvalue="CMake Application.TestAtomTargetLocations" />
+      <item itemvalue="CMake Application.TestBallJointProtein" />
+      <item itemvalue="CMake Application.TestBallMobility" />
+      <item itemvalue="CMake Application.TestBiopolymer" />
+      <item itemvalue="CMake Application.TestBiotypeSelfCode" />
+      <item itemvalue="CMake Application.TestBodyIds" />
+      <item itemvalue="CMake Application.TestCompoundTransforms" />
+      <item itemvalue="CMake Application.TestDihedrals2" />
+      <item itemvalue="CMake Application.TestDuMMForces" />
+      <item itemvalue="CMake Application.TestEthaneFromSimbody" />
+      <item itemvalue="CMake Application.TestEthane" />
+      <item itemvalue="CMake Application.TestFitMagnesiums" />
+      <item itemvalue="CMake Application.TestForeignBodyIds" />
+      <item itemvalue="CMake Application.TestGbsa" />
+      <item itemvalue="CMake Application.TestGetAtomName" />
+      <item itemvalue="CMake Application.TestLoadPdb" />
+      <item itemvalue="CMake Application.TestLoadVariantRnaAtomNames" />
+      <item itemvalue="CMake Application.TestLoneAtomCoordinates" />
+      <item itemvalue="CMake Application.TestMemoryUse" />
+      <item itemvalue="CMake Application.TestMethaneCartesian" />
+      <item itemvalue="CMake Application.TestMethanol" />
+      <item itemvalue="CMake Application.TestMgSolvationEnergy" />
+      <item itemvalue="CMake Application.TestNoseHooverThermostat" />
+      <item itemvalue="CMake Application.TestNucleotide2" />
+      <item itemvalue="CMake Application.TestOxygenMolecule" />
+      <item itemvalue="CMake Application.TestPartitionerDihedrals" />
+      <item itemvalue="CMake Application.TestPartitioner" />
+      <item itemvalue="CMake Application.TestPdb" />
+      <item itemvalue="CMake Application.TestPositiveControl" />
+      <item itemvalue="CMake Application.TestProteinDihedrals" />
+      <item itemvalue="CMake Application.TestProtein" />
+      <item itemvalue="CMake Application.TestRiboseMobilizer" />
+      <item itemvalue="CMake Application.TestRna" />
+      <item itemvalue="CMake Application.TestSanityDuMM" />
+      <item itemvalue="CMake Application.TestSerineWithViz" />
+      <item itemvalue="CMake Application.TestSerine" />
+      <item itemvalue="CMake Application.TestSetTorsion" />
+      <item itemvalue="CMake Application.TestShortPdbLines" />
+      <item itemvalue="CMake Application.TestSimpleProtein" />
+      <item itemvalue="CMake Application.TestSodiumWithViz" />
+      <item itemvalue="CMake Application.TestTinkerAmber" />
+      <item itemvalue="CMake Application.TestTorsionPartitioner" />
+      <item itemvalue="CMake Application.TestVelocityRescalingThermostat" />
+      <item itemvalue="CMake Application.TestWriteDefaultPdb" />
+      <item itemvalue="CMake Application.TestWriteLargerPdb" />
+      <item itemvalue="CMake Application.TestWriteSimtimePdb" />
+      <item itemvalue="CMake Application.doxygen" />
+    </list>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="69fc6958-11c7-434e-abfb-7e3af34920ff" name="Default Changelist" comment="" />
+      <created>1555582443340</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1555582443340</updated>
+      <workItem from="1555582444442" duration="1560000" />
+      <workItem from="1555589110232" duration="411000" />
+      <workItem from="1555834757215" duration="404000" />
+      <workItem from="1555835717790" duration="676000" />
+      <workItem from="1555934090987" duration="887000" />
+      <workItem from="1556520548283" duration="47000" />
+      <workItem from="1556521690133" duration="495000" />
+      <workItem from="1556610782336" duration="401000" />
+      <workItem from="1558206597169" duration="2130000" />
+      <workItem from="1558248804244" duration="151000" />
+      <workItem from="1561463478622" duration="291000" />
+      <workItem from="1561467426760" duration="4513000" />
+      <workItem from="1561474979457" duration="27000" />
+      <workItem from="1561477726781" duration="81000" />
+      <workItem from="1561541205298" duration="2010000" />
+      <workItem from="1561543849551" duration="90000" />
+      <workItem from="1561552229417" duration="1999000" />
+      <workItem from="1561554330755" duration="1079000" />
+      <workItem from="1561555758708" duration="2768000" />
+      <workItem from="1561622947519" duration="1564000" />
+      <workItem from="1561625446445" duration="731000" />
+      <workItem from="1561626392739" duration="5987000" />
+      <workItem from="1561635767969" duration="615000" />
+      <workItem from="1561636532407" duration="302000" />
+      <workItem from="1561639304672" duration="5000" />
+      <workItem from="1561639382057" duration="892000" />
+      <workItem from="1561640766284" duration="814000" />
+      <workItem from="1562142833060" duration="47000" />
+      <workItem from="1562142923103" duration="208000" />
+      <workItem from="1562147332269" duration="710000" />
+      <workItem from="1562150211981" duration="183000" />
+      <workItem from="1562231443123" duration="1163000" />
+      <workItem from="1562233183531" duration="2538000" />
+      <workItem from="1562237255215" duration="12000" />
+      <workItem from="1562838096486" duration="6000" />
+      <workItem from="1562838118522" duration="942000" />
+      <workItem from="1562842980786" duration="17000" />
+      <workItem from="1562843015438" duration="755000" />
+      <workItem from="1562843795997" duration="906000" />
+      <workItem from="1563177537683" duration="206000" />
+      <workItem from="1563264380875" duration="4000" />
+      <workItem from="1563264411348" duration="918000" />
+      <workItem from="1563265440003" duration="701000" />
+      <workItem from="1563292119451" duration="6000" />
+      <workItem from="1563292149642" duration="2221000" />
+      <workItem from="1563353701329" duration="1742000" />
+      <workItem from="1563459208711" duration="204000" />
+      <workItem from="1563459674515" duration="54000" />
+      <workItem from="1563526918395" duration="54000" />
+      <workItem from="1563528406333" duration="1104000" />
+      <workItem from="1563529598040" duration="13000" />
+      <workItem from="1563529680687" duration="1924000" />
+      <workItem from="1563531811869" duration="3966000" />
+      <workItem from="1563537750075" duration="10000" />
+      <workItem from="1563537809642" duration="432000" />
+      <workItem from="1563723415630" duration="87000" />
+      <workItem from="1563883500108" duration="51000" />
+      <workItem from="1563883587608" duration="24000" />
+      <workItem from="1563974295316" duration="1185000" />
+      <workItem from="1565081609596" duration="5000" />
+      <workItem from="1565081629590" duration="1161000" />
+      <workItem from="1565083688041" duration="46000" />
+      <workItem from="1565085939274" duration="533000" />
+      <workItem from="1565086997032" duration="8382000" />
+      <workItem from="1565161897963" duration="7280000" />
+      <workItem from="1565169979808" duration="58000" />
+      <workItem from="1565170499519" duration="3240000" />
+      <workItem from="1565174222942" duration="1055000" />
+      <workItem from="1565176821000" duration="4821000" />
+      <workItem from="1565182371668" duration="6352000" />
+      <workItem from="1565190771507" duration="415000" />
+      <workItem from="1565250365552" duration="755000" />
+      <workItem from="1565258013437" duration="21000" />
+      <workItem from="1565259958240" duration="1539000" />
+      <workItem from="1565263281054" duration="13000" />
+      <workItem from="1565341260473" duration="39000" />
+      <workItem from="1565342586822" duration="2768000" />
+      <workItem from="1565348233778" duration="2797000" />
+      <workItem from="1565353346369" duration="8038000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="102641000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="3840" y="23" width="1858" height="1177" extended-state="0" />
+    <editor active="true" />
+    <layout>
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.13611417" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.22880584" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.4412033" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.3418414" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Database Changes" order="7" />
+      <window_info anchor="bottom" id="Messages" order="8" weight="0.3372835" />
+      <window_info anchor="bottom" id="Terminal" order="9" weight="0.3298292" />
+      <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" weight="0.3299909" />
+      <window_info anchor="bottom" id="Version Control" order="11" />
+      <window_info anchor="bottom" id="CMake" order="12" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+      <window_info anchor="right" id="Database" order="3" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/DuMMForceFieldSubsystemRep.cpp</url>
+          <line>3266</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="359">
+          <caret line="479" column="40" lean-forward="true" selection-start-line="479" selection-start-column="40" selection-end-line="479" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/simbody/SimTKmath/Integrators/src/TimeStepper.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="373">
+          <caret line="56" selection-start-line="56" selection-end-line="56" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/ExampleCreatePropane.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="50" column="53" lean-forward="true" selection-start-line="50" selection-start-column="53" selection-end-line="50" selection-end-column="53" />
+          <folding>
+            <element signature="e#0#21#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/ExampleTwoArgonAtoms.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="140">
+          <caret line="20" column="37" lean-forward="true" selection-start-line="20" selection-start-column="37" selection-end-line="20" selection-end-column="37" />
+          <folding>
+            <element signature="e#0#21#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/TestVelocityRescalingThermostat.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="440">
+          <caret line="140" column="4" lean-forward="true" selection-start-line="140" selection-start-column="4" selection-end-line="140" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/include/simbody/simbody/internal/MobilizedBody_Ball.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="390">
+          <caret line="38" column="34" lean-forward="true" selection-start-line="38" selection-start-column="34" selection-end-line="38" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/MolecularMechanicsSystem.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-250">
+          <caret line="119" lean-forward="true" selection-start-line="119" selection-end-line="119" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/molmodel/internal/units.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="535">
+          <caret line="46" column="13" selection-start-line="46" selection-start-column="13" selection-end-line="46" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/include/simbody/simbody/internal/Visualizer.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="182">
+          <caret line="192" selection-start-line="192" selection-end-line="192" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/TestBiopolymer.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="465">
+          <caret line="31" column="9" selection-start-line="31" selection-start-column="9" selection-end-line="31" selection-end-column="9" />
+          <folding>
+            <element signature="e#2402#2428#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/examples/ExampleFoldPolyalanine.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="395">
+          <caret line="185" column="4" selection-start-line="185" selection-start-column="4" selection-end-line="185" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/TestMethaneCartesian.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="365">
+          <caret line="74" column="25" selection-start-line="74" selection-start-column="25" selection-end-line="74" selection-end-column="25" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/CompoundAtom.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="343">
+          <caret line="173" column="60" selection-start-line="173" selection-start-column="56" selection-end-line="173" selection-end-column="60" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/include/simbody/SimTKcommon/internal/Transform.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1025">
+          <caret line="110" selection-start-line="110" selection-end-line="110" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/molmodel/internal/Ions.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4273">
+          <caret line="452" column="6" selection-start-line="452" selection-start-column="6" selection-end-line="452" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/molmodel/internal/common.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-145" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/TestEthane.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="785">
+          <caret line="113" column="23" lean-forward="true" selection-start-line="113" selection-start-column="23" selection-end-line="113" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/TestLoneAtomCoordinates.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="54" column="11" selection-start-line="54" selection-start-column="11" selection-end-line="54" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/molmodel/internal/Biotype.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1710">
+          <caret line="114" column="24" selection-start-line="114" selection-start-column="24" selection-end-line="114" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/molmodel/internal/CompoundSystem.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1410">
+          <caret line="94" column="43" selection-start-line="94" selection-start-column="43" selection-end-line="94" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/molmodel/internal/Element.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="561">
+          <caret line="57" selection-start-line="57" selection-end-line="57" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/include/simbody/SimTKcommon/internal/ExceptionMacros.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="235">
+          <caret line="227" column="8" selection-start-line="227" selection-start-column="8" selection-end-line="227" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/TestMethanol.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1650">
+          <caret line="110" column="33" selection-start-line="110" selection-start-column="4" selection-end-line="110" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/DuMMForceFieldSubsystemRep.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="24405">
+          <caret line="1627" column="22" selection-start-line="1627" selection-start-column="22" selection-end-line="1627" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/CompoundRep.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="29535">
+          <caret line="1969" selection-start-line="1969" selection-end-line="1969" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/molmodel/internal/VelocityRescalingThermostat.h">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/TestProtein.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="65" column="79" selection-start-line="65" selection-start-column="79" selection-end-line="65" selection-end-column="79" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/VelocityRescalingThermostat.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1125">
+          <caret line="75" selection-start-line="75" selection-end-line="75" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/molmodel/internal/Protein.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="1025" column="50" selection-start-line="1025" selection-start-column="50" selection-end-line="1025" selection-end-column="50" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/simbody/SimTKmath/Integrators/src/Integrator.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="6450">
+          <caret line="430" selection-start-line="430" selection-end-line="430" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/simbody/SimTKcommon/Simulation/src/System.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5355">
+          <caret line="357" selection-start-line="357" selection-end-line="357" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/molmodel/internal/DuMMForceFieldSubsystem.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="19950">
+          <caret line="1330" column="77" selection-start-line="1330" selection-start-column="77" selection-end-line="1330" selection-end-column="77" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/simbody/Simbody/src/MultibodySystem.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2805">
+          <caret line="187" selection-start-line="187" selection-end-line="187" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/simbody/SimTKcommon/Simulation/src/Subsystem.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3120">
+          <caret line="208" selection-start-line="208" selection-end-line="208" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Compound.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="23880">
+          <caret line="1592" selection-start-line="1592" selection-end-line="1592" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/molmodel/internal/Compound.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="23595">
+          <caret line="1573" column="29" selection-start-line="1573" selection-start-column="29" selection-end-line="1573" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/simbody/examples/ExampleLongPendulum.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="470">
+          <caret line="56" column="41" selection-start-line="56" selection-start-column="41" selection-end-line="56" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/DuMMForceFieldSubsystem.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="400">
+          <caret line="1505" selection-start-line="1505" selection-end-line="1505" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/include/simbody/SimTKcommon/internal/Rotation.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="234">
+          <caret line="110" column="6" selection-start-line="110" selection-start-column="6" selection-end-line="110" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/include/simbody/SimTKcommon/internal/MassProperties.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="100">
+          <caret line="193" column="15" lean-forward="true" selection-start-line="193" selection-start-column="15" selection-end-line="193" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/CompoundSystem.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="598" selection-start-line="598" selection-end-line="598" />
+          <folding>
+            <element signature="e#0#45#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/DuMMForceFieldSubsystemRep.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="130">
+          <caret line="3268" selection-start-line="3268" selection-end-line="3268" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/TestBallJointProtein.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="445">
+          <caret line="129" column="5" selection-start-line="129" selection-start-column="5" selection-end-line="129" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/TestBallMobility.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="22">
+          <caret line="62" column="90" lean-forward="true" selection-start-line="62" selection-start-column="90" selection-end-line="62" selection-end-column="90" />
+          <folding>
+            <element signature="e#2402#2428#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

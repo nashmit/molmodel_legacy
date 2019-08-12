@@ -42,21 +42,21 @@ using namespace std;
 
 // define CREATE_VIZ_WINDOW to see animated window of simulation
 // undefine for automated nightly builds
-// #define CREATE_VIZ_WINDOW
+#define CREATE_VIZ_WINDOW
 
 int main() {
 
-    Methane methane1, methane2;
+    Methane methane1;
 
     CompoundSystem system;
 	SimbodyMatterSubsystem matter(system);
+    DecorationSubsystem decorations(system);
     DuMMForceFieldSubsystem dumm(system);
 
     dumm.loadAmber99Parameters();
     dumm.loadTestMoleculeParameters();
 
     system.adoptCompound(methane1, Vec3(   0, 0, 0));
-    system.adoptCompound(methane2, Vec3( 0.4, 0, 0));
 
     methane1.setBondMobility( BondMobility::Free, Compound::BondIndex(0) );
     methane1.setBondMobility( BondMobility::Free, Compound::BondIndex(1) );
@@ -68,7 +68,7 @@ int main() {
     State state = system.realizeTopology();
 
 #ifdef CREATE_VIZ_WINDOW
-    Visualizer display(system, 0.1);
+    Visualizer display(system);
 #endif
 
     RungeKuttaMersonIntegrator study(system);

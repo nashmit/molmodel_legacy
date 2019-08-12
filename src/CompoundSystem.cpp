@@ -573,8 +573,13 @@ void CompoundSystem::modelOneCompound(CompoundIndex compoundId, String mobilized
 	            unit.bodyId = torsionBody.getMobilizedBodyIndex();
             }
             else {
+                std::cout << "P_X_M:" << std::endl;
+                std::cout << P_X_M << std::endl;
+                std::cout << "M_X_pin:" << std::endl;
+                std::cout << M_X_pin << std::endl;
 
                 if(bond.getMobility() == BondMobility::Torsion) {
+
 ///* Molmodel: BEGIN
                     MobilizedBody::Pin torsionBody(
                             matter.updMobilizedBody(parentUnit.bodyId),
@@ -589,12 +594,24 @@ void CompoundSystem::modelOneCompound(CompoundIndex compoundId, String mobilized
                     unit.bodyId = torsionBody.getMobilizedBodyIndex();
 // Molmodel: END */
                 } else if(bond.getMobility() == BondMobility::Ball) {
-    	            MobilizedBody::Ball torsionBody(
-    	                    matter.updMobilizedBody(parentUnit.bodyId),
-    	                    P_X_M * M_X_pin,
-    	                    dumm.calcClusterMassProperties(unit.clusterIx),
-    	                    M_X_pin);
-	                // Save a pointer to the pin joint in the bond object
+
+                    MassProperties mp = dumm.calcClusterMassProperties(unit.clusterIx);
+                    std::cout << " DEBUG MP isNaN " << mp.isNaN() << std::endl;
+
+    	            //MobilizedBody::Ball torsionBody(
+    	            //       matter.updMobilizedBody(parentUnit.bodyId),
+                    //        P_X_M * M_X_pin,
+    	            //        dumm.calcClusterMassProperties(unit.clusterIx),
+                    //        M_X_pin);
+
+                    MobilizedBody::Ball torsionBody(
+                            matter.updMobilizedBody(parentUnit.bodyId),
+                            P_X_M * M_X_pin,
+                            dumm.calcClusterMassProperties(unit.clusterIx),
+                            M_X_pin
+                            );
+
+                    // Save a pointer to the pin joint in the bond object
 	                // (ensure that the default angle of the MobilizedBody::Pin matches that of
 	                // the bond, in Atom.h)
 	                // NOTE - setPinBody automatically sets the torsionBody default torsion angle
@@ -629,7 +646,7 @@ void CompoundSystem::modelOneCompound(CompoundIndex compoundId, String mobilized
 
     if (showDebugMessages) cout << "Step 9 create decorations" << endl;
     // 9) Create nice visualization geometry
-    /*
+ //   /*
     if (hasDecorationSubsystem()) 
     {
         DecorationSubsystem&     artwork = updDecorationSubsystem();
@@ -657,7 +674,7 @@ void CompoundSystem::modelOneCompound(CompoundIndex compoundId, String mobilized
                     .setColor(dumm.getAtomDefaultColor(anum)).setOpacity(opacity).setResolution(3));
         }
     }
-    */
+//    */
     if (showDebugMessages) cout << "Finished modelOneCompound" << endl;
 }
 

@@ -170,9 +170,11 @@ public:
             MobilizedBody::Pin &pin = (MobilizedBody::Pin &) matter.updMobilizedBody(pinJointId);
             pin.setAngle(state, angleInRadians);
         }else if(mobility == BondMobility::Ball){ // Gmol
+
             MobilizedBody::Ball &ball = (MobilizedBody::Ball &) matter.updMobilizedBody(pinJointId);
             ball.setQ(state, SimTK::Rotation(angleInRadians,
                     CoordinateAxis::ZCoordinateAxis()).convertRotationToQuaternion().asVec4());
+
         }
 
         return *this;

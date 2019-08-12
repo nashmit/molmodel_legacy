@@ -42,7 +42,7 @@ using namespace std;
 
 // define CREATE_VIZ_WINDOW to see animated window of simulation
 // undefine for automated nightly builds
-// #define CREATE_VIZ_WINDOW
+#define CREATE_VIZ_WINDOW
 
 class Methanol : public Compound {
 public:
@@ -87,23 +87,23 @@ static const Real rubber_dissipation = 0.005;
 
 int main() {
 
-    Methanol methanol1, methanol2, methanol3;
+    Methanol methanol1; //, methanol2, methanol3;
 
     CompoundSystem system;
 	SimbodyMatterSubsystem matter(system);
     DecorationSubsystem decorations(system);
 
     DuMMForceFieldSubsystem dumm(system);
-    HuntCrossleyContact     contact(system);
+    //HuntCrossleyContact     contact(system);
 
-    contact.addHalfSpace(matter.Ground(), UnitVec3(0,1,0), -3, rubber_planestrain, rubber_dissipation);
-    decorations.addBodyFixedDecoration(GroundIndex, Transform(Vec3(0, -3, 0)), DecorativeBrick(Vec3(7,.02,7)).setColor(Yellow).setOpacity(0.25));
+    //contact.addHalfSpace(matter.Ground(), UnitVec3(0,1,0), -3, rubber_planestrain, rubber_dissipation);
+    //decorations.addBodyFixedDecoration(GroundIndex, Transform(Vec3(0, -3, 0)), DecorativeBrick(Vec3(7,.02,7)).setColor(Yellow).setOpacity(0.25));
 
-    contact.addHalfSpace(matter.Ground(), UnitVec3(1,0,0), -3, rubber_planestrain, rubber_dissipation);
-    decorations.addBodyFixedDecoration(GroundIndex, Transform(Vec3(-3, 0, 0)), DecorativeBrick(Vec3(.02, 7 ,7)).setColor(Yellow).setOpacity(0.25));
+    //contact.addHalfSpace(matter.Ground(), UnitVec3(1,0,0), -3, rubber_planestrain, rubber_dissipation);
+    //decorations.addBodyFixedDecoration(GroundIndex, Transform(Vec3(-3, 0, 0)), DecorativeBrick(Vec3(.02, 7 ,7)).setColor(Yellow).setOpacity(0.25));
 
-    contact.addHalfSpace(matter.Ground(), UnitVec3(1,0,0), 3, rubber_planestrain, rubber_dissipation);
-    decorations.addBodyFixedDecoration(GroundIndex, Transform(Vec3(3, 0, 0)), DecorativeBrick(Vec3(.02,7,7)).setColor(Yellow).setOpacity(0.25));
+    //contact.addHalfSpace(matter.Ground(), UnitVec3(1,0,0), 3, rubber_planestrain, rubber_dissipation);
+    //decorations.addBodyFixedDecoration(GroundIndex, Transform(Vec3(3, 0, 0)), DecorativeBrick(Vec3(.02,7,7)).setColor(Yellow).setOpacity(0.25));
 
     // ifstream tinkerStream("C:/cygwin/home/cmbruns/svn/molmodel/resources/tinker_amber99_clean.prm");
     // dumm.populateFromTinkerParameterFile(tinkerStream);
@@ -135,15 +135,17 @@ int main() {
     dumm.setBiotypeChargedAtomType( methanolCAtomTypeIndex, Biotype::get("Methanol", "C").getIndex() );
 
     system.adoptCompound(methanol1, Vec3(-0.5, 0, 0));
-    system.adoptCompound(methanol2, Vec3(   0, 0, 0));
-    system.adoptCompound(methanol3, Vec3( 0.5, 0, 0));
+    //system.adoptCompound(methanol2, Vec3(   0, 0, 0));
+    //system.adoptCompound(methanol3, Vec3( 0.5, 0, 0));
+
+    //methanol1.setBondMobility( BondMobility::Torsion, Compound::BondIndex(4) );
 
     system.modelCompounds();        
 
     State state = system.realizeTopology();
 
 #ifdef CREATE_VIZ_WINDOW
-    Visualizer display(system, 0.1);
+    Visualizer display(system);
 #endif
 
 
