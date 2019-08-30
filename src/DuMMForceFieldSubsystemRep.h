@@ -542,17 +542,18 @@ public:
         while (theta0 > Pi) theta0 -= 2*Pi;
         while (theta0 <= -Pi) theta0 += 2*Pi;
         
-        /*
-        std::cout << "periodicity = " << periodicity << std::endl;
+
+/*        std::cout << "periodicity = " << periodicity << std::endl;
         std::cout << "amplitude = " << amplitude << std::endl;
         std::cout << "theta0 = " << theta0 << std::endl;
-        std::cout << "Pi = " << Pi << std::endl;
-         */
+        std::cout << "Pi = " << Pi << std::endl;*/
+
         
         assert(isValid());
     }
-    bool isValid() const {return periodicity > 0 && amplitude >= 0 
-                                 && -Pi < theta0 && theta0 <= Pi;}
+    bool isValid() const {return periodicity > 0
+                                //&& amplitude >= 0 // GMOL Amber allows negative dihedral energy
+                                && -Pi < theta0 && theta0 <= Pi;}
     Real energy(Real theta) const {
         return amplitude*(1 + std::cos(periodicity*theta-theta0));
     }

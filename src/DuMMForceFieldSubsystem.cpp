@@ -558,9 +558,12 @@ void DuMMForceFieldSubsystemRep::defineAnyTorsion
             // No nonsense.
         SimTK_APIARGCHECK1_ALWAYS(1 <= periodicity1 && periodicity1 <= 6, ApiClassName, CallingMethodName,
             "periodicity1(%d) is invalid: we require 1 <= periodicity <= 6", periodicity1);
-        SimTK_APIARGCHECK1_ALWAYS(amp1InKJ >= 0, ApiClassName, CallingMethodName,
-            "amplitude1(%g) is not valid: must be nonnegative", amp1InKJ);
+
+        // GMOL Amber allows negative dihedral energy
+        /*        SimTK_APIARGCHECK1_ALWAYS(amp1InKJ >= 0, ApiClassName, CallingMethodName,
+            "amplitude1(%g) is not valid: must be nonnegative", amp1InKJ);*/
         //scf changed 0 to -180 to allow NAST right handed helices
+
         SimTK_APIARGCHECK1_ALWAYS(-180 <= phase1InDegrees && phase1InDegrees <= 180, ApiClassName, CallingMethodName,
             "phaseAngle1(%g) is not valid: must be between -180 and 180 degrees, inclusive", phase1InDegrees);
 
@@ -574,8 +577,11 @@ void DuMMForceFieldSubsystemRep::defineAnyTorsion
             // No nonsense.
         SimTK_APIARGCHECK1_ALWAYS(1 <= periodicity2 && periodicity2 <= 6, ApiClassName, CallingMethodName,
             "periodicity2(%d) is invalid: we require 1 <= periodicity <= 6", periodicity2);
-        SimTK_APIARGCHECK1_ALWAYS(amp2InKJ >= 0, ApiClassName, CallingMethodName,
-            "amplitude2(%g) is not valid: must be nonnegative", amp2InKJ);
+
+        // GMOL Amber allows negative dihedral energy
+        /*        SimTK_APIARGCHECK1_ALWAYS(amp2InKJ >= 0, ApiClassName, CallingMethodName,
+            "amplitude2(%g) is not valid: must be nonnegative", amp2InKJ);*/
+
         SimTK_APIARGCHECK1_ALWAYS(0 <= phase2InDegrees && phase2InDegrees <= 180, ApiClassName, CallingMethodName,
             "phaseAngle2(%g) is not valid: must be between 0 and 180 degrees, inclusive", phase2InDegrees);
 
@@ -588,8 +594,11 @@ void DuMMForceFieldSubsystemRep::defineAnyTorsion
             // No nonsense.
         SimTK_APIARGCHECK1_ALWAYS(1 <= periodicity3 && periodicity3 <= 6, ApiClassName, CallingMethodName,
             "periodicity3(%d) is invalid: we require 1 <= periodicity <= 6", periodicity3);
-        SimTK_APIARGCHECK1_ALWAYS(amp3InKJ >= 0, ApiClassName, CallingMethodName,
-            "amplitude3(%g) is not valid: must be nonnegative", amp3InKJ);
+
+        // GMOL Amber allows negative dihedral energy
+        /*        SimTK_APIARGCHECK1_ALWAYS(amp3InKJ >= 0, ApiClassName, CallingMethodName,
+            "amplitude3(%g) is not valid: must be nonnegative", amp3InKJ);*/
+
         SimTK_APIARGCHECK1_ALWAYS(0 <= phase3InDegrees && phase3InDegrees <= 180, ApiClassName, CallingMethodName,
             "phaseAngle3(%g) is not valid: must be between 0 and 180 degrees, inclusive", phase3InDegrees);
             // (we've already checked for any possible repeats)

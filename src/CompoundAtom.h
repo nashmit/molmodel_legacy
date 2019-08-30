@@ -174,6 +174,12 @@ public:
             MobilizedBody::Ball &ball = (MobilizedBody::Ball &) matter.updMobilizedBody(pinJointId);
             ball.setQ(state, SimTK::Rotation(angleInRadians,
                     CoordinateAxis::ZCoordinateAxis()).convertRotationToQuaternion().asVec4());
+/*
+
+            ball.setQ(state, SimTK::Rotation(angleInRadians,
+                                             CoordinateAxis::XCoordinateAxis()).convertRotationToQuaternion().asVec4());
+
+*/
 
         }
 
@@ -213,9 +219,16 @@ public:
         pinJointId = ball.getMobilizedBodyIndex();
 
         SimTK::Rotation R_FM;
+
         R_FM.setRotationFromAngleAboutX(0.0);
         R_FM.setRotationFromAngleAboutY(0.0);
         R_FM.setRotationFromAngleAboutZ(defaultDihedral);
+/*
+        R_FM.setRotationFromAngleAboutX(defaultDihedral);
+        R_FM.setRotationFromAngleAboutY(0.0);
+        R_FM.setRotationFromAngleAboutZ(0.0);
+*/
+
         ball.setDefaultRotation(R_FM);
 
         return *this;

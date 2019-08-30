@@ -573,13 +573,7 @@ void CompoundSystem::modelOneCompound(CompoundIndex compoundId, String mobilized
 	            unit.bodyId = torsionBody.getMobilizedBodyIndex();
             }
             else {
-                std::cout << "P_X_M:" << std::endl;
-                std::cout << P_X_M << std::endl;
-                std::cout << "M_X_pin:" << std::endl;
-                std::cout << M_X_pin << std::endl;
-
                 if(bond.getMobility() == BondMobility::Torsion) {
-
 ///* Molmodel: BEGIN
                     MobilizedBody::Pin torsionBody(
                             matter.updMobilizedBody(parentUnit.bodyId),
@@ -596,27 +590,48 @@ void CompoundSystem::modelOneCompound(CompoundIndex compoundId, String mobilized
                 } else if(bond.getMobility() == BondMobility::Ball) {
 
                     MassProperties mp = dumm.calcClusterMassProperties(unit.clusterIx);
-                    std::cout << " DEBUG MP isNaN " << mp.isNaN() << std::endl;
+/*                    Mat33 inertia = mp.getInertia().toMat33();
+                    Mat11 submat11(inertia[0][0]);
 
-    	            //MobilizedBody::Ball torsionBody(
-    	            //       matter.updMobilizedBody(parentUnit.bodyId),
-                    //        P_X_M * M_X_pin,
-    	            //        dumm.calcClusterMassProperties(unit.clusterIx),
-                    //        M_X_pin);
+                    Mat22 submat22;
+                    submat22[0][0] = inertia[0][0]; submat22[0][1] = inertia[0][1];
+                    submat22[1][0] = inertia[1][0]; submat22[1][1] = inertia[1][1];
 
-                    MobilizedBody::Ball torsionBody(
-                            matter.updMobilizedBody(parentUnit.bodyId),
-                            P_X_M * M_X_pin,
-                            dumm.calcClusterMassProperties(unit.clusterIx),
-                            M_X_pin
-                            );
+                    Mat33 submat33 = inertia;
 
-                    // Save a pointer to the pin joint in the bond object
-	                // (ensure that the default angle of the MobilizedBody::Pin matches that of
-	                // the bond, in Atom.h)
-	                // NOTE - setPinBody automatically sets the torsionBody default torsion angle
-	                bond.setBallBody(torsionBody);
-	                unit.bodyId = torsionBody.getMobilizedBodyIndex();
+                    Real tol = 0.00000001;
+                    Real det1 = det(submat11);
+                    Real det2 = det(submat22);
+                    Real det3 = det(submat33);
+
+                    // If the body is singular it will be downgraded from Ball to Pin
+                    if((det1 < TinyReal) || (det2 < TinyReal) || (det3 < TinyReal)){
+                        MobilizedBody::Pin torsionBody(
+                                matter.updMobilizedBody(parentUnit.bodyId),
+                                P_X_M * M_X_pin,
+                                dumm.calcClusterMassProperties(unit.clusterIx),
+                                M_X_pin);
+
+                        bond.setPinBody(torsionBody);
+                        unit.bodyId = torsionBody.getMobilizedBodyIndex();
+                        std::cout << "Inertia is not positive definite. Determinants are "
+                            << det1 << " " << det2 << " " << det3 << " Seting mobod "
+                            << unit.bodyId << " to Pin" << std::endl;
+                    }else{*/
+                        MobilizedBody::Ball torsionBody(
+                                matter.updMobilizedBody(parentUnit.bodyId),
+                                P_X_M * M_X_pin,
+                                dumm.calcClusterMassProperties(unit.clusterIx),
+                                M_X_pin
+                        );
+
+                        bond.setBallBody(torsionBody);
+                        unit.bodyId = torsionBody.getMobilizedBodyIndex();
+/*
+                    }
+*/
+
+
                 } else if(bond.getMobility() == BondMobility::Cylinder) {
                     MobilizedBody::Cylinder torsionBody(
                                matter.updMobilizedBody(parentUnit.bodyId),
@@ -652,7 +667,7 @@ void CompoundSystem::modelOneCompound(CompoundIndex compoundId, String mobilized
         DecorationSubsystem&     artwork = updDecorationSubsystem();
         DecorativeLine crossBodyBond; crossBodyBond.setColor(Orange).setLineThickness(5);
 
-        for (DuMM::BondIndex i(0); i < dumm.getNumBonds(); ++i) {
+/*        for (DuMM::BondIndex i(0); i < dumm.getNumBonds(); ++i) {
             const DuMM::AtomIndex    a1 = dumm.getBondAtom(i,0), a2 = dumm.getBondAtom(i,1);
             const MobilizedBodyIndex b1 = dumm.getAtomBody(a1),  b2 = dumm.getAtomBody(a2);
             if (b1==b2)
@@ -662,7 +677,7 @@ void CompoundSystem::modelOneCompound(CompoundIndex compoundId, String mobilized
             else
                 artwork.addRubberBandLine(b1, dumm.getAtomStationOnBody(a1),
                                           b2, dumm.getAtomStationOnBody(a2), crossBodyBond);
-        }
+        }*/
 
         for (DuMM::AtomIndex anum(0); anum < dumm.getNumAtoms(); ++anum) {
             Real shrink = 0.25 , opacity = dumm.getAtomElement(anum)==1?0.5:1;
