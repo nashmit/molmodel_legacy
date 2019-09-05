@@ -279,6 +279,14 @@ public:
 
     }
 
+    // GMOL
+    Rotation getDefaultRotation(const State& state, const SimbodyMatterSubsystem& matter) const {
+        assert(pinJointId.isValid());
+        assert(mobility == BondMobility::Ball);
+        const MobilizedBody::Ball &ball = (const MobilizedBody::Ball &) matter.getMobilizedBody(pinJointId);
+        return ball.getBodyRotation(state);
+    }
+
     Bond& setDefaultBondLength(mdunits::Length d) {
         defaultLength = d;
         return *this;

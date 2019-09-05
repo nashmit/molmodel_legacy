@@ -3282,7 +3282,6 @@ MassProperties Cluster::calcMassProperties
         ++aap;
     }
     com /= mass;
-    std::cout << "BALLBUG Cluster::calcMassProperties transMassProps inertia " << MassProperties(mass,com,inertia).calcTransformedMassProps(tr).getInertia() << std::endl;
     return MassProperties(mass,com,inertia).calcTransformedMassProps(tr);
 }
 

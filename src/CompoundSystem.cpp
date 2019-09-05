@@ -553,7 +553,43 @@ void CompoundSystem::modelOneCompound(CompoundIndex compoundId, String mobilized
 
             // this is just a hack for testing the unfinished ribose mobilizer
             bool testRiboseMobilizer = false;
-            
+
+
+
+
+
+            // GMOL =====================
+
+            // Get the atom indeces at the origin of the bodies
+            Compound::AtomIndex originAtomId(*unit.clusterAtoms.begin());
+            Compound::AtomIndex parentOriginAtomId(*parentUnit.clusterAtoms.begin());
+
+            // Check if they are relly the origins
+            Vec3 originAtomLoc = atomBonds[originAtomId].locationInBodyFrame;
+            Vec3 parentOriginAtomLoc = atomBonds[parentOriginAtomId].locationInBodyFrame;
+
+            // Get atoms
+            CompoundAtom& originAtom = compoundRep.updAtom(originAtomId);
+            CompoundAtom& parentOriginAtom = compoundRep.updAtom(parentOriginAtomId);
+
+            // Get the parent atom of the origin atom
+            AtomBonding& originAtomBonding = atomBonds.find(originAtomId)->second;
+            Compound::AtomIndex parentAtomId = originAtomBonding.parentAtomIndex;
+
+            CompoundAtom& parentAtom = compoundRep.updAtom(parentAtomId);
+            Transform P_X_parentAtom = parentAtom.getFrameInMobilizedBodyFrame();
+
+            // Get default Q
+            const Transform& T_X_origin = defaultAtomFrames[originAtomId];
+            const Transform& T_X_parent = defaultAtomFrames[parentAtomId];
+            const Transform& G_X_T = compoundRep.getTopLevelTransform();
+            Transform G_X_origin = G_X_T * T_X_origin;
+            Transform G_X_parent = G_X_T * T_X_parent;
+            std::cout << "Molmodel parent child transform: " << ~G_X_parent * G_X_origin << " " << std::endl;
+
+            // GMOL END
+
+
             // CMB -- temporarily comment out Pin mobilizer while we test 
             // function based mobilizer for ribose pseudorotation
             if (testRiboseMobilizer) {
@@ -574,12 +610,19 @@ void CompoundSystem::modelOneCompound(CompoundIndex compoundId, String mobilized
             }
             else {
                 if(bond.getMobility() == BondMobility::Torsion) {
-///* Molmodel: BEGIN
+                    // GMOL ======
                     MobilizedBody::Pin torsionBody(
+                            matter.updMobilizedBody(parentUnit.bodyId),
+                            ~P_X_parentAtom * P_X_M * M_X_pin,
+                            dumm.calcClusterMassProperties(unit.clusterIx),
+                            M_X_pin);
+                    // GMOL END
+///* Molmodel: BEGIN
+/*                    MobilizedBody::Pin torsionBody(
                             matter.updMobilizedBody(parentUnit.bodyId),
                             P_X_M * M_X_pin,
                             dumm.calcClusterMassProperties(unit.clusterIx),
-                            M_X_pin);
+                            M_X_pin);*/
                     // Save a pointer to the pin joint in the bond object
                     // (ensure that the default angle of the MobilizedBody::Pin matches that of
                     // the bond, in Atom.h)
@@ -664,10 +707,10 @@ void CompoundSystem::modelOneCompound(CompoundIndex compoundId, String mobilized
  //   /*
     if (hasDecorationSubsystem()) 
     {
-        DecorationSubsystem&     artwork = updDecorationSubsystem();
+/*        DecorationSubsystem&     artwork = updDecorationSubsystem();
         DecorativeLine crossBodyBond; crossBodyBond.setColor(Orange).setLineThickness(5);
 
-/*        for (DuMM::BondIndex i(0); i < dumm.getNumBonds(); ++i) {
+        for (DuMM::BondIndex i(0); i < dumm.getNumBonds(); ++i) {
             const DuMM::AtomIndex    a1 = dumm.getBondAtom(i,0), a2 = dumm.getBondAtom(i,1);
             const MobilizedBodyIndex b1 = dumm.getAtomBody(a1),  b2 = dumm.getAtomBody(a2);
             if (b1==b2)
@@ -677,7 +720,7 @@ void CompoundSystem::modelOneCompound(CompoundIndex compoundId, String mobilized
             else
                 artwork.addRubberBandLine(b1, dumm.getAtomStationOnBody(a1),
                                           b2, dumm.getAtomStationOnBody(a2), crossBodyBond);
-        }*/
+        }
 
         for (DuMM::AtomIndex anum(0); anum < dumm.getNumAtoms(); ++anum) {
             Real shrink = 0.25 , opacity = dumm.getAtomElement(anum)==1?0.5:1;
@@ -687,9 +730,9 @@ void CompoundSystem::modelOneCompound(CompoundIndex compoundId, String mobilized
             artwork.addBodyFixedDecoration(dumm.getAtomBody(anum), dumm.getAtomStationOnBody(anum),
                 DecorativeSphere(shrink*r)
                     .setColor(dumm.getAtomDefaultColor(anum)).setOpacity(opacity).setResolution(3));
-        }
+        }*/
     }
-//    */
+
     if (showDebugMessages) cout << "Finished modelOneCompound" << endl;
 }
 
