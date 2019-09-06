@@ -191,11 +191,12 @@ public:
         return defaultDihedral;
     }
 
-    Bond& setPinBody(MobilizedBody::Pin& pin) 
+    Bond& setPinBody(MobilizedBody::Pin& pin, Angle argDefaultDihedral)
     {
         pinJointId = pin.getMobilizedBodyIndex();
 
-        pin.setDefaultAngle(defaultDihedral);
+        pin.setDefaultAngle(defaultDihedral); // Molmodel
+        //pin.setDefaultAngle(argDefaultDihedral); // GMOL BIG RB
 
         return *this;
     }

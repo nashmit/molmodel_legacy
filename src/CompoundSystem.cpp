@@ -556,9 +556,7 @@ void CompoundSystem::modelOneCompound(CompoundIndex compoundId, String mobilized
 
 
 
-
-
-            // GMOL =====================
+            // GMOL BIG RB =====================
 
             // Get the atom indeces at the origin of the bodies
             Compound::AtomIndex originAtomId(*unit.clusterAtoms.begin());
@@ -577,16 +575,38 @@ void CompoundSystem::modelOneCompound(CompoundIndex compoundId, String mobilized
             Compound::AtomIndex parentAtomId = originAtomBonding.parentAtomIndex;
 
             CompoundAtom& parentAtom = compoundRep.updAtom(parentAtomId);
-            Transform P_X_parentAtom = parentAtom.getFrameInMobilizedBodyFrame();
+            Transform P_X_parent = parentAtom.getFrameInMobilizedBodyFrame();
+            Transform parentAtom_X_P = ~P_X_parent;
 
             // Get default Q
             const Transform& T_X_origin = defaultAtomFrames[originAtomId];
             const Transform& T_X_parent = defaultAtomFrames[parentAtomId];
-            const Transform& G_X_T = compoundRep.getTopLevelTransform();
+            Transform parent_X_origin = ~T_X_parent * T_X_origin;
+            Transform origin_X_parent = ~parent_X_origin;
+/*            const Transform& G_X_T = compoundRep.getTopLevelTransform();
             Transform G_X_origin = G_X_T * T_X_origin;
-            Transform G_X_parent = G_X_T * T_X_parent;
-            std::cout << "Molmodel parent child transform: " << ~G_X_parent * G_X_origin << " " << std::endl;
+            Transform G_X_parent = G_X_T * T_X_parent;*/
+            std::cout << "Molmodel parent child transform: " << parent_X_origin << " " << std::endl;
 
+
+            // Get BondCenterInfo defaultDihedrals
+            const AtomInfo& originAtomInfo = compoundRep.getAtomInfo(originAtomId);
+            const AtomInfo& parentAtomInfo = compoundRep.getAtomInfo(parentAtomId);
+
+            const BondInfo& bondInfo = compoundRep.getBondInfo(originAtomInfo, parentAtomInfo);
+            Transform X_parentBC_childBC = bondInfo.getBond().getDefaultBondCenterFrameInOtherBondCenterFrame();
+            Transform X_childBC_parentBC = ~X_parentBC_childBC;
+            std::cout << "Molmodel X_parentBC_childBC " << X_parentBC_childBC << std::endl;
+
+            const BondCenterInfo& childBondCenterInfo = compoundRep.getBondCenterInfo(bondInfo.getChildBondCenterIndex());
+            const BondCenterInfo& parentBondCenterInfo = compoundRep.getBondCenterInfo(bondInfo.getParentBondCenterIndex());
+
+            BondCenter childBondCenter = compoundRep.getBondCenter(childBondCenterInfo.getIndex());
+            BondCenter parentBondCenter = compoundRep.getBondCenter(parentBondCenterInfo.getIndex());
+
+            Angle childBondCenterDihedral = childBondCenter.getDefaultDihedralAngle();
+            Angle parentBondCenterDihedral = parentBondCenter.getDefaultDihedralAngle();
+            std::cout << "Molmodel child parent bondCenterDihedrals " << childBondCenterDihedral << " " << parentBondCenterDihedral << std::endl;
             // GMOL END
 
 
@@ -613,23 +633,29 @@ void CompoundSystem::modelOneCompound(CompoundIndex compoundId, String mobilized
                     // GMOL ======
                     MobilizedBody::Pin torsionBody(
                             matter.updMobilizedBody(parentUnit.bodyId),
-                            ~P_X_parentAtom * P_X_M * M_X_pin,
+                            P_X_M * X_childBC_parentBC * M_X_pin,
                             dumm.calcClusterMassProperties(unit.clusterIx),
-                            M_X_pin);
+                            X_childBC_parentBC * M_X_pin);
                     // GMOL END
 ///* Molmodel: BEGIN
 /*                    MobilizedBody::Pin torsionBody(
                             matter.updMobilizedBody(parentUnit.bodyId),
                             P_X_M * M_X_pin,
                             dumm.calcClusterMassProperties(unit.clusterIx),
-                            M_X_pin);*/
+                            M_X_pin);
                     // Save a pointer to the pin joint in the bond object
                     // (ensure that the default angle of the MobilizedBody::Pin matches that of
                     // the bond, in Atom.h)
                     // NOTE - setPinBody automatically sets the torsionBody default torsion angle
                     bond.setPinBody(torsionBody);
-                    unit.bodyId = torsionBody.getMobilizedBodyIndex();
+                    unit.bodyId = torsionBody.getMobilizedBodyIndex();*/
 // Molmodel: END */
+
+                    // GMOL BIG RB
+                    bond.setPinBody(torsionBody, parentBondCenterDihedral);
+                    unit.bodyId = torsionBody.getMobilizedBodyIndex();
+                    // GMOL END
+
                 } else if(bond.getMobility() == BondMobility::Ball) {
 
                     MassProperties mp = dumm.calcClusterMassProperties(unit.clusterIx);
