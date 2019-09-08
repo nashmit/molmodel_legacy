@@ -1552,13 +1552,15 @@ public:
                         continue;
                 }
 
+            std::cout<<" angle, atomIndex1, atomIndex2, atomIndex3, atomIndex4 "<<angle<<" , "<< atomIndex1 ;
+
             //std::cout<<__FILE__<<":"<<__LINE__<<" angle, atomIndex1, atomIndex2, atomIndex3, atomIndex4 "<<angle<<" , "<< atomIndex1;
-            /*std::cout << ":"<<getAtomName(atomIndex1);  
+            std::cout << ":"<<getAtomName(atomIndex1);
             std::cout<<" , "<< atomIndex2;
             std::cout << ":"<<getAtomName(atomIndex2);
             std::cout<<" , "<< atomIndex3;
             std::cout << ":"<<getAtomName(atomIndex3)  <<" , "<< atomIndex4;
-            std::cout << ":"<<getAtomName(atomIndex4)   <<std::endl;*/
+            std::cout << ":"<<getAtomName(atomIndex4)   <<std::endl;
             setDefaultDihedralAngle( 
                 angle, 
                 atomIndex1, 

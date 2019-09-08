@@ -191,15 +191,26 @@ public:
         return defaultDihedral;
     }
 
+    // Molmodel
+/*    Bond& setPinBody(MobilizedBody::Pin& pin)
+    {
+        pinJointId = pin.getMobilizedBodyIndex();
+
+        pin.setDefaultAngle(defaultDihedral);
+        return *this;
+    }*/
+// Molmodel END
+
+    // GMOL BIG RB
     Bond& setPinBody(MobilizedBody::Pin& pin, Angle argDefaultDihedral)
     {
         pinJointId = pin.getMobilizedBodyIndex();
 
-        pin.setDefaultAngle(defaultDihedral); // Molmodel
-        //pin.setDefaultAngle(argDefaultDihedral); // GMOL BIG RB
+        pin.setDefaultAngle(argDefaultDihedral);
 
         return *this;
     }
+    // GMOL END
 
 ///* GMolModel Try other Mobilizers
     // This method does not set default values of Q

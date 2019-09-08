@@ -586,17 +586,29 @@ void CompoundSystem::modelOneCompound(CompoundIndex compoundId, String mobilized
 /*            const Transform& G_X_T = compoundRep.getTopLevelTransform();
             Transform G_X_origin = G_X_T * T_X_origin;
             Transform G_X_parent = G_X_T * T_X_parent;*/
-            std::cout << "Molmodel parent child transform: " << parent_X_origin << " " << std::endl;
-
 
             // Get BondCenterInfo defaultDihedrals
             const AtomInfo& originAtomInfo = compoundRep.getAtomInfo(originAtomId);
             const AtomInfo& parentAtomInfo = compoundRep.getAtomInfo(parentAtomId);
 
             const BondInfo& bondInfo = compoundRep.getBondInfo(originAtomInfo, parentAtomInfo);
+            const Bond BMBond = bondInfo.getBond();
+            std::cout << "Molmodel BMBond defaultDihedral " << BMBond.getDefaultDihedral() << std::endl;
+
             Transform X_parentBC_childBC = bondInfo.getBond().getDefaultBondCenterFrameInOtherBondCenterFrame();
             Transform X_childBC_parentBC = ~X_parentBC_childBC;
-            std::cout << "Molmodel X_parentBC_childBC " << X_parentBC_childBC << std::endl;
+
+            Transform oldX_PF = P_X_M * M_X_pin;
+            Transform oldX_BM = M_X_pin;
+            Transform oldX_MB = ~oldX_BM;
+            Transform oldX_FM = Rotation(bond.getDefaultDihedral(), ZAxis);
+
+            Transform newX_BM = X_childBC_parentBC * M_X_pin;
+            Transform newX_MB = ~newX_BM;
+            Transform newX_PF = oldX_PF * oldX_FM * oldX_MB * newX_BM;
+
+/*            std::cout << "Molmodel X_parentBC_childBC " << X_parentBC_childBC << std::endl;
+            std::cout << "Molmodel X_childBC_parentBC " << X_childBC_parentBC << std::endl;*/
 
             const BondCenterInfo& childBondCenterInfo = compoundRep.getBondCenterInfo(bondInfo.getChildBondCenterIndex());
             const BondCenterInfo& parentBondCenterInfo = compoundRep.getBondCenterInfo(bondInfo.getParentBondCenterIndex());
@@ -606,7 +618,7 @@ void CompoundSystem::modelOneCompound(CompoundIndex compoundId, String mobilized
 
             Angle childBondCenterDihedral = childBondCenter.getDefaultDihedralAngle();
             Angle parentBondCenterDihedral = parentBondCenter.getDefaultDihedralAngle();
-            std::cout << "Molmodel child parent bondCenterDihedrals " << childBondCenterDihedral << " " << parentBondCenterDihedral << std::endl;
+            std::cout << "Molmodel child parent bondCenterInfo indeces " << childBondCenterInfo.getIndex() << " " << parentBondCenterInfo.getIndex() << std::endl;
             // GMOL END
 
 
@@ -630,12 +642,16 @@ void CompoundSystem::modelOneCompound(CompoundIndex compoundId, String mobilized
             }
             else {
                 if(bond.getMobility() == BondMobility::Torsion) {
-                    // GMOL ======
+                    // GMOL BIG RB ======
                     MobilizedBody::Pin torsionBody(
                             matter.updMobilizedBody(parentUnit.bodyId),
-                            P_X_M * X_childBC_parentBC * M_X_pin,
+                            newX_PF,
                             dumm.calcClusterMassProperties(unit.clusterIx),
-                            X_childBC_parentBC * M_X_pin);
+                            newX_BM);
+
+                    bond.setPinBody(torsionBody, 0);
+                    torsionBody.setDefaultAngle(0);
+                    unit.bodyId = torsionBody.getMobilizedBodyIndex();
                     // GMOL END
 ///* Molmodel: BEGIN
 /*                    MobilizedBody::Pin torsionBody(
@@ -651,10 +667,6 @@ void CompoundSystem::modelOneCompound(CompoundIndex compoundId, String mobilized
                     unit.bodyId = torsionBody.getMobilizedBodyIndex();*/
 // Molmodel: END */
 
-                    // GMOL BIG RB
-                    bond.setPinBody(torsionBody, parentBondCenterDihedral);
-                    unit.bodyId = torsionBody.getMobilizedBodyIndex();
-                    // GMOL END
 
                 } else if(bond.getMobility() == BondMobility::Ball) {
 
@@ -733,10 +745,10 @@ void CompoundSystem::modelOneCompound(CompoundIndex compoundId, String mobilized
  //   /*
     if (hasDecorationSubsystem()) 
     {
-/*        DecorationSubsystem&     artwork = updDecorationSubsystem();
+        DecorationSubsystem&     artwork = updDecorationSubsystem();
         DecorativeLine crossBodyBond; crossBodyBond.setColor(Orange).setLineThickness(5);
 
-        for (DuMM::BondIndex i(0); i < dumm.getNumBonds(); ++i) {
+        /*for (DuMM::BondIndex i(0); i < dumm.getNumBonds(); ++i) {
             const DuMM::AtomIndex    a1 = dumm.getBondAtom(i,0), a2 = dumm.getBondAtom(i,1);
             const MobilizedBodyIndex b1 = dumm.getAtomBody(a1),  b2 = dumm.getAtomBody(a2);
             if (b1==b2)
@@ -756,7 +768,8 @@ void CompoundSystem::modelOneCompound(CompoundIndex compoundId, String mobilized
             artwork.addBodyFixedDecoration(dumm.getAtomBody(anum), dumm.getAtomStationOnBody(anum),
                 DecorativeSphere(shrink*r)
                     .setColor(dumm.getAtomDefaultColor(anum)).setOpacity(opacity).setResolution(3));
-        }*/
+        }
+	*/
     }
 
     if (showDebugMessages) cout << "Finished modelOneCompound" << endl;
